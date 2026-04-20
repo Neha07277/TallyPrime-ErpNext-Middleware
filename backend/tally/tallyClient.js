@@ -240,7 +240,7 @@ export async function fetchTallyLedgers(companyName) {
   const xml = buildCollectionXml(
     "Ledger Collection",
     "Ledger",
-    "NAME,GUID,PARENT,ADDRESS,MAILINGDETAILS.LIST,OPENINGBALANCE,CLOSINGBALANCE,ISBILLWISEON,LEDGERPHONE,EMAIL,INCOMETAXNUMBER,GSTIN.LIST,COUNTRYNAME,STATENAME,PINCODE,BANKACCNO,IFSCODE",
+    "NAME,GUID,PARENT,ADDRESS,MAILINGNAME,MAILINGDETAILS.LIST,OPENINGBALANCE,CLOSINGBALANCE,ISBILLWISEON,LEDGERPHONE,LEDGERMOBILE,EMAIL,INCOMETAXNUMBER,GSTIN.LIST,COUNTRYNAME,STATENAME,PINCODE,BANKACCNO,IFSCODE,SWIFTCODE,BANKNAME",
     companyName
   );
   const raw = await postXml(xml);
@@ -257,6 +257,7 @@ export async function fetchTallyLedgers(companyName) {
     if (!name || !guid) continue;
 
     const blob = [
+      val(l.LEDGERMOBILE),
       val(l.LEDGERPHONE),
       val(l.EMAIL),
       extractAddress(l.ADDRESS),
@@ -280,10 +281,35 @@ export async function fetchTallyLedgers(companyName) {
         const a = Array.isArray(g) ? g : [g];
         return a[0]?.GSTIN || null;
       })(),
-      state: val(l.STATENAME) || null,
+      state: (() => {
+        const s = val(l.STATENAME) || "";
+        const clean = s.replace(/[♦◆\u0004\u2297\u2666\u25c6*]/g, "").trim();
+        return (clean && clean.toLowerCase() !== "not applicable") ? clean : null;
+      })(),
       pincode: val(l.PINCODE) || null,
-      bankAccount: val(l.BANKACCNO) || null,
-      ifsc: val(l.IFSCODE) || null,
+      mailingName: val(l.MAILINGNAME) || null,   // alias / trade name
+      bankAccount: val(l.BANKACCNO)  || null,
+      ifsc:        val(l.IFSCODE)    || null,
+      swiftCode:   val(l.SWIFTCODE)  || null,
+      bankName:    val(l.BANKNAME)   || null,
+      address: (() => {
+        // Try MAILINGDETAILS.LIST first (multi-line address), fall back to ADDRESS
+        const md = l["MAILINGDETAILS.LIST"] || l.MAILINGDETAILS;
+        if (md) {
+          const arr = Array.isArray(md) ? md : [md];
+          const lines = arr.flatMap((m) => {
+            if (!m || typeof m !== "object") return [];
+            const list = m.LIST || m.ADDRESSLIST || m["MAILINGDETAILS.LIST"];
+            if (list) {
+              const la = Array.isArray(list) ? list : [list];
+              return la.map((x) => val(x.ADDRESS || x) || "").filter(Boolean);
+            }
+            return [val(m.ADDRESS || m.NAME) || ""].filter(Boolean);
+          });
+          if (lines.length > 0) return lines.join(", ");
+        }
+        return extractAddress(l.ADDRESS) || null;
+      })(),
     });
   }
 
@@ -817,7 +843,7 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     <TDLMESSAGE>
      <COLLECTION NAME="VoucherCollection" ISMODIFY="No">
       <TYPE>Voucher</TYPE>
-      <FETCH>GUID,DATE,VOUCHERTYPENAME,VOUCHERNUMBER,REFERENCE,PARTYLEDGERNAME,NARRATION,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST.LEDGERNAME,ALLLEDGERENTRIES.LIST.AMOUNT,ALLLEDGERENTRIES.LIST.ISDEEMEDPOSITIVE,ALLINVENTORYENTRIES.LIST.STOCKITEMNAME,ALLINVENTORYENTRIES.LIST.ACTUALQTY,ALLINVENTORYENTRIES.LIST.RATE,ALLINVENTORYENTRIES.LIST.AMOUNT</FETCH>
+      <FETCH>GUID,DATE,VOUCHERTYPENAME,VOUCHERNUMBER,REFERENCE,PARTYLEDGERNAME,NARRATION,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST.LEDGERNAME,ALLLEDGERENTRIES.LIST.AMOUNT,ALLLEDGERENTRIES.LIST.ISDEEMEDPOSITIVE</FETCH>
      </COLLECTION>
     </TDLMESSAGE>
    </TDL>
@@ -864,36 +890,20 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
       if (ledgerName) entries.push({ ledger: ledgerName, amount, isDebit: isDeemedPositive });
     }
 
-    // Parse inventory (stock item) line entries
-    const rawInv = v["ALLINVENTORYENTRIES.LIST"] || [];
-    const invArr = Array.isArray(rawInv) ? rawInv : (rawInv && typeof rawInv === "object" ? [rawInv] : []);
-    const inventoryItems = invArr
-      .map((e) => {
-        if (!e || typeof e !== "object") return null;
-        const itemName = val(e.STOCKITEMNAME?.[0] || e.STOCKITEMNAME);
-        if (!itemName) return null;
-        const qty    = Math.abs(parseTallyAmount(val(e.ACTUALQTY?.[0]  || e.ACTUALQTY)));
-        const rate   = Math.abs(parseTallyAmount(val(e.RATE?.[0]       || e.RATE)));
-        const amount = Math.abs(parseTallyAmount(val(e.AMOUNT?.[0]     || e.AMOUNT)));
-        return { itemName, qty: qty || 1, rate, amount };
-      })
-      .filter(Boolean);
-
     vouchers.push({
       guid,
-      voucherDate:    tallyDateToISO(val(v.DATE?.[0])),
-      voucherType:    val(v.VOUCHERTYPENAME?.[0] || v.VOUCHERTYPE?.[0]),
-      voucherNumber:  val(v.VOUCHERNUMBER?.[0]),
-      referenceNo:    val(v.REFERENCE?.[0]),
-      partyName:      val(v.PARTYLEDGERNAME?.[0]),
-      narration:      val(v.NARRATION?.[0]),
+      voucherDate:   tallyDateToISO(val(v.DATE?.[0])),
+      voucherType:   val(v.VOUCHERTYPENAME?.[0] || v.VOUCHERTYPE?.[0]),
+      voucherNumber: val(v.VOUCHERNUMBER?.[0]),
+      referenceNo:   val(v.REFERENCE?.[0]),
+      partyName:     val(v.PARTYLEDGERNAME?.[0]),
+      narration:     val(v.NARRATION?.[0]),
       netAmount,
       entries,
-      inventoryItems,  // stock line items (Bottle, ProductA, etc.)
-      lineItemCount:  entries.length,
-      isInvoice:      val(v.ISINVOICE?.[0])   === "Yes",
-      isOptional:     val(v.ISOPTIONAL?.[0])  === "Yes",
-      isPostDated:    val(v.ISPOSTDATED?.[0]) === "Yes",
+      lineItemCount: entries.length,
+      isInvoice:    val(v.ISINVOICE?.[0])   === "Yes",
+      isOptional:   val(v.ISOPTIONAL?.[0])  === "Yes",
+      isPostDated:  val(v.ISPOSTDATED?.[0]) === "Yes",
     });
   }
 
