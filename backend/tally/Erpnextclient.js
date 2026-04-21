@@ -1050,10 +1050,13 @@ export async function syncStockToErpNext(stockItems, creds = {}) {
   const uniqueUoMs   = Array.from(new Set(stockItems.map((i) => normaliseUoM(i.baseUnit)).filter(Boolean)));
   const uniqueHsns   = Array.from(new Set(stockItems.map((i) => sanitiseHsn(i.hsnCode)).filter((h) => h && h !== "null")));
 
-  logger.info("Pre-creating " + uniqueGroups.length + " Item Groups, " + uniqueUoMs.length + " UoMs, " + uniqueHsns.length + " HSN codes");
-  for (const g of uniqueGroups) { await ensureItemGroup(client, g); await sleep(100); }
-  for (const u of uniqueUoMs)   { await ensureUoM(client, u);       await sleep(100); }
-  for (const h of uniqueHsns)   { await ensureHsnCode(client, h);   await sleep(100); }
+  // Always ensure the fallback HSN "999999" exists so items with no Tally HSN can sync.
+  const HSN_FALLBACK_STOCK = "999999";
+  const uniqueHsnsWithFallback = Array.from(new Set([HSN_FALLBACK_STOCK, ...uniqueHsns]));
+  logger.info("Pre-creating " + uniqueGroups.length + " Item Groups, " + uniqueUoMs.length + " UoMs, " + uniqueHsnsWithFallback.length + " HSN codes (incl. fallback)");
+  for (const g of uniqueGroups)           { await ensureItemGroup(client, g); await sleep(100); }
+  for (const u of uniqueUoMs)             { await ensureUoM(client, u);       await sleep(100); }
+  for (const h of uniqueHsnsWithFallback) { await ensureHsnCode(client, h);   await sleep(100); }
 
   const results = await batchSync(client, "Item", stockItems, (item) => {
     const uom       = normaliseUoM(item.baseUnit);
@@ -1062,8 +1065,12 @@ export async function syncStockToErpNext(stockItems, creds = {}) {
     const rawGroup  = (item.group || "").replace(/[\u0004\u2297\u2666\u25c6*]/g, "").trim();
     const itemGroup = rawGroup && rawGroup.toLowerCase() !== "primary" ? rawGroup : "All Item Groups";
 
-    // hsnCode: pure mirror of Tally — null if Tally has none (ERPNext mandatory flag removed above)
-    const hsnCode   = sanitiseHsn(item.hsnCode); // null if Tally has none — ERPNext field is non-mandatory (patched below)
+    // hsnCode: use Tally value if present, else fall back to "999999" (Other / Unclassified).
+    // ERPNext India may still enforce mandatory HSN even after the Property Setter patch
+    // on some installations — a fallback ensures the item always syncs.
+    // "999999" is the standard catch-all HSN/SAC code for unclassified goods/services.
+    const HSN_FALLBACK = "999999";
+    const hsnCode   = sanitiseHsn(item.hsnCode) || HSN_FALLBACK;
 
     // Strip Tally special chars from all string fields before comparing
     const cleanStr = (s) => (s || "").replace(/[\u0004\u2297\u2666\u25c6*]/g, "").trim();
@@ -1106,10 +1113,9 @@ export async function syncStockToErpNext(stockItems, creds = {}) {
       description:      item.name,
     };
 
-    // GST fields — only send if Tally has a real value; omit entirely when null
-    // so ERPNext mandatory-field validation is not triggered for items with no HSN
-    // GST fields — only set when Tally has a real value, pure mirror, no defaults
-    if (hsnCode)      doc.gst_hsn_code  = hsnCode;
+    // GST fields — always set hsnCode (real Tally value or "999999" fallback — never null)
+    // Other GST fields only set when Tally has a real value.
+    doc.gst_hsn_code = hsnCode; // always present (fallback = "999999")
     if (gstItemType)  doc.gst_item_type = gstItemType;
     if (isNilExempt)  doc.is_nil_exempt = 1;
     if (isNonGst)     doc.is_non_gst    = 1;
@@ -2527,18 +2533,20 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         }))
       : [{ item_code: "Sales Item", item_name: "Sales Item", qty: 1, rate: v.netAmount || 0, income_account: incomeAccount }];
 
-    const salesRemarks = "Tally Voucher No: " + (v.voucherNumber || "") + (v.narration ? " | " + v.narration : "");
+    // voucherNumber fallback: use date+type as unique key if Tally didn't export a number
+    const vSalesNum   = v.voucherNumber || (v.voucherDate + "-" + (v.voucherType || "Sales") + "-" + (v.guid || "").slice(-6));
+    const salesRemarks = "Tally Voucher No: " + vSalesNum + (v.narration ? " | " + v.narration : "");
     return {
       // `title` is a virtual field — ERPNext rejects it in list-API filters, so upsert
       // always fell through to CREATE, duplicating invoices on every sync.
       // Use `remarks` (real DB column, unique per voucher) as the idempotency key instead.
       filters: { remarks: salesRemarks },
       doc: {
-        title:        "Tally:" + v.voucherNumber,
-        customer:     v.partyName || "Guest",
-        posting_date: v.voucherDate,
+        title:        "Tally:" + vSalesNum,
+        customer:     v.partyName || "Walk-in Customer",
+        posting_date: v.voucherDate || new Date().toISOString().slice(0, 10), // fallback: today if Tally date missing
         company:      companyName,
-        po_no:        v.voucherNumber || "",
+        po_no:        vSalesNum,
         remarks:      salesRemarks,
         items,
       },
@@ -2557,21 +2565,55 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         }))
       : [{ item_code: "Purchase Item", item_name: "Purchase Item", qty: 1, rate: v.netAmount || 0, expense_account: expenseAccount }];
 
-    const purchaseRemarks = "Tally Voucher No: " + (v.voucherNumber || "") + (v.narration ? " | " + v.narration : "");
+    const vPurchaseNum    = v.voucherNumber || (v.voucherDate + "-" + (v.voucherType || "Purchase") + "-" + (v.guid || "").slice(-6));
+    const purchaseRemarks = "Tally Voucher No: " + vPurchaseNum + (v.narration ? " | " + v.narration : "");
     return {
       filters: { remarks: purchaseRemarks },
       doc: {
-        title:        "Tally:" + v.voucherNumber,
+        title:        "Tally:" + vPurchaseNum,
         supplier:     v.partyName || "Unknown Supplier",
-        posting_date: v.voucherDate,
+        posting_date: v.voucherDate || new Date().toISOString().slice(0, 10), // fallback: today if Tally date missing
         company:      companyName,
-        bill_no:      v.voucherNumber || "",
-        bill_date:    v.voucherDate,
+        bill_no:      vPurchaseNum,
+        bill_date:    v.voucherDate   || new Date().toISOString().slice(0, 10),
         remarks:      purchaseRemarks,
         items,
       },
     };
   };
+
+  // ── Ensure fallback parties exist (Walk-in Customer / Unknown Supplier) ──────
+  // Sales vouchers with no partyName in Tally fall back to "Walk-in Customer".
+  // Purchase vouchers with no partyName fall back to "Unknown Supplier".
+  // We create these once here so the invoice batch never hits "Could not find Customer/Supplier".
+  const FALLBACK_CUSTOMER  = "Walk-in Customer";
+  const FALLBACK_SUPPLIER  = "Unknown Supplier";
+  for (const [doctype, name, group] of [
+    ["Customer", FALLBACK_CUSTOMER, _customerGroup || "Commercial"],
+    ["Supplier", FALLBACK_SUPPLIER, _supplierGroup || "Services"],
+  ]) {
+    try {
+      await client.get("/api/resource/" + doctype + "/" + encodeURIComponent(name));
+      // already exists
+    } catch (_) {
+      try {
+        if (doctype === "Customer") {
+          await client.post("/api/resource/Customer", {
+            doctype: "Customer", customer_name: name,
+            customer_type: "Individual", customer_group: group,
+          });
+        } else {
+          await client.post("/api/resource/Supplier", {
+            doctype: "Supplier", supplier_name: name,
+            supplier_type: "Individual", supplier_group: group,
+          });
+        }
+        logger.info("Auto-created fallback party: " + name + " (" + doctype + ")");
+      } catch (e) {
+        logger.warn("Could not create fallback party \"" + name + "\": " + parseErpError(e));
+      }
+    }
+  }
 
   for (const code of ["Sales Item", "Purchase Item"]) {
     try {
@@ -2657,7 +2699,7 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         salesVouchers
           .map((v) => (v.partyName || "").trim())
           .filter(Boolean)
-          .filter((n) => n !== "Unknown Customer")
+          .filter((n) => n !== "Unknown Customer" && n !== "Walk-in Customer")
       ),
     ];
     if (uniqueCustomerNames.length > 0) {

@@ -1,5 +1,1092 @@
 [
   {
+    "id": 1776751605544.4226,
+    "ts": "2026-04-21T06:06:45.544Z",
+    "level": "info",
+    "message": "Full sync job full-1776751153057-mxrtj done",
+    "meta": {}
+  },
+  {
+    "id": 1776751605541.1763,
+    "ts": "2026-04-21T06:06:45.541Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "tallytoerpnext"
+    }
+  },
+  {
+    "id": 1776751605538.332,
+    "ts": "2026-04-21T06:06:45.538Z",
+    "level": "success",
+    "message": "Invoice sync done - sales: +2 new/24 updated/0 failed | purchase: +0 new/17 updated/0 failed",
+    "meta": {}
+  },
+  {
+    "id": 1776751605533.9575,
+    "ts": "2026-04-21T06:06:45.533Z",
+    "level": "info",
+    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
+    "meta": {}
+  },
+  {
+    "id": 1776751604277.1077,
+    "ts": "2026-04-21T06:06:44.277Z",
+    "level": "info",
+    "message": "Submit Sales Invoice: 2 submitted, 0 failed",
+    "meta": {}
+  },
+  {
+    "id": 1776751576607.3975,
+    "ts": "2026-04-21T06:06:16.607Z",
+    "level": "info",
+    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751545583.3228,
+    "ts": "2026-04-21T06:05:45.583Z",
+    "level": "info",
+    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751515373.6895,
+    "ts": "2026-04-21T06:05:15.373Z",
+    "level": "info",
+    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751498704.5415,
+    "ts": "2026-04-21T06:04:58.704Z",
+    "level": "info",
+    "message": "Pre-syncing 12 customers before Sales Invoice batch",
+    "meta": {}
+  },
+  {
+    "id": 1776751498097.2324,
+    "ts": "2026-04-21T06:04:58.097Z",
+    "level": "info",
+    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
+    "meta": {}
+  },
+  {
+    "id": 1776751498094.3872,
+    "ts": "2026-04-21T06:04:58.094Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Purchase Item",
+    "meta": {}
+  },
+  {
+    "id": 1776751497988.1484,
+    "ts": "2026-04-21T06:04:57.988Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Sales Item",
+    "meta": {}
+  },
+  {
+    "id": 1776751497885.8503,
+    "ts": "2026-04-21T06:04:57.885Z",
+    "level": "info",
+    "message": "Auto-created fallback party: Unknown Supplier (Supplier)",
+    "meta": {}
+  },
+  {
+    "id": 1776751497679.4373,
+    "ts": "2026-04-21T06:04:57.679Z",
+    "level": "info",
+    "message": "Auto-created fallback party: Walk-in Customer (Customer)",
+    "meta": {}
+  },
+  {
+    "id": 1776751497304.7092,
+    "ts": "2026-04-21T06:04:57.304Z",
+    "level": "info",
+    "message": "Invoice breakdown - sales: 26, purchase: 17",
+    "meta": {}
+  },
+  {
+    "id": 1776751497273.2007,
+    "ts": "2026-04-21T06:04:57.273Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {}
+  },
+  {
+    "id": 1776751496632.4316,
+    "ts": "2026-04-21T06:04:56.632Z",
+    "level": "info",
+    "message": "Syncing invoices to ERPNext for tallytoerpnext (abbr: T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751496627.9326,
+    "ts": "2026-04-21T06:04:56.627Z",
+    "level": "success",
+    "message": "Voucher sync done - JE created: 1, updated: 84, failed: 0",
+    "meta": {}
+  },
+  {
+    "id": 1776751483217.768,
+    "ts": "2026-04-21T06:04:43.217Z",
+    "level": "info",
+    "message": "[Journal Entry] 80/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751461407.965,
+    "ts": "2026-04-21T06:04:21.407Z",
+    "level": "info",
+    "message": "[Journal Entry] 70/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751439848.9106,
+    "ts": "2026-04-21T06:03:59.848Z",
+    "level": "info",
+    "message": "[Journal Entry] 60/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751418048.4314,
+    "ts": "2026-04-21T06:03:38.048Z",
+    "level": "info",
+    "message": "[Journal Entry] 50/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751396583.0674,
+    "ts": "2026-04-21T06:03:16.583Z",
+    "level": "info",
+    "message": "[Journal Entry] 40/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751366269.358,
+    "ts": "2026-04-21T06:02:46.269Z",
+    "level": "info",
+    "message": "[Journal Entry] 30/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751343646.609,
+    "ts": "2026-04-21T06:02:23.646Z",
+    "level": "info",
+    "message": "[Journal Entry] 20/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751309955.788,
+    "ts": "2026-04-21T06:01:49.955Z",
+    "level": "info",
+    "message": "[Journal Entry] 10/85 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751291703.5806,
+    "ts": "2026-04-21T06:01:31.703Z",
+    "level": "info",
+    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 23",
+    "meta": {}
+  },
+  {
+    "id": 1776751291698.336,
+    "ts": "2026-04-21T06:01:31.698Z",
+    "level": "info",
+    "message": "Syncing 85/85 vouchers",
+    "meta": {}
+  },
+  {
+    "id": 1776751289079.8164,
+    "ts": "2026-04-21T06:01:29.079Z",
+    "level": "info",
+    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
+    "meta": {}
+  },
+  {
+    "id": 1776751289075.504,
+    "ts": "2026-04-21T06:01:29.075Z",
+    "level": "info",
+    "message": "Resolving accounts with company abbreviation: T",
+    "meta": {}
+  },
+  {
+    "id": 1776751289072.1963,
+    "ts": "2026-04-21T06:01:29.072Z",
+    "level": "info",
+    "message": "Syncing 129 vouchers to ERPNext",
+    "meta": {}
+  },
+  {
+    "id": 1776751289067.9526,
+    "ts": "2026-04-21T06:01:29.067Z",
+    "level": "success",
+    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
+    "meta": {}
+  },
+  {
+    "id": 1776751287016.206,
+    "ts": "2026-04-21T06:01:27.016Z",
+    "level": "info",
+    "message": "[GST debug] \"TEST-ITEM2\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751285279.1704,
+    "ts": "2026-04-21T06:01:25.279Z",
+    "level": "info",
+    "message": "[GST debug] \"Red Pen\" → typeOfSupply=\"capital goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751283635.6526,
+    "ts": "2026-04-21T06:01:23.635Z",
+    "level": "info",
+    "message": "[GST debug] \"ProductA\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751282005.202,
+    "ts": "2026-04-21T06:01:22.005Z",
+    "level": "info",
+    "message": "[GST debug] \"Laptop\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751280355.066,
+    "ts": "2026-04-21T06:01:20.355Z",
+    "level": "info",
+    "message": "[GST debug] \"ITEM-TEST-1\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751278633.6304,
+    "ts": "2026-04-21T06:01:18.633Z",
+    "level": "info",
+    "message": "[GST debug] \"Item1\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751276974.564,
+    "ts": "2026-04-21T06:01:16.974Z",
+    "level": "info",
+    "message": "[GST debug] \"Demo Item\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751275347.8293,
+    "ts": "2026-04-21T06:01:15.347Z",
+    "level": "info",
+    "message": "[GST debug] \"Cup\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751273531.8313,
+    "ts": "2026-04-21T06:01:13.531Z",
+    "level": "info",
+    "message": "[GST debug] \"Bottle\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
+    "meta": {}
+  },
+  {
+    "id": 1776751265239.728,
+    "ts": "2026-04-21T06:01:05.239Z",
+    "level": "info",
+    "message": "Pre-creating 2 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
+    "meta": {}
+  },
+  {
+    "id": 1776751262740.53,
+    "ts": "2026-04-21T06:01:02.740Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {}
+  },
+  {
+    "id": 1776751260185.159,
+    "ts": "2026-04-21T06:01:00.185Z",
+    "level": "info",
+    "message": "Syncing 9 stock items to ERPNext",
+    "meta": {}
+  },
+  {
+    "id": 1776751260180.7236,
+    "ts": "2026-04-21T06:01:00.180Z",
+    "level": "success",
+    "message": "Cost centres sync done - created: 0, updated: 1, failed: 0",
+    "meta": {}
+  },
+  {
+    "id": 1776751258505.6702,
+    "ts": "2026-04-21T06:00:58.505Z",
+    "level": "info",
+    "message": "Cost Centre sync: fetched 8 existing cost centers",
+    "meta": {}
+  },
+  {
+    "id": 1776751258459.0054,
+    "ts": "2026-04-21T06:00:58.459Z",
+    "level": "info",
+    "message": "Syncing 1 cost centres to ERPNext for tallytoerpnext (abbr: T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751258454.9517,
+    "ts": "2026-04-21T06:00:58.454Z",
+    "level": "success",
+    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
+    "meta": {}
+  },
+  {
+    "id": 1776751256741.0642,
+    "ts": "2026-04-21T06:00:56.741Z",
+    "level": "info",
+    "message": "[Warehouse] rawParent='primary' parentWarehouse='All Warehouses - T'",
+    "meta": {}
+  },
+  {
+    "id": 1776751256737.3525,
+    "ts": "2026-04-21T06:00:56.737Z",
+    "level": "info",
+    "message": "Using root warehouse: All Warehouses - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751256734.4978,
+    "ts": "2026-04-21T06:00:56.734Z",
+    "level": "info",
+    "message": "Root warehouse resolved: All Warehouses - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751256640.2515,
+    "ts": "2026-04-21T06:00:56.640Z",
+    "level": "info",
+    "message": "Syncing 1 godowns to ERPNext for tallytoerpnext (abbr: T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751256636.1802,
+    "ts": "2026-04-21T06:00:56.636Z",
+    "level": "info",
+    "message": "Opening balance sync complete - 0 created, 3 updated, 0 failed",
+    "meta": {}
+  },
+  {
+    "id": 1776751256633.1885,
+    "ts": "2026-04-21T06:00:56.633Z",
+    "level": "success",
+    "message": "Created & submitted Opening Entry JE [GL]: ACC-JV-2026-00065",
+    "meta": {}
+  },
+  {
+    "id": 1776751255402.5361,
+    "ts": "2026-04-21T06:00:55.402Z",
+    "level": "success",
+    "message": "Created & submitted Opening Entry JE [Creditors]: ACC-JV-2026-00064",
+    "meta": {}
+  },
+  {
+    "id": 1776751254071.7166,
+    "ts": "2026-04-21T06:00:54.071Z",
+    "level": "success",
+    "message": "Created & submitted Opening Entry JE [Debtors]: ACC-JV-2026-00063",
+    "meta": {}
+  },
+  {
+    "id": 1776751253563.4272,
+    "ts": "2026-04-21T06:00:53.563Z",
+    "level": "info",
+    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
+    "meta": {}
+  },
+  {
+    "id": 1776751253559.5918,
+    "ts": "2026-04-21T06:00:53.559Z",
+    "level": "info",
+    "message": "[OB] Cleaned up 5 old-format Opening Balance JEs",
+    "meta": {}
+  },
+  {
+    "id": 1776751252156.2146,
+    "ts": "2026-04-21T06:00:52.156Z",
+    "level": "info",
+    "message": "Resolved 14 / 14 ledgers to JE account rows",
+    "meta": {}
+  },
+  {
+    "id": 1776751252109.4512,
+    "ts": "2026-04-21T06:00:52.109Z",
+    "level": "info",
+    "message": "  UpdateLedgerTest -> GL: UpdateLedgerTest - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751252063.3005,
+    "ts": "2026-04-21T06:00:52.063Z",
+    "level": "info",
+    "message": "  TEST-SUPPLIER2 -> Payable: ABC Traders - T (Supplier)",
+    "meta": {}
+  },
+  {
+    "id": 1776751252016.1025,
+    "ts": "2026-04-21T06:00:52.016Z",
+    "level": "info",
+    "message": "  Test Ledger 999 -> GL: Test Ledger 999 - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251969.0742,
+    "ts": "2026-04-21T06:00:51.969Z",
+    "level": "info",
+    "message": "  Test GST Customer -> Receivable: Debtors - T (Customer)",
+    "meta": {}
+  },
+  {
+    "id": 1776751251922.958,
+    "ts": "2026-04-21T06:00:51.922Z",
+    "level": "info",
+    "message": "  TestCustomer4 -> Receivable: Debtors - T (Customer)",
+    "meta": {}
+  },
+  {
+    "id": 1776751251875.4426,
+    "ts": "2026-04-21T06:00:51.875Z",
+    "level": "info",
+    "message": "  Test600 -> Payable: ABC Traders - T (Supplier)",
+    "meta": {}
+  },
+  {
+    "id": 1776751251828.465,
+    "ts": "2026-04-21T06:00:51.828Z",
+    "level": "info",
+    "message": "  Test500 -> GL (Payable — adding party): Test500 - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251780.0808,
+    "ts": "2026-04-21T06:00:51.780Z",
+    "level": "info",
+    "message": "  Test18022026 -> GL: Test18022026 - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251738.934,
+    "ts": "2026-04-21T06:00:51.738Z",
+    "level": "info",
+    "message": "  Suryavanshi -> GL: Suryavanshi - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251702.4187,
+    "ts": "2026-04-21T06:00:51.702Z",
+    "level": "info",
+    "message": "  Suppliers5 -> Payable: ABC Traders - T (Supplier)",
+    "meta": {}
+  },
+  {
+    "id": 1776751251655.8953,
+    "ts": "2026-04-21T06:00:51.655Z",
+    "level": "info",
+    "message": "  SudhirMorchale -> GL (Payable — adding party): SudhirMorchale - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251608.773,
+    "ts": "2026-04-21T06:00:51.608Z",
+    "level": "info",
+    "message": "  Sudhir26022026 -> GL: Sudhir26022026 - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251562.0576,
+    "ts": "2026-04-21T06:00:51.562Z",
+    "level": "info",
+    "message": "  RAJLAXMI -> GL: RAJLAXMI - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251517.3757,
+    "ts": "2026-04-21T06:00:51.517Z",
+    "level": "info",
+    "message": "  Customers5 -> Receivable: Debtors - T (Customer)",
+    "meta": {}
+  },
+  {
+    "id": 1776751251512.012,
+    "ts": "2026-04-21T06:00:51.512Z",
+    "level": "info",
+    "message": "[OB] Known customers: 448, suppliers: 32",
+    "meta": {}
+  },
+  {
+    "id": 1776751251276.903,
+    "ts": "2026-04-21T06:00:51.276Z",
+    "level": "info",
+    "message": "Control accounts - Receivable: Debtors - T, Payable: ABC Traders - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751251271.3477,
+    "ts": "2026-04-21T06:00:51.271Z",
+    "level": "info",
+    "message": "Fetched 120 accounts from ERPNext for tallytoerpnext",
+    "meta": {}
+  },
+  {
+    "id": 1776751251213.2507,
+    "ts": "2026-04-21T06:00:51.213Z",
+    "level": "info",
+    "message": "Found 14 ledgers with opening balances: Customers5=777777, RAJLAXMI=242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=2, Test600=7, TestCustomer4=67567575, Test GST Customer=76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
+    "meta": {}
+  },
+  {
+    "id": 1776751251210.005,
+    "ts": "2026-04-21T06:00:51.210Z",
+    "level": "info",
+    "message": "Syncing opening balances for 67 ledgers in tallytoerpnext",
+    "meta": {}
+  },
+  {
+    "id": 1776751251205.6675,
+    "ts": "2026-04-21T06:00:51.205Z",
+    "level": "success",
+    "message": "Ledger sync done - customers: +0 created, ~18 updated, x0 failed | suppliers: +0 created, ~10 updated, x0 failed",
+    "meta": {}
+  },
+  {
+    "id": 1776751251202.9385,
+    "ts": "2026-04-21T06:00:51.202Z",
+    "level": "info",
+    "message": "Address/contact sync done",
+    "meta": {}
+  },
+  {
+    "id": 1776751250152.5522,
+    "ts": "2026-04-21T06:00:50.152Z",
+    "level": "warn",
+    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
+    "meta": {}
+  },
+  {
+    "id": 1776751249710.0017,
+    "ts": "2026-04-21T06:00:49.710Z",
+    "level": "warn",
+    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
+    "meta": {}
+  },
+  {
+    "id": 1776751248289.328,
+    "ts": "2026-04-21T06:00:48.289Z",
+    "level": "warn",
+    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
+    "meta": {}
+  },
+  {
+    "id": 1776751248284.6082,
+    "ts": "2026-04-21T06:00:48.284Z",
+    "level": "info",
+    "message": "Syncing addresses/contacts for 6 parties from Tally",
+    "meta": {}
+  },
+  {
+    "id": 1776751243273.209,
+    "ts": "2026-04-21T06:00:43.273Z",
+    "level": "info",
+    "message": "[Supplier] 10/10 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751223533.8647,
+    "ts": "2026-04-21T06:00:23.533Z",
+    "level": "warn",
+    "message": "Invalid PAN skipped for customer \"TestGstCustomer2\": 4444444444",
+    "meta": {}
+  },
+  {
+    "id": 1776751220558.3252,
+    "ts": "2026-04-21T06:00:20.558Z",
+    "level": "warn",
+    "message": "Invalid PAN skipped for customer \"Test GST Customer\": 4654563565",
+    "meta": {}
+  },
+  {
+    "id": 1776751192511.6814,
+    "ts": "2026-04-21T05:59:52.511Z",
+    "level": "info",
+    "message": "[Customer] 10/18 synced - pausing 5000ms",
+    "meta": {}
+  },
+  {
+    "id": 1776751175190.9084,
+    "ts": "2026-04-21T05:59:35.190Z",
+    "level": "info",
+    "message": "Ledger breakdown - customers: 18, suppliers: 10, skipped (GL-only groups): 40",
+    "meta": {}
+  },
+  {
+    "id": 1776751175178.8792,
+    "ts": "2026-04-21T05:59:35.178Z",
+    "level": "info",
+    "message": "Using default Territory: India",
+    "meta": {}
+  },
+  {
+    "id": 1776751175175.5637,
+    "ts": "2026-04-21T05:59:35.175Z",
+    "level": "info",
+    "message": "Using Supplier Group: Services",
+    "meta": {}
+  },
+  {
+    "id": 1776751175128.9517,
+    "ts": "2026-04-21T05:59:35.128Z",
+    "level": "info",
+    "message": "Using Customer Group: Commercial",
+    "meta": {}
+  },
+  {
+    "id": 1776751175040.845,
+    "ts": "2026-04-21T05:59:35.040Z",
+    "level": "info",
+    "message": "Syncing 67 ledgers to ERPNext",
+    "meta": {}
+  },
+  {
+    "id": 1776751175035.249,
+    "ts": "2026-04-21T05:59:35.035Z",
+    "level": "success",
+    "message": "Chart of Accounts sync done - created: 0, updated: 10, failed: 18",
+    "meta": {}
+  },
+  {
+    "id": 1776751175030.035,
+    "ts": "2026-04-21T05:59:35.030Z",
+    "level": "warn",
+    "message": "COA sync error [Unsecured Loans]: Could not find Parent Account: Loans (Liability) - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751174988.5022,
+    "ts": "2026-04-21T05:59:34.988Z",
+    "level": "warn",
+    "message": "COA sync error [Secured Loans]: Could not find Parent Account: Loans (Liability) - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751174717.043,
+    "ts": "2026-04-21T05:59:34.717Z",
+    "level": "warn",
+    "message": "COA sync error [Bank OD A/c]: Could not find Parent Account: Loans (Liability) - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751173072.9883,
+    "ts": "2026-04-21T05:59:33.072Z",
+    "level": "info",
+    "message": "COA updated: Sundry Creditors - T (parent: Current Liabilities - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751171424.2324,
+    "ts": "2026-04-21T05:59:31.424Z",
+    "level": "info",
+    "message": "COA updated: Provisions - T (parent: Current Liabilities - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751169392.7417,
+    "ts": "2026-04-21T05:59:29.392Z",
+    "level": "info",
+    "message": "COA updated: Duties & Taxes - T (parent: Current Liabilities - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751167771.5198,
+    "ts": "2026-04-21T05:59:27.772Z",
+    "level": "info",
+    "message": "COA updated: Sundry Debtors - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751166213.4646,
+    "ts": "2026-04-21T05:59:26.213Z",
+    "level": "info",
+    "message": "COA updated: Stock-in-Hand - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751164634.5762,
+    "ts": "2026-04-21T05:59:24.634Z",
+    "level": "info",
+    "message": "COA updated: Loans & Advances (Asset) - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751163085.6702,
+    "ts": "2026-04-21T05:59:23.085Z",
+    "level": "info",
+    "message": "COA updated: Deposits (Asset) - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751161402.9355,
+    "ts": "2026-04-21T05:59:21.402Z",
+    "level": "info",
+    "message": "COA updated: Cash-in-Hand - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751159784.2878,
+    "ts": "2026-04-21T05:59:19.784Z",
+    "level": "info",
+    "message": "COA updated: Bank Accounts - T (parent: Current Assets - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751158230.8413,
+    "ts": "2026-04-21T05:59:18.230Z",
+    "level": "info",
+    "message": "COA updated: Reserves & Surplus - T (parent: Capital Account - T)",
+    "meta": {}
+  },
+  {
+    "id": 1776751158124.6384,
+    "ts": "2026-04-21T05:59:18.124Z",
+    "level": "warn",
+    "message": "COA sync error [Suspense A/c]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157950.7878,
+    "ts": "2026-04-21T05:59:17.950Z",
+    "level": "warn",
+    "message": "COA sync error [Sales Accounts]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157876.2393,
+    "ts": "2026-04-21T05:59:17.876Z",
+    "level": "warn",
+    "message": "COA sync error [Purchase Accounts]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157703.156,
+    "ts": "2026-04-21T05:59:17.703Z",
+    "level": "warn",
+    "message": "COA sync error [Misc. Expenses (ASSET)]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157565.7651,
+    "ts": "2026-04-21T05:59:17.565Z",
+    "level": "warn",
+    "message": "COA sync error [Loans (Liability)]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157407.6995,
+    "ts": "2026-04-21T05:59:17.407Z",
+    "level": "warn",
+    "message": "COA sync error [Investments]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157309.6392,
+    "ts": "2026-04-21T05:59:17.309Z",
+    "level": "warn",
+    "message": "COA sync error [Indirect Incomes]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157208.5222,
+    "ts": "2026-04-21T05:59:17.208Z",
+    "level": "warn",
+    "message": "COA sync error [Indirect Expenses]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157134.4917,
+    "ts": "2026-04-21T05:59:17.134Z",
+    "level": "warn",
+    "message": "COA sync error [Fixed Assets]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751157104.946,
+    "ts": "2026-04-21T05:59:17.104Z",
+    "level": "warn",
+    "message": "COA sync error [Direct Incomes]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156976.9827,
+    "ts": "2026-04-21T05:59:16.976Z",
+    "level": "warn",
+    "message": "COA sync error [Direct Expenses]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156940.0544,
+    "ts": "2026-04-21T05:59:16.940Z",
+    "level": "warn",
+    "message": "COA sync error [Current Liabilities]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156895.2996,
+    "ts": "2026-04-21T05:59:16.895Z",
+    "level": "warn",
+    "message": "COA sync error [Current Assets]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156833.2893,
+    "ts": "2026-04-21T05:59:16.833Z",
+    "level": "warn",
+    "message": "COA sync error [Capital Account]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156795.4014,
+    "ts": "2026-04-21T05:59:16.795Z",
+    "level": "warn",
+    "message": "COA sync error [Branch / Divisions]: Could not find Parent Account: \u0004 Primary - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156596.5208,
+    "ts": "2026-04-21T05:59:16.596Z",
+    "level": "info",
+    "message": "COA root accounts — Asset: Application of Funds (Assets) - T, Liability: Source of Funds (Liabilities) - T, Equity(fallback): Source of Funds (Liabilities) - T, Income: Income - T, Expense: Expenses - T",
+    "meta": {}
+  },
+  {
+    "id": 1776751156592.0676,
+    "ts": "2026-04-21T05:59:16.592Z",
+    "level": "info",
+    "message": "COA: fetched 120 existing ERPNext accounts for tallytoerpnext",
+    "meta": {}
+  },
+  {
+    "id": 1776751156289.877,
+    "ts": "2026-04-21T05:59:16.289Z",
+    "level": "info",
+    "message": "Syncing 28 account groups to ERPNext for tallytoerpnext",
+    "meta": {}
+  },
+  {
+    "id": 1776751156284.7227,
+    "ts": "2026-04-21T05:59:16.284Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3561000000",
+    "meta": {}
+  },
+  {
+    "id": 1776751153696.326,
+    "ts": "2026-04-21T05:59:13.696Z",
+    "level": "info",
+    "message": "Using ERPNext company: \"tallytoerpnext\" (from Sync UI)",
+    "meta": {}
+  },
+  {
+    "id": 1776751153683.6985,
+    "ts": "2026-04-21T05:59:13.683Z",
+    "level": "info",
+    "message": "ERPNext client caches cleared for new sync run",
+    "meta": {}
+  },
+  {
+    "id": 1776751153678.3118,
+    "ts": "2026-04-21T05:59:13.678Z",
+    "level": "success",
+    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-21) from 129 total",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153670.8892,
+    "ts": "2026-04-21T05:59:13.670Z",
+    "level": "info",
+    "message": "Vouchers parsed successfully: 129",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153663.2722,
+    "ts": "2026-04-21T05:59:13.663Z",
+    "level": "info",
+    "message": "Raw vouchers received from Tally: 129",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153475.8574,
+    "ts": "2026-04-21T05:59:13.475Z",
+    "level": "info",
+    "message": "Voucher raw response (first 1000): <ENVELOPE>\r\n <HEADER>\r\n  <VERSION>1</VERSION>\r\n  <STATUS>1</STATUS>\r\n </HEADER>\r\n <BODY>\r\n  <DESC>\r\n   <CMPINFO>\r\n    <COMPANY>0</COMPANY>\r\n    <GROUP>0</GROUP>\r\n    <LEDGER>0</LEDGER>\r\n    <COSTCATEGORY>0</COSTCATEGORY>\r\n    <COSTCENTRE>0</COSTCENTRE>\r\n    <GODOWN>0</GODOWN>\r\n    <STOCKGROUP>0</STOCKGROUP>\r\n    <STOCKCATEGORY>0</STOCKCATEGORY>\r\n    <STOCKITEM>0</STOCKITEM>\r\n    <VOUCHERTYPE>0</VOUCHERTYPE>\r\n    <CURRENCY>0</CURRENCY>\r\n    <UNIT>0</UNIT>\r\n    <BUDGET>0</BUDGET>\r\n    <CLIENTRULE>0</CLIENTRULE>\r\n    <SERVERRULE>0</SERVERRULE>\r\n    <STATE>0</STATE>\r\n    <TDSRATE>0</TDSRATE>\r\n    <TAXCLASSIFICATION>0</TAXCLASSIFICATION>\r\n    <STCATEGORY>0</STCATEGORY>\r\n    <DEDUCTEETYPE>0</DEDUCTEETYPE>\r\n    <ATTENDANCETYPE>0</ATTENDANCETYPE>\r\n    <FBTCATEGORY>0</FBTCATEGORY>\r\n    <FBTASSESSEETYPE>0</FBTASSESSEETYPE>\r\n    <TARIFFCLASSIFICATION>0</TARIFFCLASSIFICATION>\r\n    <EXCISEDUTYCLASSIFICATION>0</EXCISEDUTYCLASSIFICATION>\r\n    <SERIALNUMBER>0</SERIALNUMBER>\r\n    <ADJUSTMENTCLASSIFICAT",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153331.8662,
+    "ts": "2026-04-21T05:59:13.331Z",
+    "level": "info",
+    "message": "Fetching ALL vouchers from Tally",
+    "meta": {
+      "company": "Tally",
+      "fromDate": "2025-01-01",
+      "toDate": "2026-04-21"
+    }
+  },
+  {
+    "id": 1776751153326.3525,
+    "ts": "2026-04-21T05:59:13.326Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153300.04,
+    "ts": "2026-04-21T05:59:13.300Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153296.765,
+    "ts": "2026-04-21T05:59:13.296Z",
+    "level": "success",
+    "message": "Fetched 67 ledgers",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153247.5327,
+    "ts": "2026-04-21T05:59:13.247Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153239.2578,
+    "ts": "2026-04-21T05:59:13.239Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153217.6277,
+    "ts": "2026-04-21T05:59:13.217Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153210.7102,
+    "ts": "2026-04-21T05:59:13.210Z",
+    "level": "success",
+    "message": "Fetched 1 cost centres",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153187.7922,
+    "ts": "2026-04-21T05:59:13.187Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153181.5437,
+    "ts": "2026-04-21T05:59:13.181Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153071.3794,
+    "ts": "2026-04-21T05:59:13.071Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    }
+  },
+  {
+    "id": 1776751153066.4656,
+    "ts": "2026-04-21T05:59:13.066Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data sequentially...",
+    "meta": {}
+  },
+  {
+    "id": 1776751153057.6453,
+    "ts": "2026-04-21T05:59:13.057Z",
+    "level": "info",
+    "message": "Full sync job full-1776751153057-mxrtj started for: Tally",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    }
+  },
+  {
+    "id": 1776751141849.544,
+    "ts": "2026-04-21T05:59:01.849Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {}
+  },
+  {
+    "id": 1776751141845.2556,
+    "ts": "2026-04-21T05:59:01.845Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {}
+  },
+  {
+    "id": 1776751141841.9868,
+    "ts": "2026-04-21T05:59:01.841Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {}
+  },
+  {
+    "id": 1776751141828.3037,
+    "ts": "2026-04-21T05:59:01.828Z",
+    "level": "info",
+    "message": "Auto-sync disabled (set AUTO_SYNC_ENABLED=true in .env to enable)",
+    "meta": {}
+  },
+  {
     "id": 1776750327613.5398,
     "ts": "2026-04-21T05:45:27.613Z",
     "level": "info",
@@ -7474,1091 +8561,6 @@
     "ts": "2026-04-21T04:18:40.453Z",
     "level": "info",
     "message": "Tally Middleware server running on http://localhost:4000",
-    "meta": {}
-  },
-  {
-    "id": 1776745120444.8855,
-    "ts": "2026-04-21T04:18:40.444Z",
-    "level": "info",
-    "message": "Auto-sync disabled (set AUTO_SYNC_ENABLED=true in .env to enable)",
-    "meta": {}
-  },
-  {
-    "id": 1776690212627.8936,
-    "ts": "2026-04-20T13:03:32.627Z",
-    "level": "info",
-    "message": "Run POST /api/middleware/check to validate all Tally data",
-    "meta": {}
-  },
-  {
-    "id": 1776690212626.0618,
-    "ts": "2026-04-20T13:03:32.626Z",
-    "level": "info",
-    "message": "Tally endpoint: http://localhost:9000",
-    "meta": {}
-  },
-  {
-    "id": 1776690212624.2852,
-    "ts": "2026-04-20T13:03:32.624Z",
-    "level": "info",
-    "message": "Tally Middleware server running on http://localhost:4000",
-    "meta": {}
-  },
-  {
-    "id": 1776690212617.361,
-    "ts": "2026-04-20T13:03:32.617Z",
-    "level": "info",
-    "message": "Auto-sync disabled (set AUTO_SYNC_ENABLED=true in .env to enable)",
-    "meta": {}
-  },
-  {
-    "id": 1776689755519.3418,
-    "ts": "2026-04-20T12:55:55.519Z",
-    "level": "info",
-    "message": "Full sync job full-1776689630527-z3pxg done",
-    "meta": {}
-  },
-  {
-    "id": 1776689755515.638,
-    "ts": "2026-04-20T12:55:55.515Z",
-    "level": "info",
-    "message": "Full sync complete: warning",
-    "meta": {
-      "company": "Test Company"
-    }
-  },
-  {
-    "id": 1776689755509.9854,
-    "ts": "2026-04-20T12:55:55.509Z",
-    "level": "success",
-    "message": "Invoice sync done - sales: +0 new/0 updated/0 failed | purchase: +0 new/0 updated/0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776689755503.2905,
-    "ts": "2026-04-20T12:55:55.503Z",
-    "level": "info",
-    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776689755497.2205,
-    "ts": "2026-04-20T12:55:55.497Z",
-    "level": "info",
-    "message": "Submit Sales Invoice: 0 submitted, 0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776689755492.2983,
-    "ts": "2026-04-20T12:55:55.492Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Purchase Item",
-    "meta": {}
-  },
-  {
-    "id": 1776689755390.559,
-    "ts": "2026-04-20T12:55:55.390Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Sales Item",
-    "meta": {}
-  },
-  {
-    "id": 1776689755215.7249,
-    "ts": "2026-04-20T12:55:55.215Z",
-    "level": "info",
-    "message": "Invoice breakdown - sales: 0, purchase: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776689755186.9373,
-    "ts": "2026-04-20T12:55:55.186Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {}
-  },
-  {
-    "id": 1776689755070.657,
-    "ts": "2026-04-20T12:55:55.070Z",
-    "level": "info",
-    "message": "Syncing invoices to ERPNext for Test Company (abbr: TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689755060.966,
-    "ts": "2026-04-20T12:55:55.060Z",
-    "level": "success",
-    "message": "Voucher sync done - JE created: 0, updated: 3, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776689749731.579,
-    "ts": "2026-04-20T12:55:49.731Z",
-    "level": "info",
-    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 6",
-    "meta": {}
-  },
-  {
-    "id": 1776689749725.9934,
-    "ts": "2026-04-20T12:55:49.725Z",
-    "level": "info",
-    "message": "Syncing 3/3 vouchers",
-    "meta": {}
-  },
-  {
-    "id": 1776689749148.9944,
-    "ts": "2026-04-20T12:55:49.148Z",
-    "level": "info",
-    "message": "Resolving accounts with company abbreviation: TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689749143.7983,
-    "ts": "2026-04-20T12:55:49.143Z",
-    "level": "info",
-    "message": "Syncing 3 vouchers to ERPNext",
-    "meta": {}
-  },
-  {
-    "id": 1776689749114.952,
-    "ts": "2026-04-20T12:55:49.114Z",
-    "level": "success",
-    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776689747480.4802,
-    "ts": "2026-04-20T12:55:47.480Z",
-    "level": "info",
-    "message": "[GST debug] \"TEST-ITEM2\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689745846.5532,
-    "ts": "2026-04-20T12:55:45.846Z",
-    "level": "info",
-    "message": "[GST debug] \"Red Pen\" → typeOfSupply=\"capital goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689744202.007,
-    "ts": "2026-04-20T12:55:44.202Z",
-    "level": "info",
-    "message": "[GST debug] \"ProductA\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689742454.6775,
-    "ts": "2026-04-20T12:55:42.454Z",
-    "level": "info",
-    "message": "[GST debug] \"Laptop\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689740825.3684,
-    "ts": "2026-04-20T12:55:40.825Z",
-    "level": "info",
-    "message": "[GST debug] \"ITEM-TEST-1\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689739188.0366,
-    "ts": "2026-04-20T12:55:39.188Z",
-    "level": "info",
-    "message": "[GST debug] \"Item1\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689737551.6743,
-    "ts": "2026-04-20T12:55:37.551Z",
-    "level": "info",
-    "message": "[GST debug] \"Demo Item\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689735901.5205,
-    "ts": "2026-04-20T12:55:35.901Z",
-    "level": "info",
-    "message": "[GST debug] \"Cup\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689734102.5457,
-    "ts": "2026-04-20T12:55:34.102Z",
-    "level": "info",
-    "message": "[GST debug] \"Bottle\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776689733295.5735,
-    "ts": "2026-04-20T12:55:33.295Z",
-    "level": "info",
-    "message": "Pre-creating 2 Item Groups, 2 UoMs, 0 HSN codes",
-    "meta": {}
-  },
-  {
-    "id": 1776689733270.685,
-    "ts": "2026-04-20T12:55:33.270Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {}
-  },
-  {
-    "id": 1776689733143.0059,
-    "ts": "2026-04-20T12:55:33.143Z",
-    "level": "info",
-    "message": "Syncing 9 stock items to ERPNext",
-    "meta": {}
-  },
-  {
-    "id": 1776689733139.01,
-    "ts": "2026-04-20T12:55:33.139Z",
-    "level": "success",
-    "message": "Cost centres sync done - created: 0, updated: 1, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776689731539.5227,
-    "ts": "2026-04-20T12:55:31.540Z",
-    "level": "info",
-    "message": "Cost Centre sync: fetched 98 existing cost centers",
-    "meta": {}
-  },
-  {
-    "id": 1776689731508.112,
-    "ts": "2026-04-20T12:55:31.508Z",
-    "level": "info",
-    "message": "Syncing 1 cost centres to ERPNext for Test Company (abbr: TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689731504.9043,
-    "ts": "2026-04-20T12:55:31.504Z",
-    "level": "success",
-    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776689729835.2898,
-    "ts": "2026-04-20T12:55:29.835Z",
-    "level": "info",
-    "message": "[Warehouse] rawParent='primary' parentWarehouse='All Warehouses - TC'",
-    "meta": {}
-  },
-  {
-    "id": 1776689729828.0813,
-    "ts": "2026-04-20T12:55:29.828Z",
-    "level": "info",
-    "message": "Using root warehouse: All Warehouses - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689729822.3801,
-    "ts": "2026-04-20T12:55:29.822Z",
-    "level": "info",
-    "message": "Root warehouse resolved: All Warehouses - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689729798.2114,
-    "ts": "2026-04-20T12:55:29.798Z",
-    "level": "info",
-    "message": "Syncing 1 godowns to ERPNext for Test Company (abbr: TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689729793.9692,
-    "ts": "2026-04-20T12:55:29.793Z",
-    "level": "info",
-    "message": "Opening balance sync complete - 0 created, 3 updated, 0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776689729789.4812,
-    "ts": "2026-04-20T12:55:29.789Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [GL]: ACC-JV-2026-00163",
-    "meta": {}
-  },
-  {
-    "id": 1776689728664.7515,
-    "ts": "2026-04-20T12:55:28.664Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Creditors]: ACC-JV-2026-00162",
-    "meta": {}
-  },
-  {
-    "id": 1776689727333.8396,
-    "ts": "2026-04-20T12:55:27.333Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Debtors]: ACC-JV-2026-00161",
-    "meta": {}
-  },
-  {
-    "id": 1776689726710.633,
-    "ts": "2026-04-20T12:55:26.710Z",
-    "level": "info",
-    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726654.1934,
-    "ts": "2026-04-20T12:55:26.654Z",
-    "level": "info",
-    "message": "Resolved 14 / 14 ledgers to JE account rows",
-    "meta": {}
-  },
-  {
-    "id": 1776689726608.788,
-    "ts": "2026-04-20T12:55:26.608Z",
-    "level": "info",
-    "message": "  UpdateLedgerTest -> GL: UpdateLedgerTest - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726560.4512,
-    "ts": "2026-04-20T12:55:26.560Z",
-    "level": "info",
-    "message": "  TEST-SUPPLIER2 -> Payable: 21N78E Creative LABS Pvt. Ltd. - TC (Supplier)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726513.5518,
-    "ts": "2026-04-20T12:55:26.513Z",
-    "level": "info",
-    "message": "  Test Ledger 999 -> GL: Test Ledger 999 - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726467.9126,
-    "ts": "2026-04-20T12:55:26.467Z",
-    "level": "info",
-    "message": "  Test GST Customer -> Receivable: Debtors - TC (Customer)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726420.3806,
-    "ts": "2026-04-20T12:55:26.420Z",
-    "level": "info",
-    "message": "  TestCustomer4 -> Receivable: Debtors - TC (Customer)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726373.1226,
-    "ts": "2026-04-20T12:55:26.373Z",
-    "level": "info",
-    "message": "  Test600 -> Payable: 21N78E Creative LABS Pvt. Ltd. - TC (Supplier)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726327.1597,
-    "ts": "2026-04-20T12:55:26.327Z",
-    "level": "info",
-    "message": "  Test500 -> GL (Payable — adding party): Test500 - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726281.0093,
-    "ts": "2026-04-20T12:55:26.281Z",
-    "level": "info",
-    "message": "  Test18022026 -> GL: Test18022026 - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726234.4812,
-    "ts": "2026-04-20T12:55:26.234Z",
-    "level": "info",
-    "message": "  Suryavanshi -> GL (Payable — adding party): Suryavanshi - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726188.3164,
-    "ts": "2026-04-20T12:55:26.188Z",
-    "level": "info",
-    "message": "  Suppliers5 -> Payable: 21N78E Creative LABS Pvt. Ltd. - TC (Supplier)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726141.0818,
-    "ts": "2026-04-20T12:55:26.141Z",
-    "level": "info",
-    "message": "  SudhirMorchale -> GL (Payable — adding party): SudhirMorchale - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726095.7,
-    "ts": "2026-04-20T12:55:26.095Z",
-    "level": "info",
-    "message": "  Sudhir26022026 -> GL (Payable — adding party): Sudhir26022026 - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726047.1404,
-    "ts": "2026-04-20T12:55:26.047Z",
-    "level": "info",
-    "message": "  RAJLAXMI -> GL (Payable — adding party): RAJLAXMI - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689726008.7312,
-    "ts": "2026-04-20T12:55:26.008Z",
-    "level": "info",
-    "message": "  Customers5 -> Receivable: Debtors - TC (Customer)",
-    "meta": {}
-  },
-  {
-    "id": 1776689726002.8008,
-    "ts": "2026-04-20T12:55:26.002Z",
-    "level": "info",
-    "message": "[OB] Known customers: 9343, suppliers: 354",
-    "meta": {}
-  },
-  {
-    "id": 1776689724781.233,
-    "ts": "2026-04-20T12:55:24.781Z",
-    "level": "info",
-    "message": "Control accounts - Receivable: Debtors - TC, Payable: 21N78E Creative LABS Pvt. Ltd. - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689724774.4067,
-    "ts": "2026-04-20T12:55:24.774Z",
-    "level": "info",
-    "message": "Fetched 1473 accounts from ERPNext for Test Company",
-    "meta": {}
-  },
-  {
-    "id": 1776689724474.0571,
-    "ts": "2026-04-20T12:55:24.474Z",
-    "level": "info",
-    "message": "Found 14 ledgers with opening balances: Customers5=777777, RAJLAXMI=242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=2, Test600=7, TestCustomer4=67567575, Test GST Customer=76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
-    "meta": {}
-  },
-  {
-    "id": 1776689724470.2126,
-    "ts": "2026-04-20T12:55:24.470Z",
-    "level": "info",
-    "message": "Syncing opening balances for 67 ledgers in Test Company",
-    "meta": {}
-  },
-  {
-    "id": 1776689724465.6804,
-    "ts": "2026-04-20T12:55:24.465Z",
-    "level": "success",
-    "message": "Ledger sync done - customers: +0 created, ~18 updated, x0 failed | suppliers: +0 created, ~10 updated, x0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776689724461.669,
-    "ts": "2026-04-20T12:55:24.461Z",
-    "level": "info",
-    "message": "Address/contact sync done",
-    "meta": {}
-  },
-  {
-    "id": 1776689723138.3918,
-    "ts": "2026-04-20T12:55:23.138Z",
-    "level": "warn",
-    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
-    "meta": {}
-  },
-  {
-    "id": 1776689722219.8608,
-    "ts": "2026-04-20T12:55:22.219Z",
-    "level": "warn",
-    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
-    "meta": {}
-  },
-  {
-    "id": 1776689715123.561,
-    "ts": "2026-04-20T12:55:15.123Z",
-    "level": "warn",
-    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
-    "meta": {}
-  },
-  {
-    "id": 1776689715117.5042,
-    "ts": "2026-04-20T12:55:15.117Z",
-    "level": "info",
-    "message": "Syncing addresses/contacts for 6 parties from Tally",
-    "meta": {}
-  },
-  {
-    "id": 1776689710097.9597,
-    "ts": "2026-04-20T12:55:10.097Z",
-    "level": "info",
-    "message": "[Supplier] 10/10 synced - pausing 5000ms",
-    "meta": {}
-  },
-  {
-    "id": 1776689691546.3342,
-    "ts": "2026-04-20T12:54:51.546Z",
-    "level": "warn",
-    "message": "Invalid PAN skipped for customer \"TestGstCustomer2\": 4444444444",
-    "meta": {}
-  },
-  {
-    "id": 1776689689930.7864,
-    "ts": "2026-04-20T12:54:49.930Z",
-    "level": "warn",
-    "message": "Invalid PAN skipped for customer \"Test GST Customer\": 4654563565",
-    "meta": {}
-  },
-  {
-    "id": 1776689674463.4475,
-    "ts": "2026-04-20T12:54:34.463Z",
-    "level": "info",
-    "message": "[Customer] 10/18 synced - pausing 5000ms",
-    "meta": {}
-  },
-  {
-    "id": 1776689650994.5112,
-    "ts": "2026-04-20T12:54:10.994Z",
-    "level": "info",
-    "message": "Ledger breakdown - customers: 18, suppliers: 10, skipped (GL-only groups): 40",
-    "meta": {}
-  },
-  {
-    "id": 1776689650986.8538,
-    "ts": "2026-04-20T12:54:10.986Z",
-    "level": "info",
-    "message": "Using default Territory: India",
-    "meta": {}
-  },
-  {
-    "id": 1776689650983.2244,
-    "ts": "2026-04-20T12:54:10.983Z",
-    "level": "info",
-    "message": "Using Supplier Group: Services",
-    "meta": {}
-  },
-  {
-    "id": 1776689650884.8296,
-    "ts": "2026-04-20T12:54:10.884Z",
-    "level": "info",
-    "message": "Using Customer Group: Commercial",
-    "meta": {}
-  },
-  {
-    "id": 1776689650856.9348,
-    "ts": "2026-04-20T12:54:10.856Z",
-    "level": "info",
-    "message": "Syncing 67 ledgers to ERPNext",
-    "meta": {}
-  },
-  {
-    "id": 1776689650852.5298,
-    "ts": "2026-04-20T12:54:10.852Z",
-    "level": "success",
-    "message": "Chart of Accounts sync done - created: 0, updated: 10, failed: 18",
-    "meta": {}
-  },
-  {
-    "id": 1776689650848.738,
-    "ts": "2026-04-20T12:54:10.848Z",
-    "level": "warn",
-    "message": "COA sync error [Unsecured Loans]: Could not find Parent Account: Loans (Liability) - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689650723.7544,
-    "ts": "2026-04-20T12:54:10.723Z",
-    "level": "warn",
-    "message": "COA sync error [Secured Loans]: Could not find Parent Account: Loans (Liability) - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689650615.3635,
-    "ts": "2026-04-20T12:54:10.615Z",
-    "level": "warn",
-    "message": "COA sync error [Bank OD A/c]: Could not find Parent Account: Loans (Liability) - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689648858.8745,
-    "ts": "2026-04-20T12:54:08.858Z",
-    "level": "info",
-    "message": "COA updated: Sundry Creditors - TC (parent: Current Liabilities - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689647256.5835,
-    "ts": "2026-04-20T12:54:07.256Z",
-    "level": "info",
-    "message": "COA updated: Provisions - TC (parent: Current Liabilities - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689645413.89,
-    "ts": "2026-04-20T12:54:05.413Z",
-    "level": "info",
-    "message": "COA updated: Duties & Taxes - TC (parent: Current Liabilities - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689643774.5728,
-    "ts": "2026-04-20T12:54:03.774Z",
-    "level": "info",
-    "message": "COA updated: Sundry Debtors - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689642146.0996,
-    "ts": "2026-04-20T12:54:02.146Z",
-    "level": "info",
-    "message": "COA updated: Stock-in-Hand - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689640499.5813,
-    "ts": "2026-04-20T12:54:00.499Z",
-    "level": "info",
-    "message": "COA updated: Loans & Advances (Asset) - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689638899.7307,
-    "ts": "2026-04-20T12:53:58.899Z",
-    "level": "info",
-    "message": "COA updated: Deposits (Asset) - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689637325.149,
-    "ts": "2026-04-20T12:53:57.325Z",
-    "level": "info",
-    "message": "COA updated: Cash-in-Hand - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689635686.8445,
-    "ts": "2026-04-20T12:53:55.686Z",
-    "level": "info",
-    "message": "COA updated: Bank Accounts - TC (parent: Current Assets - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689633841.347,
-    "ts": "2026-04-20T12:53:53.841Z",
-    "level": "info",
-    "message": "COA updated: Reserves & Surplus - TC (parent: Capital Account - TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776689633689.1516,
-    "ts": "2026-04-20T12:53:53.689Z",
-    "level": "warn",
-    "message": "COA sync error [Suspense A/c]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633636.2483,
-    "ts": "2026-04-20T12:53:53.636Z",
-    "level": "warn",
-    "message": "COA sync error [Sales Accounts]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633472.769,
-    "ts": "2026-04-20T12:53:53.472Z",
-    "level": "warn",
-    "message": "COA sync error [Purchase Accounts]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633328.1284,
-    "ts": "2026-04-20T12:53:53.328Z",
-    "level": "warn",
-    "message": "COA sync error [Misc. Expenses (ASSET)]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633197.1104,
-    "ts": "2026-04-20T12:53:53.197Z",
-    "level": "warn",
-    "message": "COA sync error [Loans (Liability)]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633125.33,
-    "ts": "2026-04-20T12:53:53.125Z",
-    "level": "warn",
-    "message": "COA sync error [Investments]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689633022.967,
-    "ts": "2026-04-20T12:53:53.022Z",
-    "level": "warn",
-    "message": "COA sync error [Indirect Incomes]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632919.4934,
-    "ts": "2026-04-20T12:53:52.919Z",
-    "level": "warn",
-    "message": "COA sync error [Indirect Expenses]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632816.885,
-    "ts": "2026-04-20T12:53:52.816Z",
-    "level": "warn",
-    "message": "COA sync error [Fixed Assets]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632714.28,
-    "ts": "2026-04-20T12:53:52.714Z",
-    "level": "warn",
-    "message": "COA sync error [Direct Incomes]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632612.8206,
-    "ts": "2026-04-20T12:53:52.612Z",
-    "level": "warn",
-    "message": "COA sync error [Direct Expenses]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632486.6594,
-    "ts": "2026-04-20T12:53:52.486Z",
-    "level": "warn",
-    "message": "COA sync error [Current Liabilities]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632436.1238,
-    "ts": "2026-04-20T12:53:52.436Z",
-    "level": "warn",
-    "message": "COA sync error [Current Assets]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632407.3274,
-    "ts": "2026-04-20T12:53:52.407Z",
-    "level": "warn",
-    "message": "COA sync error [Capital Account]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632305.55,
-    "ts": "2026-04-20T12:53:52.305Z",
-    "level": "warn",
-    "message": "COA sync error [Branch / Divisions]: Could not find Parent Account: \u0004 Primary - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632170.4973,
-    "ts": "2026-04-20T12:53:52.170Z",
-    "level": "info",
-    "message": "COA root accounts — Asset: Application of Funds (Assets) - TC, Liability: Source of Funds (Liabilities) - TC, Equity(fallback): Source of Funds (Liabilities) - TC, Income: Income - TC, Expense: Expenses - TC",
-    "meta": {}
-  },
-  {
-    "id": 1776689632166.8862,
-    "ts": "2026-04-20T12:53:52.166Z",
-    "level": "info",
-    "message": "COA: fetched 1473 existing ERPNext accounts for Test Company",
-    "meta": {}
-  },
-  {
-    "id": 1776689631920.5024,
-    "ts": "2026-04-20T12:53:51.920Z",
-    "level": "info",
-    "message": "Syncing 28 account groups to ERPNext for Test Company",
-    "meta": {}
-  },
-  {
-    "id": 1776689631916.6604,
-    "ts": "2026-04-20T12:53:51.916Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3456000000",
-    "meta": {}
-  },
-  {
-    "id": 1776689630964.724,
-    "ts": "2026-04-20T12:53:50.964Z",
-    "level": "info",
-    "message": "Using ERPNext company: \"Test Company\" (from Sync UI)",
-    "meta": {}
-  },
-  {
-    "id": 1776689630960.9497,
-    "ts": "2026-04-20T12:53:50.960Z",
-    "level": "info",
-    "message": "ERPNext client caches cleared for new sync run",
-    "meta": {}
-  },
-  {
-    "id": 1776689630956.7512,
-    "ts": "2026-04-20T12:53:50.956Z",
-    "level": "success",
-    "message": "Fetched 3 vouchers (2026-04-01 → 2026-04-20)",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630701.6677,
-    "ts": "2026-04-20T12:53:50.701Z",
-    "level": "info",
-    "message": "Fetching all vouchers (JS date filter: 2026-04-01 → 2026-04-20)",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630698.2537,
-    "ts": "2026-04-20T12:53:50.698Z",
-    "level": "info",
-    "message": "Fetching vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2026-04-01",
-      "toDate": "2026-04-20"
-    }
-  },
-  {
-    "id": 1776689630693.966,
-    "ts": "2026-04-20T12:53:50.693Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630672.1458,
-    "ts": "2026-04-20T12:53:50.672Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630665.5403,
-    "ts": "2026-04-20T12:53:50.665Z",
-    "level": "success",
-    "message": "Fetched 67 ledgers",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630615.149,
-    "ts": "2026-04-20T12:53:50.615Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630609.2117,
-    "ts": "2026-04-20T12:53:50.609Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630594.0264,
-    "ts": "2026-04-20T12:53:50.594Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630586.6504,
-    "ts": "2026-04-20T12:53:50.586Z",
-    "level": "success",
-    "message": "Fetched 1 cost centres",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630572.1575,
-    "ts": "2026-04-20T12:53:50.572Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630567.1423,
-    "ts": "2026-04-20T12:53:50.567Z",
-    "level": "success",
-    "message": "Fetched 28 groups",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630540.6973,
-    "ts": "2026-04-20T12:53:50.540Z",
-    "level": "info",
-    "message": "Fetching groups from Tally",
-    "meta": {
-      "company": "Tally"
-    }
-  },
-  {
-    "id": 1776689630534.503,
-    "ts": "2026-04-20T12:53:50.534Z",
-    "level": "info",
-    "message": "Full sync: fetching Tally data sequentially...",
-    "meta": {}
-  },
-  {
-    "id": 1776689630527.2317,
-    "ts": "2026-04-20T12:53:50.527Z",
-    "level": "info",
-    "message": "Full sync job full-1776689630527-z3pxg started for: Tally",
-    "meta": {
-      "syncLedgers": true,
-      "syncStock": true,
-      "syncVouchers": true,
-      "syncGodowns": true,
-      "syncCostCentres": true,
-      "syncOpeningBalances": true,
-      "syncInvoices": true,
-      "syncTaxes": false,
-      "syncChartOfAccounts": true
-    }
-  },
-  {
-    "id": 1776688849183.5288,
-    "ts": "2026-04-20T12:40:49.183Z",
-    "level": "info",
-    "message": "Full sync job full-1776688730523-cbtdm done",
-    "meta": {}
-  },
-  {
-    "id": 1776688849179.2551,
-    "ts": "2026-04-20T12:40:49.179Z",
-    "level": "info",
-    "message": "Full sync complete: warning",
-    "meta": {
-      "company": "Test Company"
-    }
-  },
-  {
-    "id": 1776688849173.2368,
-    "ts": "2026-04-20T12:40:49.173Z",
-    "level": "success",
-    "message": "Invoice sync done - sales: +0 new/0 updated/0 failed | purchase: +0 new/0 updated/0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776688849170.9492,
-    "ts": "2026-04-20T12:40:49.170Z",
-    "level": "info",
-    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776688849165.4653,
-    "ts": "2026-04-20T12:40:49.165Z",
-    "level": "info",
-    "message": "Submit Sales Invoice: 0 submitted, 0 failed",
-    "meta": {}
-  },
-  {
-    "id": 1776688849162.7927,
-    "ts": "2026-04-20T12:40:49.162Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Purchase Item",
-    "meta": {}
-  },
-  {
-    "id": 1776688849054.5266,
-    "ts": "2026-04-20T12:40:49.054Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Sales Item",
-    "meta": {}
-  },
-  {
-    "id": 1776688848870.2266,
-    "ts": "2026-04-20T12:40:48.870Z",
-    "level": "info",
-    "message": "Invoice breakdown - sales: 0, purchase: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776688848846.0398,
-    "ts": "2026-04-20T12:40:48.846Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {}
-  },
-  {
-    "id": 1776688848725.7935,
-    "ts": "2026-04-20T12:40:48.725Z",
-    "level": "info",
-    "message": "Syncing invoices to ERPNext for Test Company (abbr: TC)",
-    "meta": {}
-  },
-  {
-    "id": 1776688848721.9922,
-    "ts": "2026-04-20T12:40:48.721Z",
-    "level": "success",
-    "message": "Voucher sync done - JE created: 0, updated: 3, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776688843614.3184,
-    "ts": "2026-04-20T12:40:43.614Z",
-    "level": "info",
-    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 6",
-    "meta": {}
-  },
-  {
-    "id": 1776688843610.3892,
-    "ts": "2026-04-20T12:40:43.610Z",
-    "level": "info",
-    "message": "Syncing 3/3 vouchers",
-    "meta": {}
-  },
-  {
-    "id": 1776688843074.025,
-    "ts": "2026-04-20T12:40:43.074Z",
-    "level": "info",
-    "message": "Resolving accounts with company abbreviation: TC",
-    "meta": {}
-  },
-  {
-    "id": 1776688843070.4956,
-    "ts": "2026-04-20T12:40:43.070Z",
-    "level": "info",
-    "message": "Syncing 3 vouchers to ERPNext",
-    "meta": {}
-  },
-  {
-    "id": 1776688843066.9368,
-    "ts": "2026-04-20T12:40:43.066Z",
-    "level": "success",
-    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
-    "meta": {}
-  },
-  {
-    "id": 1776688841446.4946,
-    "ts": "2026-04-20T12:40:41.446Z",
-    "level": "info",
-    "message": "[GST debug] \"TEST-ITEM2\" → typeOfSupply=\"goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
-    "meta": {}
-  },
-  {
-    "id": 1776688839813.8477,
-    "ts": "2026-04-20T12:40:39.813Z",
-    "level": "info",
-    "message": "[GST debug] \"Red Pen\" → typeOfSupply=\"capital goods\" gstApplicable=\"applicable\" taxability=\"\" hsnCode=\"null\" gstRate=\"null\"",
     "meta": {}
   }
 ]
