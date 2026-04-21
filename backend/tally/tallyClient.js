@@ -824,7 +824,13 @@ function tallyUnlock() {
 //      avoid a single massive XML response hanging Tally. Each chunk requests
 //      the full set but we deduplicate at the end, so the result is correct.
 async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
-  // Simple XML — no date filter at all. Filtering is done in JS after parsing.
+  // STRATEGY: Use <TYPE>Object</TYPE> with OBJECTTYPE=Voucher — the most reliable
+  // method across all TallyPrime versions. SVFROMDATE/SVTODATE are set as static
+  // variables so Tally applies its own built-in date filter server-side.
+  // We do NOT use $$InRange in a TDL filter — it returns 0 on most builds.
+  const tallyFrom = fromDate ? String(fromDate).replace(/-/g, "") : "20160101";
+  const tallyTo   = toDate   ? String(toDate).replace(/-/g, "")   : new Date().toISOString().slice(0,10).replace(/-/g,"");
+
   const xml = `
 <ENVELOPE>
  <HEADER>
@@ -838,12 +844,14 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
    <STATICVARIABLES>
     <SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
     <SVCURRENTCOMPANY>${escapeXml(companyName)}</SVCURRENTCOMPANY>
+    <SVFROMDATE>${tallyFrom}</SVFROMDATE>
+    <SVTODATE>${tallyTo}</SVTODATE>
    </STATICVARIABLES>
    <TDL>
     <TDLMESSAGE>
      <COLLECTION NAME="VoucherCollection" ISMODIFY="No">
       <TYPE>Voucher</TYPE>
-      <FETCH>GUID,DATE,VOUCHERTYPENAME,VOUCHERNUMBER,REFERENCE,PARTYLEDGERNAME,NARRATION,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST.LEDGERNAME,ALLLEDGERENTRIES.LIST.AMOUNT,ALLLEDGERENTRIES.LIST.ISDEEMEDPOSITIVE</FETCH>
+      <FETCH>GUID,DATE,VOUCHERNUMBER,VOUCHERTYPENAME,PARTYLEDGERNAME,NARRATION,REFERENCE,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST</FETCH>
      </COLLECTION>
     </TDLMESSAGE>
    </TDL>
@@ -851,7 +859,6 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
  </BODY>
 </ENVELOPE>`;
 
-  // Acquire mutex — Tally is single-threaded, only one request at a time
   await tallyLock();
   let raw;
   try {
@@ -860,90 +867,72 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     tallyUnlock();
   }
 
-  // TDL Collection response: ENVELOPE > BODY > DATA > COLLECTION > VOUCHER
-  const parsed = await parseXml(raw, true);
+  logger.info(`Voucher raw response (first 1000): ${String(raw).slice(0, 1000)}`, { company: companyName });
 
-  const collection =
-    parsed?.ENVELOPE?.BODY?.[0]?.DATA?.[0]?.COLLECTION?.[0] ||
-    parsed?.ENVELOPE?.BODY?.DATA?.COLLECTION ||
-    {};
+  const parsed = await parseXml(raw, false);
 
-  const rawVouchers = collection?.VOUCHER || [];
+  // Response path for inline TDL Collection: ENVELOPE > BODY > DATA > COLLECTION > VOUCHER
+  const body = parsed?.ENVELOPE?.BODY;
+  const rawVouchers =
+    body?.DATA?.COLLECTION?.VOUCHER   ||
+    body?.DATA?.TALLYMESSAGE?.VOUCHER ||
+    body?.DATA?.VOUCHER               ||
+    body?.TALLYMESSAGE?.VOUCHER       ||
+    [];
+
   const vArr = Array.isArray(rawVouchers) ? rawVouchers : (rawVouchers ? [rawVouchers] : []);
+  logger.info(`Raw vouchers received from Tally: ${vArr.length}`, { company: companyName });
 
   const vouchers = [];
   for (const v of vArr) {
-    const guid = val(v.GUID?.[0]);
-    if (!guid) continue;
+    const guid =
+      v.$?.GUID ||
+      val(v.GUID) ||
+      `${val(v.DATE)}-${val(v.VOUCHERNUMBER)}-${val(v.VOUCHERTYPENAME)}`;
 
-    const allEntries = v["ALLLEDGERENTRIES.LIST"] || [];
+    const allEntries = v["ALLLEDGERENTRIES.LIST"] || v["LEDGERENTRIES.LIST"] || [];
     const entryArr   = Array.isArray(allEntries) ? allEntries : [allEntries];
     let netAmount    = 0;
     const entries    = [];
 
     for (const e of entryArr) {
       if (!e || typeof e !== "object") continue;
-      const ledgerName       = val(e.LEDGERNAME?.[0] || e.LEDGERNAME);
-      const isDeemedPositive = val(e.ISDEEMEDPOSITIVE?.[0] || e.ISDEEMEDPOSITIVE) === "Yes";
-      const amount           = parseTallyAmount(val(e.AMOUNT?.[0] || e.AMOUNT));
+      const ledgerName       = val(e.LEDGERNAME);
+      const isDeemedPositive = val(e.ISDEEMEDPOSITIVE) === "Yes";
+      const amount           = parseTallyAmount(val(e.AMOUNT));
       if (isDeemedPositive) netAmount += amount;
       if (ledgerName) entries.push({ ledger: ledgerName, amount, isDebit: isDeemedPositive });
     }
 
     vouchers.push({
-      guid,
-      voucherDate:   tallyDateToISO(val(v.DATE?.[0])),
-      voucherType:   val(v.VOUCHERTYPENAME?.[0] || v.VOUCHERTYPE?.[0]),
-      voucherNumber: val(v.VOUCHERNUMBER?.[0]),
-      referenceNo:   val(v.REFERENCE?.[0]),
-      partyName:     val(v.PARTYLEDGERNAME?.[0]),
-      narration:     val(v.NARRATION?.[0]),
+      guid: guid || `voucher-${vouchers.length}`,
+      voucherDate:   tallyDateToISO(val(v.DATE)),
+      voucherType:   val(v.VOUCHERTYPENAME) || val(v.VOUCHERTYPE),
+      voucherNumber: val(v.VOUCHERNUMBER),
+      referenceNo:   val(v.REFERENCE),
+      partyName:     val(v.PARTYLEDGERNAME),
+      narration:     val(v.NARRATION),
       netAmount,
       entries,
       lineItemCount: entries.length,
-      isInvoice:    val(v.ISINVOICE?.[0])   === "Yes",
-      isOptional:   val(v.ISOPTIONAL?.[0])  === "Yes",
-      isPostDated:  val(v.ISPOSTDATED?.[0]) === "Yes",
+      isInvoice:   val(v.ISINVOICE)   === "Yes",
+      isOptional:  val(v.ISOPTIONAL)  === "Yes",
+      isPostDated: val(v.ISPOSTDATED) === "Yes",
     });
   }
 
-  // ── Client-side date filter ────────────────────────────────────────────────
-  // Since Tally ignores our date variables, we filter here in JS.
-  // voucherDate is "YYYY-MM-DD" — string comparison works correctly for ISO dates.
-  if (fromDate || toDate) {
-    return vouchers.filter((v) => {
-      if (!v.voucherDate) return false;         // no date = skip
-      if (fromDate && v.voucherDate < fromDate) return false;
-      if (toDate   && v.voucherDate > toDate)   return false;
-      return true;
-    });
-  }
-
+  logger.info(`Vouchers parsed successfully: ${vouchers.length}`, { company: companyName });
   return vouchers;
 }
 
-// ── Public API: fetch vouchers with JS-side date filtering + GUID dedup ────────
 export async function fetchTallyVouchers(companyName, fromDate = null, toDate = null) {
-  // Default to current financial year if no dates given
-  if (!fromDate || !toDate) {
-    const now = new Date();
-    const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
-    fromDate = fromDate || `${fyStartYear}-04-01`;
-    toDate   = toDate   || now.toISOString().slice(0, 10);
-    logger.info(`No date range given — defaulting to FY: ${fromDate} → ${toDate}`, { company: companyName });
-  }
+  logger.info(`Fetching ALL vouchers from Tally`, { company: companyName, fromDate, toDate });
 
-  logger.info("Fetching vouchers from Tally", { company: companyName, fromDate, toDate });
-
-  // ── Strategy: single request + JS date filter ──────────────────────────────
-  // We no longer chunk by date because Tally ignores our date filter anyway.
-  // One request gets ALL vouchers; we filter by date in JS and deduplicate by GUID.
-  // This is faster (33 requests → 1) and produces the correct count every time.
-  logger.info(`Fetching all vouchers (JS date filter: ${fromDate} → ${toDate})`, { company: companyName });
-
+  // Pass dates to Tally so it applies SVFROMDATE/SVTODATE server-side.
+  // JS-side filtering below is kept as a safety net.
   const allVouchers = await fetchTallyVouchersChunk(companyName, fromDate, toDate);
 
-  // Deduplicate by GUID (should not be needed since it's one request, but defensive)
+  // Deduplicate by GUID
   const seen = new Set();
   const unique = allVouchers.filter((v) => {
     if (seen.has(v.guid)) return false;
@@ -951,7 +940,19 @@ export async function fetchTallyVouchers(companyName, fromDate = null, toDate = 
     return true;
   });
 
-  logger.success(`Fetched ${unique.length} vouchers (${fromDate} → ${toDate})`, { company: companyName });
+  // Apply JS-side date filter only if dates were explicitly passed
+  if (fromDate || toDate) {
+    const filtered = unique.filter((v) => {
+      if (!v.voucherDate) return true;
+      if (fromDate && v.voucherDate < fromDate) return false;
+      if (toDate   && v.voucherDate > toDate)   return false;
+      return true;
+    });
+    logger.success(`Fetched ${filtered.length} vouchers (filtered: ${fromDate} → ${toDate}) from ${unique.length} total`, { company: companyName });
+    return filtered;
+  }
+
+  logger.success(`Fetched ${unique.length} total vouchers (all dates)`, { company: companyName });
   return unique;
 }
 
@@ -1172,37 +1173,30 @@ export async function runMiddlewareCheck(companyName, options = {}) {
   });
 
   // ── 15. Vouchers (transactions) ───────────────────────────────────────────
-  // Always pass a date range — if none given, use current FY so Tally doesn't
-  // return an empty default view.
+  // Fetch ALL vouchers — no date filter at all.
   try {
-    const _now         = new Date();
-    const _fyStartYear = _now.getMonth() >= 3 ? _now.getFullYear() : _now.getFullYear() - 1;
-    const checkFrom    = options.fromDate || `${_fyStartYear}-04-01`;
-    const checkTo      = options.toDate   || _now.toISOString().slice(0, 10);
-    logger.info(`Voucher check: fetching ${checkFrom} → ${checkTo}`, { company: companyName });
-    const vouchers = await fetchTallyVouchers(
-      companyName,
-      checkFrom,
-      checkTo
-    );
+    logger.info(`Voucher check: fetching ALL vouchers`, { company: companyName });
+    const vouchers = await fetchTallyVouchers(companyName);
     const byType = {};
     vouchers.forEach((v) => {
       byType[v.voucherType] = (byType[v.voucherType] || 0) + 1;
     });
     const totalAmount = vouchers.reduce((s, v) => s + v.netAmount, 0);
     result.checks.vouchers = {
-      status: "ok",
+      status: vouchers.length > 0 ? "ok" : "warn",
       count: vouchers.length,
       byType,
       totalAmount,
       sample: vouchers.slice(0, 5),
     };
   } catch (e) {
+    logger.error(`Voucher check failed: ${e.message}`, { company: companyName });
     result.checks.vouchers = {
       status: "warn",
-      error: e.message + " — try a shorter date range",
+      error: e.message,
       count: 0,
     };
+    result.errors.push(`Vouchers fetch failed: ${e.message}`);
   }
 
   // ── Final status ──────────────────────────────────────────────────────────
