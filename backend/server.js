@@ -6,6 +6,14 @@ import router from "./routes/index.js";
 import { logger } from "./logs/logger.js";
 import { fetchTallyLedgers, fetchTallyStockItems, fetchTallyVouchers, fetchTallyGroups, fetchTallyGodowns, fetchTallyCostCentres } from "./tally/tallyClient.js";
 import { runFullSync } from "./tally/Erpnextclient.js";
+import {
+  getCompanyState,
+  saveCompanyState,
+  getIncrementalVoucherDates,
+  filterChangedMasters,
+  buildAlterIdMap,
+  resetCompanyState,
+} from "./syncState.js";
 
 const app = express();
 
@@ -39,11 +47,13 @@ async function runAutoSync() {
     return;
   }
 
-  const now   = new Date();
-  const from  = new Date(now);
-  from.setDate(from.getDate() - AUTO_SYNC_FROM_DAYS);
-  const fromDate = from.toISOString().slice(0, 10);
-  const toDate   = now.toISOString().slice(0, 10);
+  const now    = new Date();
+  const toDate = now.toISOString().slice(0, 10);
+
+  // ── Compute fallback fromDate (only used on first-ever sync) ──────────────
+  const fallbackFrom = new Date(now);
+  fallbackFrom.setDate(fallbackFrom.getDate() - AUTO_SYNC_FROM_DAYS);
+  const fallbackFromDate = fallbackFrom.toISOString().slice(0, 10);
 
   const opts = {
     syncChartOfAccounts:  AUTO_SYNC_OPTIONS.includes("chart-of-accounts"),
@@ -57,24 +67,95 @@ async function runAutoSync() {
     syncTaxes:            AUTO_SYNC_OPTIONS.includes("taxes"),
   };
 
-  logger.info(`Auto-sync started for "${companyName}" (${fromDate} → ${toDate})`, opts);
+  // ── Load incremental state for this company ───────────────────────────────
+  const state = getCompanyState(companyName);
+  const isFirstSync = !state.lastVoucherSyncDate && !state.lastMasterSyncAt;
+
+  logger.info(
+    `Auto-sync started for "${companyName}" — ${isFirstSync ? "FULL (first run)" : "INCREMENTAL"}`,
+    opts
+  );
   _lastAutoSync = { startedAt: now.toISOString(), status: "running", company: companyName };
 
   try {
-    const groups     = opts.syncChartOfAccounts || opts.syncOpeningBalances ? await fetchTallyGroups(companyName)                    : [];
-    const costCentres = opts.syncCostCentres                                 ? await fetchTallyCostCentres(companyName)               : [];
-    const godowns    = opts.syncGodowns                                      ? await fetchTallyGodowns(companyName)                   : [];
-    const ledgers    = opts.syncLedgers || opts.syncOpeningBalances           ? await fetchTallyLedgers(companyName)                   : [];
-    const stockItems = opts.syncStock || opts.syncTaxes                       ? await fetchTallyStockItems(companyName)                : [];
-    const vouchers   = opts.syncVouchers || opts.syncInvoices                 ? await fetchTallyVouchers(companyName, fromDate, toDate) : [];
+    // ── 1. MASTERS — fetch all, but only sync changed ones ─────────────────
+    let groups      = [];
+    let costCentres = [];
+    let godowns     = [];
+    let ledgers     = [];
+    let stockItems  = [];
 
+    if (opts.syncChartOfAccounts || opts.syncOpeningBalances) {
+      const allGroups = await fetchTallyGroups(companyName);
+      const { toSync: changedGroups, unchanged: unchangedGroups } =
+        filterChangedMasters(allGroups, state.groupAlterIds);
+      logger.info(`Groups: ${changedGroups.length} to sync, ${unchangedGroups} unchanged`);
+      groups = changedGroups;
+      // Save updated alterId map regardless so new records are tracked
+      saveCompanyState(companyName, { groupAlterIds: buildAlterIdMap(allGroups) });
+    }
+
+    if (opts.syncCostCentres) {
+      costCentres = await fetchTallyCostCentres(companyName);
+    }
+
+    if (opts.syncGodowns) {
+      godowns = await fetchTallyGodowns(companyName);
+    }
+
+    if (opts.syncLedgers || opts.syncOpeningBalances) {
+      const allLedgers = await fetchTallyLedgers(companyName);
+      const { toSync: changedLedgers, unchanged: unchangedLedgers } =
+        filterChangedMasters(allLedgers, state.ledgerAlterIds);
+      logger.info(`Ledgers: ${changedLedgers.length} to sync, ${unchangedLedgers} unchanged`);
+      ledgers = changedLedgers;
+      saveCompanyState(companyName, { ledgerAlterIds: buildAlterIdMap(allLedgers) });
+    }
+
+    if (opts.syncStock || opts.syncTaxes) {
+      const allStock = await fetchTallyStockItems(companyName);
+      const { toSync: changedStock, unchanged: unchangedStock } =
+        filterChangedMasters(allStock, state.stockAlterIds);
+      logger.info(`Stock: ${changedStock.length} to sync, ${unchangedStock} unchanged`);
+      stockItems = changedStock;
+      saveCompanyState(companyName, { stockAlterIds: buildAlterIdMap(allStock) });
+    }
+
+    // ── 2. VOUCHERS — only fetch new/amended date window ──────────────────
+    let vouchers = [];
+    if (opts.syncVouchers || opts.syncInvoices) {
+      const { fromDate, toDate: vToDate, isIncremental } =
+        getIncrementalVoucherDates(companyName, fallbackFromDate, toDate);
+
+      logger.info(
+        `Vouchers: fetching ${isIncremental ? "incremental" : "full"} range ${fromDate} → ${vToDate}`
+      );
+      vouchers = await fetchTallyVouchers(companyName, fromDate, vToDate);
+    }
+
+    // ── 3. Run the sync ────────────────────────────────────────────────────
     const result = await runFullSync(
       companyName,
       { groups, ledgers, stockItems, vouchers, godowns, costCentres },
       opts
     );
 
-    _lastAutoSync = { ...result, triggeredBy: "cron", fromDate, toDate };
+    // ── 4. Save state only on success ─────────────────────────────────────
+    if (result.status !== "failed") {
+      saveCompanyState(companyName, {
+        lastVoucherSyncDate: toDate,
+        lastMasterSyncAt:    now.toISOString(),
+      });
+      logger.info(`syncState: checkpoint saved → vouchers up to ${toDate}`);
+    }
+
+    _lastAutoSync = {
+      ...result,
+      triggeredBy:   "cron",
+      fromDate:      state.lastVoucherSyncDate || fallbackFromDate,
+      toDate,
+      isIncremental: !isFirstSync,
+    };
     logger.info(`Auto-sync complete: ${result.status}`);
   } catch (err) {
     _lastAutoSync = { status: "failed", error: err.message, startedAt: now.toISOString() };
@@ -107,6 +188,23 @@ app.get("/api/auto-sync/status", (_req, res) => {
 app.post("/api/auto-sync/run-now", async (_req, res) => {
   res.json({ ok: true, message: "Manual auto-sync triggered in background" });
   runAutoSync(); // fire and forget
+});
+
+// Reset incremental state for a company — forces full re-sync on next run
+app.post("/api/auto-sync/reset-state", (req, res) => {
+  const { company } = req.body || {};
+  const companyName = company || config.tally.companyName;
+  if (!companyName) return res.status(400).json({ ok: false, error: "company required" });
+  resetCompanyState(companyName);
+  res.json({ ok: true, message: `Incremental state cleared for "${companyName}" — next sync will be full` });
+});
+
+// Get current incremental sync state for a company
+app.get("/api/auto-sync/state", (req, res) => {
+  const company = req.query.company || config.tally.companyName;
+  if (!company) return res.status(400).json({ ok: false, error: "company required" });
+  const state = getCompanyState(company);
+  res.json({ ok: true, company, state });
 });
 
 // ──────────────────────────────────────────────────────────────────────────

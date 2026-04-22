@@ -2,7 +2,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { tallyAPI } from "../api/tallyAPI";
 
 const TODAY      = new Date().toISOString().slice(0, 10);
-const YEAR_START = `${new Date().getFullYear()}-04-01`;
+// Indian FY starts April 1. Recomputed dynamically so it is always correct
+// even if the app runs across financial year boundaries.
+function getFYStart() {
+  const now = new Date();
+  const year = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  return `${year}-04-01`;
+}
+const YEAR_START = getFYStart();
 const BASE_URL   = process.env.REACT_APP_API_URL || "http://localhost:4000/api";
 const ACTIVE_JOB_KEY = "sync_active_job";
 
@@ -198,7 +205,12 @@ export function SyncToErpNext({companies}){
     finally{setCancelling(false);}
   }
 
+  // Persist the last successful sync toDate so auto-sync can do incremental runs.
+  // Key is per-company so switching companies doesn't bleed dates.
   const [syncOpts,setSyncOpts]=useState({syncChartOfAccounts:false,syncLedgers:false,syncSmartLedgers:false,syncOpeningBalances:false,syncGodowns:false,syncCostCentres:false,syncStock:false,syncVouchers:false,syncInvoices:false});
+  // Track last successful sync date per company for incremental auto-sync
+  const [lastSyncDates,setLastSyncDates]=useState(()=>{try{return JSON.parse(localStorage.getItem("last_sync_dates")||"{}");}catch{return {};}});
+  function saveLastSyncDate(co,date){const updated={...lastSyncDates,[co]:date};setLastSyncDates(updated);localStorage.setItem("last_sync_dates",JSON.stringify(updated));}
   const toggleOpt=(key)=>setSyncOpts(o=>({...o,[key]:!o[key]}));
   const [autoMode,setAutoMode]=useState(false);
   const [autoInterval,setAutoInterval]=useState(INTERVALS[2].value);
@@ -224,7 +236,7 @@ export function SyncToErpNext({companies}){
         pollRef.current=setTimeout(async()=>{
           try{
             const res=await fetch(`${BASE_URL}/sync/status/${jobId}`);
-            if(res.status===404){sessionStorage.removeItem(ACTIVE_JOB_KEY);resolve({type,data:{ok:true,result:{note:"Server restarted — sync likely completed. Check ERPNext."}}});return;}
+            if(res.status===404){sessionStorage.removeItem(ACTIVE_JOB_KEY);resolve({type,data:{ok:true,result:{nothingToSync:false,serverRestarted:true,note:"Server restarted while syncing — the sync likely completed. Please check ERPNext to confirm."}}});return;}
             const data=await res.json();const job=data.job;
             if(!job){sessionStorage.removeItem(ACTIVE_JOB_KEY);resolve({type,data:{ok:true,result:{note:"Job completed (no longer tracked by server)"}}});return;}
             if(job.status==="done"){resolve({type,data:{ok:true,result:job.result}});return;}
@@ -248,6 +260,8 @@ export function SyncToErpNext({companies}){
           ...syncCreds,
           syncChartOfAccounts: syncOpts.syncChartOfAccounts,
           syncLedgers:         syncOpts.syncLedgers,
+          // FIX: syncSmartLedgers was in the checkbox list but never sent to the server
+          syncSmartLedgers:    syncOpts.syncSmartLedgers,
           syncOpeningBalances: syncOpts.syncOpeningBalances,
           syncGodowns:         syncOpts.syncGodowns,
           syncCostCentres:     syncOpts.syncCostCentres,
@@ -255,6 +269,8 @@ export function SyncToErpNext({companies}){
           syncVouchers:        syncOpts.syncVouchers,
           syncInvoices:        syncOpts.syncInvoices,
         });
+        // Save today as last successful manual sync date for this company
+        saveLastSyncDate(co, toDate);
       }
       else if(type==="chart-of-accounts")apiRes=await tallyAPI.syncChartOfAccounts(co,syncCreds);
       else if(type==="ledgers")apiRes=await tallyAPI.syncLedgers(co,syncCreds);
@@ -276,23 +292,67 @@ export function SyncToErpNext({companies}){
     try{
       const creds=credsOverride();
       const erpCoName=erpCompany&&erpCompany.trim();
-      const apiRes=await tallyAPI.syncFull(co,fromDate,new Date().toISOString().slice(0,10),{
-        ...creds,
-        erpnextCompany:      erpCoName,
+      const todayStr=new Date().toISOString().slice(0,10);
+
+      // FIX: Use incremental fromDate for auto sync.
+      // If we have synced before, go back 3 days from the last sync date
+      // (overlap catches backdated entries in Tally).
+      // If never synced, use the current FY start date.
+      let autoFromDate=getFYStart();
+      const lastSynced=lastSyncDates[co];
+      if(lastSynced){
+        const d=new Date(lastSynced);
+        d.setDate(d.getDate()-3); // 3-day overlap
+        autoFromDate=d.toISOString().slice(0,10);
+      }
+
+      // FIX: Auto sync flags — if user has checked items use those,
+      // otherwise default to syncing Ledgers + Vouchers + Stock (the
+      // most important data). Previously all flags were false by default
+      // so auto sync would connect and then do absolutely nothing.
+      const hasUserSelection=Object.values(syncOpts).some(Boolean);
+      const autoFlags=hasUserSelection?{
         syncChartOfAccounts: syncOpts.syncChartOfAccounts,
         syncLedgers:         syncOpts.syncLedgers,
+        syncSmartLedgers:    syncOpts.syncSmartLedgers,
         syncOpeningBalances: syncOpts.syncOpeningBalances,
         syncGodowns:         syncOpts.syncGodowns,
         syncCostCentres:     syncOpts.syncCostCentres,
         syncStock:           syncOpts.syncStock,
         syncVouchers:        syncOpts.syncVouchers,
         syncInvoices:        syncOpts.syncInvoices,
+      }:{
+        // Sensible defaults when nothing is ticked — sync the core data
+        syncChartOfAccounts: false,
+        syncLedgers:         true,
+        syncSmartLedgers:    false,
+        syncOpeningBalances: false,
+        syncGodowns:         false,
+        syncCostCentres:     false,
+        syncStock:           true,
+        syncVouchers:        true,
+        syncInvoices:        true,
+      };
+
+      const apiRes=await tallyAPI.syncFull(co,autoFromDate,todayStr,{
+        ...creds,
+        erpnextCompany: erpCoName,
+        ...autoFlags,
       });let finalStatus="ok";
-      if(apiRes?.jobId){const polled=await pollUntilDone(apiRes.jobId,"full");finalStatus=polled.error?"failed":(polled.data?.result?.status||"ok");setAutoRunCount(c=>c+1);setAutoHistory(h=>[{at:started,status:finalStatus,error:polled.error},...h].slice(0,8));}
-      else{setAutoRunCount(c=>c+1);setAutoHistory(h=>[{at:started,status:apiRes?.result?.status||"ok"},...h].slice(0,8));}
+      if(apiRes?.jobId){
+        const polled=await pollUntilDone(apiRes.jobId,"full");
+        finalStatus=polled.error?"failed":(polled.data?.result?.status||"ok");
+        // Save checkpoint only on success so next auto sync starts from here
+        if(finalStatus!=="failed") saveLastSyncDate(co,todayStr);
+        setAutoRunCount(c=>c+1);
+        setAutoHistory(h=>[{at:started,status:finalStatus,error:polled.error,from:autoFromDate,to:todayStr},...h].slice(0,8));
+      }else{
+        setAutoRunCount(c=>c+1);
+        setAutoHistory(h=>[{at:started,status:apiRes?.result?.status||"ok",from:autoFromDate,to:todayStr},...h].slice(0,8));
+      }
     }catch(e){setAutoHistory(h=>[{at:started,status:"failed",error:e.message},...h].slice(0,8));}
     finally{setAutoSyncing(false);}
-  },[company,fromDate,syncOpts,autoSyncing,companyCreds,erpCompany]); // eslint-disable-line
+  },[company,fromDate,syncOpts,autoSyncing,companyCreds,erpCompany,lastSyncDates]); // eslint-disable-line
 
   useEffect(()=>{
     if(!autoRunning){clearInterval(timerRef.current);clearInterval(countdownRef.current);setAutoNextRun(null);setAutoRemainingMs(0);return;}
@@ -386,6 +446,15 @@ export function SyncToErpNext({companies}){
             </div>
           ))}
         </div>
+        {lastSyncDates[company]&&(
+          <div style={{marginTop:10,padding:"8px 12px",borderRadius:8,background:C.greenL,border:`1px solid ${C.greenB}`,display:"flex",gap:8,alignItems:"center"}}>
+            <span style={{fontSize:11}}>✓</span>
+            <p style={{fontFamily:C.mono,fontSize:10,color:C.green,margin:0}}>
+              Last synced up to <strong>{lastSyncDates[company]}</strong> — next auto sync will start from <strong>{(()=>{const d=new Date(lastSyncDates[company]);d.setDate(d.getDate()-3);return d.toISOString().slice(0,10);})()}</strong> (3-day overlap)
+            </p>
+            <button onClick={()=>{const u={...lastSyncDates};delete u[company];setLastSyncDates(u);localStorage.setItem("last_sync_dates",JSON.stringify(u));}} title="Reset — force full re-sync next time" style={{marginLeft:"auto",padding:"2px 8px",borderRadius:5,border:`1px solid ${C.greenB}`,background:"none",color:C.green,fontFamily:C.mono,fontSize:9,cursor:"pointer",flexShrink:0}}>Reset</button>
+          </div>
+        )}
         {dayCount>90&&(
           <div style={{marginTop:12,padding:"10px 13px",borderRadius:9,background:C.amberL,border:`1.5px solid ${C.amberB}`,display:"flex",gap:8,alignItems:"flex-start"}}>
             <span style={{fontSize:13,flexShrink:0}}>⏱</span>
@@ -491,7 +560,10 @@ export function SyncToErpNext({companies}){
                   {autoHistory.map((h,i)=>(
                     <div key={i} style={{display:"flex",alignItems:"center",gap:9,padding:"7px 12px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`}}>
                       <span style={{width:7,height:7,borderRadius:"50%",flexShrink:0,background:h.status==="ok"?C.green:h.status==="failed"?C.red:C.amber}}/>
-                      <span style={{fontFamily:C.mono,fontSize:10,color:C.muted,flex:1}}>{h.at.toLocaleTimeString("en-IN",{hour12:false})}</span>
+                      <div style={{flex:1}}>
+                        <span style={{fontFamily:C.mono,fontSize:10,color:C.muted,display:"block"}}>{h.at.toLocaleTimeString("en-IN",{hour12:false})}</span>
+                        {h.from&&<span style={{fontFamily:C.mono,fontSize:9,color:C.dim,display:"block"}}>{h.from} → {h.to} (incremental)</span>}
+                      </div>
                       <StatusBadge status={h.status}/>
                       {h.error&&<span style={{fontFamily:C.mono,fontSize:9,color:C.red,maxWidth:160,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.error}</span>}
                     </div>
@@ -513,6 +585,33 @@ export function SyncToErpNext({companies}){
             <div style={{background:C.redL,border:`1.5px solid ${C.redB}`,borderRadius:13,padding:"15px 18px"}}>
               <p style={{fontFamily:C.mono,fontSize:12,color:C.red,fontWeight:700,margin:0}}>✗ {result.error==="Sync was stopped by you."?"Sync stopped":"Sync failed"}</p>
               <p style={{fontFamily:C.mono,fontSize:11,color:C.red,margin:"5px 0 0"}}>{result.error}</p>
+            </div>
+          ):result.data?.ok&&result.data?.result?.serverRestarted?(
+            <div style={{background:C.card,border:`1.5px solid ${C.amberB}`,borderRadius:14,padding:18,display:'flex',flexDirection:'column',gap:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:11}}>
+                <div style={{width:36,height:36,borderRadius:10,background:C.amberL,border:`1.5px solid ${C.amberB}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>⚠</div>
+                <div style={{flex:1}}>
+                  <p style={{fontFamily:C.title,fontSize:13.5,fontWeight:800,color:C.ink,margin:0,letterSpacing:'-0.3px'}}>Server Restarted During Sync</p>
+                  <p style={{fontFamily:C.mono,fontSize:10,color:C.amber,margin:'3px 0 0'}}>The sync likely completed — please verify in ERPNext</p>
+                </div>
+                <StatusBadge status='warning'/>
+              </div>
+              <p style={{fontFamily:C.mono,fontSize:10,color:C.muted,margin:0,lineHeight:1.6}}>{result.data.result.note}</p>
+            </div>
+          ):result.data?.ok&&result.data?.result?.nothingToSync?(
+            <div style={{background:C.card,border:`1.5px solid ${C.greenB}`,borderRadius:14,padding:18,display:'flex',flexDirection:'column',gap:10,boxShadow:`0 4px 18px ${C.green}14`}}>
+              <div style={{display:'flex',alignItems:'center',gap:11}}>
+                <div style={{width:36,height:36,borderRadius:10,background:C.greenL,border:`1.5px solid ${C.greenB}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>✓</div>
+                <div style={{flex:1}}>
+                  <p style={{fontFamily:C.title,fontSize:13.5,fontWeight:800,color:C.ink,margin:0,letterSpacing:'-0.3px'}}>Already Up to Date</p>
+                  <p style={{fontFamily:C.mono,fontSize:10,color:C.green,margin:'3px 0 0'}}>No new or changed data since the last sync — ERPNext was not called</p>
+                </div>
+                <StatusBadge status='ok'/>
+              </div>
+              <div style={{padding:'10px 13px',borderRadius:9,background:C.accentL,border:`1.5px solid ${C.accentB}`}}>
+                <p style={{fontFamily:C.mono,fontSize:10,color:C.accentD,margin:0,lineHeight:1.65}}>All masters have the same ALTERID as the last sync and the voucher date window is already covered. Nothing was pushed to ERPNext.</p>
+              </div>
+              {result.data.result?.finishedAt&&<p style={{fontFamily:C.mono,fontSize:10,color:C.muted,margin:0}}>Checked at {new Date(result.data.result.finishedAt).toLocaleTimeString('en-IN')}</p>}
             </div>
           ):result.data?.ok?(
             <div style={{background:C.card,border:`1.5px solid ${C.greenB}`,borderRadius:14,padding:18,display:"flex",flexDirection:"column",gap:11,boxShadow:`0 4px 18px ${C.green}14`}}>

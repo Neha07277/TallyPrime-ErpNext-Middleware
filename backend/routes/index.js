@@ -36,6 +36,13 @@ import {
   runFullSync,
   resolveErpNextCompanyPublic,
 } from "../tally/Erpnextclient.js";
+import {
+  getCompanyState,
+  saveCompanyState,
+  getIncrementalVoucherDates,
+  filterChangedMasters,
+  buildAlterIdMap,
+} from "../syncState.js";
 import { logger } from "../logs/logger.js";
 import { config } from "../config/config.js";
 
@@ -628,20 +635,143 @@ router.post("/sync/full", async (req, res) => {
 
   (async () => {
     try {
-      // ── Fetch Tally data in correct dependency order ───────────────────────
-      // Groups must come first (COA depends on them).  Ledgers and stock are
-      // independent of each other but both depend on COA existing.
-      logger.info(`Full sync: fetching Tally data sequentially...`);
+      logger.info(`Full sync: fetching Tally data with incremental logic...`);
 
-      // Groups are needed for COA sync AND for opening balances (GL account resolution
-      // in syncOpeningBalancesToErpNext uses group membership to classify ledgers).
-      const groups      = (syncChartOfAccounts || syncOpeningBalances) ? await fetchTallyGroups(companyName)                   : [];
-      const costCentres = syncCostCentres                            ? await fetchTallyCostCentres(companyName)                  : [];
-      const godowns     = syncGodowns                                ? await fetchTallyGodowns(companyName)                     : [];
-      const ledgers     = (syncLedgers || syncOpeningBalances)       ? await fetchTallyLedgers(companyName)                     : [];
-      const stockItems  = (syncStock   || syncTaxes)                 ? await fetchTallyStockItems(companyName)                  : [];
-      const vouchers    = (syncVouchers || syncInvoices)             ? await fetchTallyVouchers(companyName, fromDate, toDate)  : [];
+      // ── Tally connectivity check ──────────────────────────────────
+      const tallyPing = await pingTally().catch(function() {
+        return { connected: false, error: "No response from Tally" };
+      });
+      if (!tallyPing.connected) {
+        const msg = "Tally is not connected — " + (tallyPing.error || "TallyPrime is not running or server mode is not enabled on port 9000") + ". Please open TallyPrime before syncing.";
+        logger.error("[Job " + jobId + "] " + msg);
+        failJob(jobId, new Error(msg));
+        return;
+      }
+      logger.info("Tally ping OK (" + tallyPing.latencyMs + "ms)");
 
+      // ── Load incremental state ────────────────────────────────────────────
+      const state       = getCompanyState(companyName);
+      const isFirstSync = !state.lastVoucherSyncDate && !state.lastMasterSyncAt;
+      logger.info(`Sync mode: ${isFirstSync ? "FULL (first run)" : "INCREMENTAL"} for "${companyName}"`);
+
+      // ── Masters — fetch all, sync only changed (via ALTERID) ─────────────
+      let groups      = [];
+      let costCentres = [];
+      let godowns     = [];
+      let ledgers     = [];
+      let stockItems  = [];
+      const newAlterIds = {};
+
+      if (syncChartOfAccounts || syncOpeningBalances) {
+        const allGroups = await fetchTallyGroups(companyName);
+        const { toSync: changedGroups, unchanged: unchangedGroups } =
+          filterChangedMasters(allGroups, state.groupAlterIds);
+        logger.info(`Groups: ${changedGroups.length} to sync, ${unchangedGroups} unchanged (skipped)`);
+        groups = changedGroups;
+        newAlterIds.groupAlterIds = buildAlterIdMap(allGroups);
+      }
+
+      if (syncCostCentres) {
+        const allCostCentres = await fetchTallyCostCentres(companyName);
+        const { toSync: changedCostCentres, unchanged: unchangedCostCentres } =
+          filterChangedMasters(allCostCentres, state.costCentreAlterIds);
+        logger.info(`Cost Centres: ${changedCostCentres.length} to sync, ${unchangedCostCentres} unchanged (skipped)`);
+        costCentres = changedCostCentres;
+        newAlterIds.costCentreAlterIds = buildAlterIdMap(allCostCentres);
+      }
+
+      if (syncGodowns) {
+        const allGodowns = await fetchTallyGodowns(companyName);
+        const { toSync: changedGodowns, unchanged: unchangedGodowns } =
+          filterChangedMasters(allGodowns, state.godownAlterIds);
+        logger.info(`Godowns: ${changedGodowns.length} to sync, ${unchangedGodowns} unchanged (skipped)`);
+        godowns = changedGodowns;
+        newAlterIds.godownAlterIds = buildAlterIdMap(allGodowns);
+      }
+
+      if (syncLedgers || syncOpeningBalances) {
+        const allLedgers = await fetchTallyLedgers(companyName);
+        const { toSync: changedLedgers, unchanged: unchangedLedgers } =
+          filterChangedMasters(allLedgers, state.ledgerAlterIds);
+        logger.info(`Ledgers: ${changedLedgers.length} to sync, ${unchangedLedgers} unchanged (skipped)`);
+        ledgers = changedLedgers;
+        newAlterIds.ledgerAlterIds = buildAlterIdMap(allLedgers);
+      }
+
+      if (syncStock || syncTaxes) {
+        const allStock = await fetchTallyStockItems(companyName);
+        const { toSync: changedStock, unchanged: unchangedStock } =
+          filterChangedMasters(allStock, state.stockAlterIds);
+        logger.info(`Stock: ${changedStock.length} to sync, ${unchangedStock} unchanged (skipped)`);
+        stockItems = changedStock;
+        newAlterIds.stockAlterIds = buildAlterIdMap(allStock);
+      }
+
+      // ── Vouchers — only fetch new/amended date window ─────────────────
+      let vouchers    = [];
+      let effectiveFromDate = fromDate;
+      let effectiveToDate   = toDate;
+
+      if (syncVouchers || syncInvoices) {
+        const dateWindow = getIncrementalVoucherDates(companyName, fromDate, toDate);
+        effectiveFromDate = dateWindow.fromDate;
+        effectiveToDate   = dateWindow.toDate;
+
+        // Same-day skip: if the incremental window starts at or after the
+        // date we already synced up to, AND no masters changed, there is
+        // nothing new to fetch. Skipping avoids re-pushing 85 identical
+        // vouchers as "updated" every time the user clicks Sync today.
+        const lastSynced = state.lastVoucherSyncDate;
+        const windowIsAlreadyCovered =
+          lastSynced &&
+          effectiveToDate <= lastSynced &&
+          groups.length       === 0 &&
+          ledgers.length      === 0 &&
+          stockItems.length   === 0 &&
+          costCentres.length  === 0 &&
+          godowns.length      === 0;
+
+        if (windowIsAlreadyCovered) {
+          logger.info(
+            "Vouchers: skipping fetch — window " + effectiveFromDate + " → " + effectiveToDate +
+            " already covered by last sync (" + lastSynced + ") and no masters changed"
+          );
+          // vouchers stays [] — nothingToSync fires below
+        } else {
+          logger.info(
+            "Vouchers: " + (dateWindow.isIncremental ? "incremental" : "full") +
+            " window " + effectiveFromDate + " → " + effectiveToDate
+          );
+          vouchers = await fetchTallyVouchers(companyName, effectiveFromDate, effectiveToDate);
+        }
+      }
+
+      // ── Short-circuit: nothing to push ─────────────────────────────────
+      const nothingToSync =
+        groups.length     === 0 &&
+        ledgers.length    === 0 &&
+        stockItems.length === 0 &&
+        costCentres.length === 0 &&
+        godowns.length    === 0 &&
+        vouchers.length   === 0;
+
+      if (nothingToSync) {
+        logger.info("[Job " + jobId + "] Nothing to sync — all masters unchanged, no new vouchers in window");
+        finishJob(jobId, {
+          status: "ok",
+          nothingToSync: true,
+          message: "Everything is already up to date. No new or changed data found since the last sync.",
+          finishedAt: new Date().toISOString(),
+        });
+        saveCompanyState(companyName, {
+          lastVoucherSyncDate: effectiveToDate || new Date().toISOString().slice(0, 10),
+          lastMasterSyncAt:    new Date().toISOString(),
+          ...newAlterIds,
+        });
+        return;
+      }
+
+            // ── Run ERPNext sync ──────────────────────────────────────────────────
       const result = await runFullSync(
         companyName,
         { groups, ledgers, stockItems, vouchers, godowns, costCentres },
@@ -652,7 +782,20 @@ router.post("/sync/full", async (req, res) => {
         },
         creds
       );
+
+      // ── Save checkpoint only on success ───────────────────────────────────
       logger.info(`Full sync job ${jobId} done`);
+      // Save checkpoint BEFORE finishJob so state is persisted even if
+      // the process restarts (e.g. nodemon) immediately after finishing.
+      if (result.status !== "failed") {
+        const today = new Date().toISOString().slice(0, 10);
+        saveCompanyState(companyName, {
+          lastVoucherSyncDate: effectiveToDate || today,
+          lastMasterSyncAt:    new Date().toISOString(),
+          ...newAlterIds,
+        });
+        logger.info(`syncState: checkpoint saved → vouchers up to ${effectiveToDate || today}`);
+      }
       finishJob(jobId, result);
     } catch (err) {
       logger.error(`Full sync job ${jobId} failed: ${err.message}`);

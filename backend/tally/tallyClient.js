@@ -217,7 +217,7 @@ export async function fetchTallyGroups(companyName) {
   const xml = buildCollectionXml(
     "GroupCollection",
     "Group",
-    "NAME,GUID,PARENT,ISREVENUE,ISBILLWISEON,AFFECTSSTOCK,ISSUBLEDGER,BASICGROUPISCALCULABLE",
+    "NAME,GUID,PARENT,ALTERID,ISREVENUE,ISBILLWISEON,AFFECTSSTOCK,ISSUBLEDGER,BASICGROUPISCALCULABLE",
     companyName
   );
   const raw = await postXml(xml);
@@ -233,6 +233,7 @@ export async function fetchTallyGroups(companyName) {
       return {
         guid: val(g.GUID),
         name,
+        alterId: val(g.ALTERID) || null,
         parent: val(g.PARENT) || "Primary",
         isRevenue: val(g.ISREVENUE) === "Yes",
         isBillwise: val(g.ISBILLWISEON) === "Yes",
@@ -254,7 +255,7 @@ export async function fetchTallyLedgers(companyName) {
   const xml = buildCollectionXml(
     "Ledger Collection",
     "Ledger",
-    "NAME,GUID,PARENT,ADDRESS,MAILINGNAME,MAILINGDETAILS.LIST,OPENINGBALANCE,CLOSINGBALANCE,ISBILLWISEON,LEDGERPHONE,LEDGERMOBILE,EMAIL,INCOMETAXNUMBER,GSTIN.LIST,COUNTRYNAME,STATENAME,PINCODE,BANKACCNO,IFSCODE,SWIFTCODE,BANKNAME",
+    "NAME,GUID,PARENT,ALTERID,ADDRESS,MAILINGNAME,MAILINGDETAILS.LIST,OPENINGBALANCE,CLOSINGBALANCE,ISBILLWISEON,LEDGERPHONE,LEDGERMOBILE,EMAIL,INCOMETAXNUMBER,GSTIN.LIST,COUNTRYNAME,STATENAME,PINCODE,BANKACCNO,IFSCODE,SWIFTCODE,BANKNAME",
     companyName
   );
   const raw = await postXml(xml);
@@ -282,6 +283,7 @@ export async function fetchTallyLedgers(companyName) {
     ledgers.push({
       guid,
       name,
+      alterId: val(l.ALTERID) || null,
       parentGroup: val(l.PARENT) || "Sundry Debtors",
       openingBalance: parseTallyAmount(l.OPENINGBALANCE?._ || l.OPENINGBALANCE),
       closingBalance: parseTallyAmount(l.CLOSINGBALANCE?._ || l.CLOSINGBALANCE),
@@ -413,7 +415,7 @@ export async function fetchTallyCostCentres(companyName) {
   const xml = buildCollectionXml(
     "CostCentreCollection",
     "Cost Centre",
-    "NAME,GUID,PARENT,CATEGORY",
+    "NAME,GUID,PARENT,ALTERID,CATEGORY",
     companyName
   );
   const raw = await postXml(xml);
@@ -428,10 +430,11 @@ export async function fetchTallyCostCentres(companyName) {
       const name = c.$?.NAME || val(c.NAME) || null;
       if (!name) return null;
       return {
-        guid: val(c.GUID),
+        guid:     val(c.GUID),
         name,
-        parent: (val(c.PARENT) || "Primary").trim(),
+        parent:   (val(c.PARENT) || "Primary").trim(),
         category: val(c.CATEGORY) || null,
+        alterId:  val(c.ALTERID)  || null,
       };
     })
     .filter(Boolean);
@@ -558,7 +561,7 @@ export async function fetchTallyStockItems(companyName) {
     // FIX: Use HSNDETAILS.LIST.HSNCODE (nested list path) instead of flat HSNDETAILS.HSNCODE.
     // TallyPrime stores HSN data inside a HSNDETAILS.LIST sub-list; the flat key returns empty.
     // Also fetch GSTRATE, GSTTYPEOFSUPPLY, and TAXABILITY for complete GST info.
-    "NAME,GUID,PARENT,CATEGORY,BASEUNITS,HSNDETAILS.LIST.HSNCODE,HSNDETAILS.LIST.GSTRATE,GSTAPPLICABLE,GSTTYPEOFSUPPLY,TAXABILITY,OPENINGBALANCE,CLOSINGBALANCE,OPENINGVALUE,CLOSINGVALUE",
+    "NAME,GUID,PARENT,ALTERID,CATEGORY,BASEUNITS,HSNDETAILS.LIST.HSNCODE,HSNDETAILS.LIST.GSTRATE,GSTAPPLICABLE,GSTTYPEOFSUPPLY,TAXABILITY,OPENINGBALANCE,CLOSINGBALANCE,OPENINGVALUE,CLOSINGVALUE",
     companyName
   );
   const raw = await postXml(xml);
@@ -659,6 +662,7 @@ export async function fetchTallyStockItems(companyName) {
       return {
         guid:            val(s.GUID),
         name,
+        alterId:         val(s.ALTERID) || null,
         group:           val(s.PARENT) || "Primary",
         category:        val(s.CATEGORY) || null,
         baseUnit:        val(s.BASEUNITS),
@@ -759,7 +763,7 @@ export async function fetchTallyGodowns(companyName) {
   const xml = buildCollectionXml(
     "GodownCollection",
     "Godown",
-    "NAME,GUID,PARENT,ADDRESS,HASSPACE,ISINTERNAL,ISEXTERNAL",
+    "NAME,GUID,PARENT,ALTERID,ADDRESS,HASSPACE,ISINTERNAL,ISEXTERNAL",
     companyName
   );
   const raw = await postXml(xml);
@@ -773,12 +777,13 @@ export async function fetchTallyGodowns(companyName) {
       const name = g.$?.NAME || val(g.NAME) || null;
       if (!name) return null;
       return {
-        guid: val(g.GUID),
+        guid:       val(g.GUID),
         name,
-        parent: val(g.PARENT) || "Primary",
-        address: extractAddress(g.ADDRESS) || null,
-        hasSpace: val(g.HASSPACE) === "Yes",
+        parent:     val(g.PARENT) || "Primary",
+        address:    extractAddress(g.ADDRESS) || null,
+        hasSpace:   val(g.HASSPACE) === "Yes",
         isInternal: val(g.ISINTERNAL) !== "No",
+        alterId:    val(g.ALTERID)   || null,
       };
     })
     .filter(Boolean);
