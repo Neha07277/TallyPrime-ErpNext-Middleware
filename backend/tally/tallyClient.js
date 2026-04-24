@@ -961,8 +961,9 @@ export async function fetchTallyVouchers(companyName, fromDate = null, toDate = 
   if (fromDate || toDate) {
     const filtered = unique.filter((v) => {
       if (!v.voucherDate) return true;
-      if (fromDate && v.voucherDate < fromDate) return false;
-      if (toDate   && v.voucherDate > toDate)   return false;
+      const d = v.voucherDate.slice(0, 10); // normalise to YYYY-MM-DD for safe string compare
+      if (fromDate && d < fromDate) return false;
+      if (toDate   && d > toDate)   return false;
       return true;
     });
     logger.success(`Fetched ${filtered.length} vouchers (filtered: ${fromDate} → ${toDate}) from ${unique.length} total`, { company: companyName });

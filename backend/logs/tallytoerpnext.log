@@ -1,5 +1,15 @@
 [
   {
+    "id": 1777006862295.656,
+    "ts": "2026-04-24T05:01:02.295Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "tallytoerpnext"
+    },
+    "company": "tallytoerpnext"
+  },
+  {
     "id": 1776850192756.496,
     "ts": "2026-04-22T09:29:52.756Z",
     "level": "info",

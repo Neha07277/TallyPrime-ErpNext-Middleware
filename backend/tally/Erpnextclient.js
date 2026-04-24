@@ -906,10 +906,11 @@ export async function syncLedgersToErpNext(ledgers, creds = {}) {
     const isBusiness = hasGstin ||
       DEBTOR_KEYS.some((k) => (l.parentGroup || "").toLowerCase().includes(k));
     const doc = {
-      customer_name:  l.name,
-      customer_type:  isBusiness ? "Company" : "Individual",
-      customer_group: _customerGroup,
-      territory:      resolveTerritory(l.state),
+      customer_name:    l.name,
+      customer_type:    isBusiness ? "Company" : "Individual",
+      customer_group:   _customerGroup,
+      territory:        resolveTerritory(l.state),
+      default_currency: "INR",
     };
     // Statutory
     if (l.gstin)  doc.tax_id          = l.gstin.trim();
@@ -936,10 +937,11 @@ export async function syncLedgersToErpNext(ledgers, creds = {}) {
     l.name = (l.name || "").trim(); // trim Tally trailing newlines
     const hasGstin = !!(l.gstin && l.gstin.trim().length > 5);
     const doc = {
-      supplier_name:  l.name,
-      supplier_type:  hasGstin ? "Company" : "Individual",
-      supplier_group: _supplierGroup,
-      country:        "India",
+      supplier_name:    l.name,
+      supplier_type:    hasGstin ? "Company" : "Individual",
+      supplier_group:   _supplierGroup,
+      country:          "India",
+      default_currency: "INR",
     };
     // Statutory
     if (l.gstin)  doc.tax_id          = l.gstin.trim();
@@ -1884,7 +1886,9 @@ export async function syncGodownsToErpNext(godowns, companyName, creds = {}) {
     if (g.address) {
       doc.address_line_1 = g.address.slice(0, 140);
     }
-    return { filters: { warehouse_name: g.name }, doc };
+    // ERPNext stores warehouses as "Name - Abbr" — use that as the lookup key
+    // so upsert finds the existing record and does a PUT instead of failing with Duplicate
+    return { filters: { name: g.name + " - " + companyAbbr }, doc };
   });
 
   logger.success("Godown sync done - created: " + results.created + ", updated: " + results.updated + ", failed: " + results.failed);
@@ -2469,11 +2473,35 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
 }
 
 // -- Cost Centres -------------------------------------------------------------
+async function resolveRootCostCentre(client, companyName, companyAbbr) {
+  // Ask ERPNext for the is_group=1 cost centre that has no parent (true root).
+  // In most installs this is "Main - <abbr>" but some installs rename it or
+  // create it as a leaf — fetching it avoids the "not a group node" error.
+  try {
+    const res = await client.get("/api/resource/Cost Center", {
+      params: {
+        filters: JSON.stringify([["Cost Center","company","=",companyName],["Cost Center","is_group","=",1],["Cost Center","parent_cost_center","=",""]]),
+        fields:  '["name"]',
+        limit:   1,
+      },
+    });
+    const name = res.data && res.data.data && res.data.data[0] && res.data.data[0].name;
+    if (name) { logger.info("Root cost centre resolved: " + name); return name; }
+  } catch (e) {
+    logger.warn("Could not resolve root cost centre: " + e.message);
+  }
+  // Fallback to the ERPNext default name
+  return "Main - " + companyAbbr;
+}
+
 export async function syncCostCentresToErpNext(costCentres, companyName, creds = {}) {
   const client = createErpClient(creds);
   companyName = await resolveErpNextCompany(client, companyName, creds);
   const companyAbbr = await getCompanyAbbr(client, companyName);
   logger.info("Syncing " + costCentres.length + " cost centres to ERPNext for " + companyName + " (abbr: " + companyAbbr + ")");
+
+  // Resolve the actual group-type root cost centre (avoids "not a group node" error)
+  const rootCostCentre = await resolveRootCostCentre(client, companyName, companyAbbr);
 
   // FIX: Pre-fetch all existing Cost Centers so we can validate parent references
   // before posting. Previously we blindly appended " - ABBR" to every parent name
@@ -2531,6 +2559,11 @@ export async function syncCostCentresToErpNext(costCentres, companyName, creds =
         // was just created in this run and the mapper runs in sorted order.
         doc.parent_cost_center = cc.parent.trim() + " - " + companyAbbr;
       }
+    } else {
+      // FIX: Tally's "Primary" parent = ERPNext root cost centre.
+      // ERPNext requires parent_cost_center on every cost centre — even top-level
+      // ones — so we must always set it.
+      doc.parent_cost_center = rootCostCentre;
     }
     // Add to known set so subsequent children in this batch can resolve this as parent
     _existingCostCenters.add((cc.name + " - " + companyAbbr).toLowerCase());

@@ -67,18 +67,21 @@ function extractCreds(req) {
   return creds;
 }
 
+// ── Helper: resolve the effective ERPNext URL for state keying ────────────────
+// FIX: every sync route calls this so the state key is always scoped to the
+// specific ERPNext instance being targeted — not shared across accounts.
+function resolveErpUrl(creds) {
+  return creds.url || config.erpnext.url || "default";
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ASYNC JOB REGISTRY
-// Syncing 15k+ records takes 30–60 min. Returning a jobId immediately prevents
-// the browser from timing out and showing "Failed to fetch" while the backend
-// is still happily running. The UI polls GET /sync/status/:jobId instead.
 // ══════════════════════════════════════════════════════════════════════════════
 const jobs = new Map(); // jobId -> { status, result, error, startedAt, type }
 
 function createJob(type) {
   const id = `${type}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   jobs.set(id, { id, type, status: "running", result: null, error: null, startedAt: new Date().toISOString() });
-  // Auto-cleanup after 2 hours
   setTimeout(() => jobs.delete(id), 2 * 60 * 60 * 1000);
   return id;
 }
@@ -93,7 +96,6 @@ function failJob(id, error) {
   if (job) Object.assign(job, { status: "failed", error: error.message || String(error), finishedAt: new Date().toISOString() });
 }
 
-// Track cancelled jobs so background workers can check and bail out early
 const cancelledJobs = new Set();
 
 function cancelJob(id) {
@@ -101,14 +103,13 @@ function cancelJob(id) {
   if (job && job.status === "running") {
     Object.assign(job, { status: "cancelled", error: "Stopped by user", finishedAt: new Date().toISOString() });
     cancelledJobs.add(id);
-    // Remove from cancelled set after 10 min (cleanup)
     setTimeout(() => cancelledJobs.delete(id), 10 * 60 * 1000);
     return true;
   }
   return false;
 }
 
-export { cancelledJobs }; // so sync workers can import and check this
+export { cancelledJobs };
 
 // ── GET /sync/status/:jobId ───────────────────────────────────────────────────
 router.get("/sync/status/:jobId", (req, res) => {
@@ -118,15 +119,12 @@ router.get("/sync/status/:jobId", (req, res) => {
 });
 
 // ── GET /sync/jobs ────────────────────────────────────────────────────────────
-// Lists all running jobs so the UI can pick up on page refresh
 router.get("/sync/jobs", (_req, res) => {
   const list = Array.from(jobs.values()).filter((j) => j.status === "running");
   res.json({ ok: true, jobs: list });
 });
 
 // ── POST /sync/cancel/:jobId ──────────────────────────────────────────────────
-// Marks the job as cancelled immediately so the UI gets instant feedback.
-// The background worker checks cancelledJobs on each iteration and bails out.
 router.post("/sync/cancel/:jobId", (req, res) => {
   const { jobId } = req.params;
   const job = jobs.get(jobId);
@@ -357,8 +355,6 @@ router.post("/middleware/check", async (req, res) => {
 });
 
 // ── GET /logs ─────────────────────────────────────────────────────────────────
-// ── GET /logs ─────────────────────────────────────────────────────────────────
-// Supports: ?company=X  ?fromDate=YYYY-MM-DD  ?toDate=YYYY-MM-DD  ?level=error  ?limit=200
 router.get("/logs", (req, res) => {
   const { company, fromDate, toDate, level } = req.query;
   const limit = Math.min(parseInt(req.query.limit) || 200, 1000);
@@ -367,7 +363,6 @@ router.get("/logs", (req, res) => {
 });
 
 // ── GET /logs/companies ───────────────────────────────────────────────────────
-// Returns list of all companies that have log files (for tenant selector in UI)
 router.get("/logs/companies", (_req, res) => {
   res.json({ companies: logger.listCompanies() });
 });
@@ -404,26 +399,26 @@ router.post("/sync/ledgers", async (req, res) => {
   const company = req.body.company || config.tally.companyName;
   if (!company) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("ledgers");
-  logger.info(`Ledger sync job ${jobId} started for: ${company}`);
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX: scope state to this ERPNext instance
+  const jobId      = createJob("ledgers");
+  logger.info(`Ledger sync job ${jobId} started for: ${company} → ${erpnextUrl}`);
   res.json({ ok: true, jobId, message: "Ledger sync started — poll /api/sync/status/" + jobId });
 
-  // Run in background (intentionally not awaited)
   (async () => {
     try {
-      const state      = getCompanyState(company);
+      const state      = getCompanyState(company, erpnextUrl);
       const allLedgers = await fetchTallyLedgers(company);
       const { toSync, unchanged } = filterChangedMasters(allLedgers, state.ledgerAlterIds);
       logger.info(`Ledgers: ${toSync.length} to sync, ${unchanged} unchanged (skipped)`);
       if (toSync.length === 0) {
         logger.info(`Ledger sync job ${jobId}: already up to date`);
-        saveCompanyState(company, { ledgerAlterIds: buildAlterIdMap(allLedgers), lastMasterSyncAt: new Date().toISOString() });
+        saveCompanyState(company, { ledgerAlterIds: buildAlterIdMap(allLedgers), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
         finishJob(jobId, { nothingToSync: true, message: "All ledgers are already up to date — nothing pushed to ERPNext." });
         return;
       }
       const result = await syncLedgersToErpNext(toSync, creds);
-      saveCompanyState(company, { ledgerAlterIds: buildAlterIdMap(allLedgers), lastMasterSyncAt: new Date().toISOString() });
+      saveCompanyState(company, { ledgerAlterIds: buildAlterIdMap(allLedgers), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
       logger.info(`Ledger sync job ${jobId} done`, result);
       finishJob(jobId, result);
     } catch (err) {
@@ -433,10 +428,7 @@ router.post("/sync/ledgers", async (req, res) => {
   })();
 });
 
-
 // ── POST /sync/smart-ledgers ──────────────────────────────────────────────────
-// Syncs ONLY the ledgers actually used in the given date range vouchers.
-// Much faster than full ledger sync for testing — typically 100-300 instead of 16,000+
 router.post("/sync/smart-ledgers", async (req, res) => {
   const { company, fromDate, toDate } = req.body;
   const companyName = company || config.tally.companyName;
@@ -469,25 +461,26 @@ router.post("/sync/stock", async (req, res) => {
   const company = req.body.company || config.tally.companyName;
   if (!company) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("stock");
-  logger.info(`Stock sync job ${jobId} started for: ${company}`);
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX
+  const jobId      = createJob("stock");
+  logger.info(`Stock sync job ${jobId} started for: ${company} → ${erpnextUrl}`);
   res.json({ ok: true, jobId, message: "Stock sync started — poll /api/sync/status/" + jobId });
 
   (async () => {
     try {
-      const state    = getCompanyState(company);
+      const state    = getCompanyState(company, erpnextUrl);
       const allStock = await fetchTallyStockItems(company);
       const { toSync, unchanged } = filterChangedMasters(allStock, state.stockAlterIds);
       logger.info(`Stock: ${toSync.length} to sync, ${unchanged} unchanged (skipped)`);
       if (toSync.length === 0) {
         logger.info(`Stock sync job ${jobId}: already up to date`);
-        saveCompanyState(company, { stockAlterIds: buildAlterIdMap(allStock), lastMasterSyncAt: new Date().toISOString() });
+        saveCompanyState(company, { stockAlterIds: buildAlterIdMap(allStock), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
         finishJob(jobId, { nothingToSync: true, message: "All stock items are already up to date — nothing pushed to ERPNext." });
         return;
       }
       const result = await syncStockToErpNext(toSync, creds);
-      saveCompanyState(company, { stockAlterIds: buildAlterIdMap(allStock), lastMasterSyncAt: new Date().toISOString() });
+      saveCompanyState(company, { stockAlterIds: buildAlterIdMap(allStock), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
       finishJob(jobId, result);
     } catch (err) {
       logger.error(`Stock sync job ${jobId} failed: ${err.message}`);
@@ -502,17 +495,18 @@ router.post("/sync/vouchers", async (req, res) => {
   const companyName = company || config.tally.companyName;
   if (!companyName) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("vouchers");
-  logger.info(`Voucher sync job ${jobId} started for: ${companyName}`);
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX
+  const jobId      = createJob("vouchers");
+  logger.info(`Voucher sync job ${jobId} started for: ${companyName} → ${erpnextUrl}`);
   res.json({ ok: true, jobId, message: "Voucher sync started — poll /api/sync/status/" + jobId });
 
   (async () => {
     try {
       const { fromDate: effFrom, toDate: effTo, isIncremental } =
-        getIncrementalVoucherDates(companyName, req.body.forceFromDate || null, toDate);
-      const state       = getCompanyState(companyName);
-      const lastSynced  = state.lastVoucherSyncDate;
+        getIncrementalVoucherDates(companyName, req.body.forceFromDate || null, toDate, erpnextUrl);
+      const state      = getCompanyState(companyName, erpnextUrl);
+      const lastSynced = state.lastVoucherSyncDate;
       if (lastSynced && effTo <= lastSynced) {
         logger.info(`Voucher sync job ${jobId}: already up to date (window ${effFrom}→${effTo} covered by last sync ${lastSynced})`);
         finishJob(jobId, { nothingToSync: true, message: "All vouchers in this date window are already up to date — nothing pushed to ERPNext." });
@@ -521,7 +515,7 @@ router.post("/sync/vouchers", async (req, res) => {
       logger.info(`Vouchers: ${isIncremental ? "incremental" : "full"} window ${effFrom} → ${effTo}`);
       const vouchers = await fetchTallyVouchers(companyName, effFrom, effTo);
       const result   = await syncVouchersToErpNext(vouchers, companyName, creds);
-      saveCompanyState(companyName, { lastVoucherSyncDate: effTo, lastMasterSyncAt: new Date().toISOString() });
+      saveCompanyState(companyName, { lastVoucherSyncDate: effTo, lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
       finishJob(jobId, result);
     } catch (err) {
       logger.error(`Voucher sync job ${jobId} failed: ${err.message}`);
@@ -535,25 +529,26 @@ router.post("/sync/godowns", async (req, res) => {
   const company = req.body.company || config.tally.companyName;
   if (!company) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("godowns");
-  logger.info(`Godown sync job ${jobId} started for: ${company}`);
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX
+  const jobId      = createJob("godowns");
+  logger.info(`Godown sync job ${jobId} started for: ${company} → ${erpnextUrl}`);
   res.json({ ok: true, jobId, message: "Godown sync started — poll /api/sync/status/" + jobId });
 
   (async () => {
     try {
-      const state      = getCompanyState(company);
+      const state      = getCompanyState(company, erpnextUrl);
       const allGodowns = await fetchTallyGodowns(company);
       const { toSync, unchanged } = filterChangedMasters(allGodowns, state.godownAlterIds);
       logger.info(`Godowns: ${toSync.length} to sync, ${unchanged} unchanged (skipped)`);
       if (toSync.length === 0) {
         logger.info(`Godown sync job ${jobId}: already up to date`);
-        saveCompanyState(company, { godownAlterIds: buildAlterIdMap(allGodowns), lastMasterSyncAt: new Date().toISOString() });
+        saveCompanyState(company, { godownAlterIds: buildAlterIdMap(allGodowns), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
         finishJob(jobId, { nothingToSync: true, message: "All godowns are already up to date — nothing pushed to ERPNext." });
         return;
       }
       const result = await syncGodownsToErpNext(toSync, company, creds);
-      saveCompanyState(company, { godownAlterIds: buildAlterIdMap(allGodowns), lastMasterSyncAt: new Date().toISOString() });
+      saveCompanyState(company, { godownAlterIds: buildAlterIdMap(allGodowns), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
       finishJob(jobId, result);
     } catch (err) {
       logger.error(`Godown sync job ${jobId} failed: ${err.message}`);
@@ -574,19 +569,14 @@ router.post("/sync/opening-balances", async (req, res) => {
 
   (async () => {
     try {
-      // Fetch groups AND ledgers — COA must be synced before opening balances
-      // so that ERPNext has real GL accounts to post JE rows against.
-      // Without groups, bank/cash/capital ledgers fall through to the skip path.
       const [groups, ledgers] = await Promise.all([
         fetchTallyGroups(company),
         fetchTallyLedgers(company),
       ]);
 
-      // Step 1: ensure the account tree exists in ERPNext
       logger.info(`[OB job ${jobId}] Syncing ${groups.length} groups (COA) before opening balances`);
       await syncChartOfAccountsToErpNext(groups, company, creds);
 
-      // Step 2: post opening balance Journal Entries
       const result = await syncOpeningBalancesToErpNext(ledgers, company, creds);
       finishJob(jobId, result);
     } catch (err) {
@@ -601,25 +591,26 @@ router.post("/sync/cost-centres", async (req, res) => {
   const company = req.body.company || config.tally.companyName;
   if (!company) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("cost-centres");
-  logger.info(`Cost centre sync job ${jobId} started for: ${company}`);
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX
+  const jobId      = createJob("cost-centres");
+  logger.info(`Cost centre sync job ${jobId} started for: ${company} → ${erpnextUrl}`);
   res.json({ ok: true, jobId, message: "Cost centre sync started — poll /api/sync/status/" + jobId });
 
   (async () => {
     try {
-      const state          = getCompanyState(company);
+      const state          = getCompanyState(company, erpnextUrl);
       const allCostCentres = await fetchTallyCostCentres(company);
       const { toSync, unchanged } = filterChangedMasters(allCostCentres, state.costCentreAlterIds);
       logger.info(`Cost Centres: ${toSync.length} to sync, ${unchanged} unchanged (skipped)`);
       if (toSync.length === 0) {
         logger.info(`Cost centre sync job ${jobId}: already up to date`);
-        saveCompanyState(company, { costCentreAlterIds: buildAlterIdMap(allCostCentres), lastMasterSyncAt: new Date().toISOString() });
+        saveCompanyState(company, { costCentreAlterIds: buildAlterIdMap(allCostCentres), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
         finishJob(jobId, { nothingToSync: true, message: "All cost centres are already up to date — nothing pushed to ERPNext." });
         return;
       }
       const result = await syncCostCentresToErpNext(toSync, company, creds);
-      saveCompanyState(company, { costCentreAlterIds: buildAlterIdMap(allCostCentres), lastMasterSyncAt: new Date().toISOString() });
+      saveCompanyState(company, { costCentreAlterIds: buildAlterIdMap(allCostCentres), lastMasterSyncAt: new Date().toISOString() }, erpnextUrl);
       finishJob(jobId, result);
     } catch (err) {
       logger.error(`Cost centre sync job ${jobId} failed: ${err.message}`);
@@ -652,10 +643,6 @@ router.post("/sync/invoices", async (req, res) => {
 });
 
 // ── POST /sync/full ───────────────────────────────────────────────────────────
-// FIX: All flags are now destructured in ONE place with defaults of false.
-// Previously syncLedgers/syncStock/syncVouchers had hardcoded defaults of `true`
-// at the outer level while the other flags (syncGodowns etc.) had `false` inside
-// the async block — so clicking "Godowns only" always triggered a ledger sync too.
 router.post("/sync/full", async (req, res) => {
   const {
     company,
@@ -675,9 +662,10 @@ router.post("/sync/full", async (req, res) => {
   const companyName = company || config.tally.companyName;
   if (!companyName) return res.status(400).json({ ok: false, error: "company required" });
 
-  const creds = extractCreds(req);
-  const jobId = createJob("full");
-  logger.info(`Full sync job ${jobId} started for: ${companyName}`, {
+  const creds      = extractCreds(req);
+  const erpnextUrl = resolveErpUrl(creds); // FIX
+  const jobId      = createJob("full");
+  logger.info(`Full sync job ${jobId} started for: ${companyName} → ${erpnextUrl}`, {
     syncLedgers, syncStock, syncVouchers, syncGodowns,
     syncCostCentres, syncOpeningBalances, syncInvoices,
     syncTaxes, syncChartOfAccounts,
@@ -700,10 +688,10 @@ router.post("/sync/full", async (req, res) => {
       }
       logger.info("Tally ping OK (" + tallyPing.latencyMs + "ms)");
 
-      // ── Load incremental state ────────────────────────────────────────────
-      const state       = getCompanyState(companyName);
+      // ── Load incremental state (scoped to this ERPNext instance) ──────────
+      const state       = getCompanyState(companyName, erpnextUrl);
       const isFirstSync = !state.lastVoucherSyncDate && !state.lastMasterSyncAt;
-      logger.info(`Sync mode: ${isFirstSync ? "FULL (first run)" : "INCREMENTAL"} for "${companyName}"`);
+      logger.info(`Sync mode: ${isFirstSync ? "FULL (first run)" : "INCREMENTAL"} for "${companyName}" → ${erpnextUrl}`);
 
       // ── Masters — fetch all, sync only changed (via ALTERID) ─────────────
       let groups      = [];
@@ -764,14 +752,10 @@ router.post("/sync/full", async (req, res) => {
       let effectiveToDate   = toDate;
 
       if (syncVouchers || syncInvoices) {
-        const dateWindow = getIncrementalVoucherDates(companyName, req.body.forceFromDate || null, toDate);
+        const dateWindow = getIncrementalVoucherDates(companyName, req.body.forceFromDate || fromDate || null, toDate, erpnextUrl);
         effectiveFromDate = dateWindow.fromDate;
         effectiveToDate   = dateWindow.toDate;
 
-        // Same-day skip: if the incremental window starts at or after the
-        // date we already synced up to, AND no masters changed, there is
-        // nothing new to fetch. Skipping avoids re-pushing 85 identical
-        // vouchers as "updated" every time the user clicks Sync today.
         const lastSynced = state.lastVoucherSyncDate;
         const windowIsAlreadyCovered =
           lastSynced &&
@@ -787,7 +771,6 @@ router.post("/sync/full", async (req, res) => {
             "Vouchers: skipping fetch — window " + effectiveFromDate + " → " + effectiveToDate +
             " already covered by last sync (" + lastSynced + ") and no masters changed"
           );
-          // vouchers stays [] — nothingToSync fires below
         } else {
           logger.info(
             "Vouchers: " + (dateWindow.isIncremental ? "incremental" : "full") +
@@ -799,12 +782,12 @@ router.post("/sync/full", async (req, res) => {
 
       // ── Short-circuit: nothing to push ─────────────────────────────────
       const nothingToSync =
-        groups.length     === 0 &&
-        ledgers.length    === 0 &&
-        stockItems.length === 0 &&
+        groups.length      === 0 &&
+        ledgers.length     === 0 &&
+        stockItems.length  === 0 &&
         costCentres.length === 0 &&
-        godowns.length    === 0 &&
-        vouchers.length   === 0;
+        godowns.length     === 0 &&
+        vouchers.length    === 0;
 
       if (nothingToSync) {
         logger.info("[Job " + jobId + "] Nothing to sync — all masters unchanged, no new vouchers in window");
@@ -818,11 +801,11 @@ router.post("/sync/full", async (req, res) => {
           lastVoucherSyncDate: effectiveToDate || new Date().toISOString().slice(0, 10),
           lastMasterSyncAt:    new Date().toISOString(),
           ...newAlterIds,
-        });
+        }, erpnextUrl);
         return;
       }
 
-            // ── Run ERPNext sync ──────────────────────────────────────────────────
+      // ── Run ERPNext sync ──────────────────────────────────────────────────
       const result = await runFullSync(
         companyName,
         { groups, ledgers, stockItems, vouchers, godowns, costCentres },
@@ -842,7 +825,7 @@ router.post("/sync/full", async (req, res) => {
           lastVoucherSyncDate: effectiveToDate || today,
           lastMasterSyncAt:    new Date().toISOString(),
           ...newAlterIds,
-        });
+        }, erpnextUrl);
         logger.info(`syncState: checkpoint saved → vouchers up to ${effectiveToDate || today}`);
       }
       finishJob(jobId, result);
@@ -876,8 +859,6 @@ router.post("/sync/chart-of-accounts", async (req, res) => {
 });
 
 // ── POST /sync/taxes ──────────────────────────────────────────────────────────
-// Creates GST Tax Templates (IGST/CGST/SGST slabs) and links them to Items.
-// Must be called AFTER /sync/stock so the Items already exist in ERPNext.
 router.post("/sync/taxes", async (req, res) => {
   const company = req.body.company || config.tally.companyName;
   if (!company) return res.status(400).json({ ok: false, error: "company required" });

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1776944434291.9268,
+    "ts": "2026-04-23T11:40:34.291Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1776943482273.8215,
+    "ts": "2026-04-23T11:24:42.273Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1776943370441.5977,
+    "ts": "2026-04-23T11:22:50.441Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  }
+]
