@@ -1,5 +1,69 @@
 [
   {
+    "id": 1777009597878.553,
+    "ts": "2026-04-24T05:46:37.878Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009597875.39,
+    "ts": "2026-04-24T05:46:37.875Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009597872.473,
+    "ts": "2026-04-24T05:46:37.872Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009597862.2383,
+    "ts": "2026-04-24T05:46:37.862Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009595079.8816,
+    "ts": "2026-04-24T05:46:35.079Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009595076.1326,
+    "ts": "2026-04-24T05:46:35.076Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009595073.791,
+    "ts": "2026-04-24T05:46:35.073Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777009595065.4666,
+    "ts": "2026-04-24T05:46:35.065Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
     "id": 1777006863244.306,
     "ts": "2026-04-24T05:01:03.244Z",
     "level": "info",
@@ -8581,70 +8645,6 @@
     "ts": "2026-04-23T09:47:24.691Z",
     "level": "success",
     "message": "Stock sync done - created: 0, updated: 9, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937628873.1511,
-    "ts": "2026-04-23T09:47:08.873Z",
-    "level": "info",
-    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937628843.4558,
-    "ts": "2026-04-23T09:47:08.843Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937628715.927,
-    "ts": "2026-04-23T09:47:08.715Z",
-    "level": "info",
-    "message": "Syncing 9 stock items to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937628709.719,
-    "ts": "2026-04-23T09:47:08.709Z",
-    "level": "success",
-    "message": "Cost centres sync done - created: 1, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937626999.8696,
-    "ts": "2026-04-23T09:47:06.999Z",
-    "level": "info",
-    "message": "Cost Centre sync: fetched 4 existing cost centers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937626905.6772,
-    "ts": "2026-04-23T09:47:06.905Z",
-    "level": "info",
-    "message": "Root cost centre resolved: Company1 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937626871.5688,
-    "ts": "2026-04-23T09:47:06.871Z",
-    "level": "info",
-    "message": "Syncing 1 cost centres to ERPNext for Company1 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1776937626866.4644,
-    "ts": "2026-04-23T09:47:06.866Z",
-    "level": "success",
-    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
     "meta": {},
     "company": null
   }

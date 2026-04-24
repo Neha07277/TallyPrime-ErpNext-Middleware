@@ -19,6 +19,22 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// ── Health check — root route (fixes 404 on /) ────────────────────────────
+app.get("/", (_req, res) => {
+  res.json({
+    status: "ok",
+    service: "Tally ↔ ERPNext Middleware",
+    version: "1.0.0",
+    endpoints: {
+      autoSyncStatus:  "GET  /api/auto-sync/status",
+      autoSyncRunNow:  "POST /api/auto-sync/run-now",
+      autoSyncReset:   "POST /api/auto-sync/reset-state",
+      autoSyncState:   "GET  /api/auto-sync/state",
+    },
+  });
+});
+
 app.use("/api", router);
 
 // ── Auto-Sync Scheduler ────────────────────────────────────────────────────
