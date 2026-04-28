@@ -1056,6 +1056,64 @@ async function ensureHsnNotMandatory(client) {
   }
 }
 
+// -- Ensure Tally custom fields exist on Sales Invoice -------------------------
+// Creates `custom_tally_voucher_no` on Sales Invoice and Payment Entry if they don't exist yet.
+// This gives us a dedicated, always-visible column that stores the Tally number.
+async function ensureTallyCustomFields(client) {
+  const fieldsToCreate = [
+    {
+      dt:         "Sales Invoice",
+      fieldname:  "custom_tally_voucher_no",
+      label:      "Tally Voucher No",
+      fieldtype:  "Data",
+      insert_after: "po_no",
+      in_list_view: 1,       // show in the Sales Invoice list — this is the key flag
+      in_standard_filter: 1, // also filterable
+      read_only: 1,
+    },
+    {
+      // FIX: Add Tally Vch No column to Payment Entry list so users can cross-reference
+      // Tally voucher numbers directly from the ERPNext Payments list view.
+      dt:         "Payment Entry",
+      fieldname:  "custom_tally_voucher_no",
+      label:      "Tally Vch No",
+      fieldtype:  "Data",
+      insert_after: "reference_no",
+      in_list_view: 1,       // visible in the Payment Entry list
+      in_standard_filter: 1, // filterable by Tally voucher number
+      read_only: 1,
+    },
+  ];
+
+  for (const f of fieldsToCreate) {
+    try {
+      // Check if custom field already exists
+      const existing = await client.get("/api/resource/Custom Field", {
+        params: {
+          filters: JSON.stringify([["Custom Field","dt","=",f.dt],["Custom Field","fieldname","=",f.fieldname]]),
+          limit: 1,
+        },
+      });
+      if ((existing?.data?.data || []).length > 0) continue; // already exists
+
+      await client.post("/api/resource/Custom Field", {
+        doctype:            "Custom Field",
+        dt:                 f.dt,
+        fieldname:          f.fieldname,
+        label:              f.label,
+        fieldtype:          f.fieldtype,
+        insert_after:       f.insert_after,
+        in_list_view:       f.in_list_view,
+        in_standard_filter: f.in_standard_filter,
+        read_only:          f.read_only,
+      });
+      logger.info("Created custom field: " + f.dt + "." + f.fieldname);
+    } catch (e) {
+      logger.warn("Could not create custom field " + f.fieldname + ": " + (e?.message || e));
+    }
+  }
+}
+
 // -- Stock Items -> ERPNext Items ---------------------------------------------
 export async function syncStockToErpNext(stockItems, creds = {}) {
   const client = createErpClient(creds);
@@ -1346,14 +1404,261 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
   const companyAbbr = companyName ? await getCompanyAbbr(client, companyName) : "T";
   logger.info("Resolving accounts with company abbreviation: " + companyAbbr);
 
-  // ── Filter: only real transaction vouchers — NEVER opening-balance types ────
-  // "Opening Balance", "Stock Journal" etc are not standard JE types and would
-  // corrupt the Opening Entry list or fail validation.
-  const JOURNAL_TYPES = ["Journal", "Payment", "Receipt", "Contra", "Debit Note", "Credit Note"];
-  const journalVouchers = vouchers.filter((v) => JOURNAL_TYPES.includes(v.voucherType));
-  const salesVouchers   = vouchers.filter((v) => v.voucherType === "Sales");
-  const skippedTypes    = vouchers.length - journalVouchers.length - salesVouchers.length;
+  // Ensure custom_tally_voucher_no field exists on Payment Entry so Vch No is visible in list view
+  await ensureTallyCustomFields(client);
+
+  // ── Split vouchers by destination in ERPNext ─────────────────────────────────
+  // Payment / Receipt  → Payment Entry  (dedicated module, shows in Payments list)
+  // Journal / Contra / Debit Note / Credit Note → Journal Entry
+  // Sales / Purchase / Stock Journal / Opening Balance → handled elsewhere / skipped
+  const PAYMENT_VCH_TYPES = ["Payment", "Receipt"];
+  const JE_VCH_TYPES      = ["Journal", "Contra", "Debit Note", "Credit Note"];
+
+  const paymentVouchers  = vouchers.filter((v) => PAYMENT_VCH_TYPES.includes(v.voucherType));
+  // let (not const) — fallback JEs from Payment Entry are pushed in later
+  let   journalVouchers  = vouchers.filter((v) => JE_VCH_TYPES.includes(v.voucherType));
+  const salesVouchers    = vouchers.filter((v) => v.voucherType === "Sales");
+  const skippedTypes     = vouchers.length - paymentVouchers.length - journalVouchers.length - salesVouchers.length;
   if (skippedTypes > 0) logger.info("Skipping " + skippedTypes + " vouchers with non-JE types (Stock Journal, Opening Balance, etc.)");
+  logger.info("Voucher split — Payment Entry: " + paymentVouchers.length + ", Journal Entry: " + journalVouchers.length + ", Sales (invoice sync): " + salesVouchers.length);
+
+  // ── Sync Payment / Receipt vouchers → ERPNext Payment Entry ─────────────────
+  // ERPNext Payment Entry fields:
+  //   payment_type: "Receive" (customer pays you) | "Pay" (you pay supplier)
+  //   paid_from / paid_to: derived from Receivable/Payable vs bank/cash account rows
+  // Idempotency key: remarks = "Tally:Payment:<voucherNumber>"
+  const peResults = { created: 0, updated: 0, failed: 0 };
+  if (paymentVouchers.length > 0) {
+    logger.info("Syncing " + paymentVouchers.length + " Payment/Receipt vouchers to Payment Entry");
+
+    // Resolve accounts for all payment vouchers
+    for (const v of paymentVouchers) {
+      if (!v.entries || v.entries.length === 0) { v._skip = true; continue; }
+      const resolved = [];
+      for (const e of v.entries) {
+        const { name: acct, accountType } = await resolveAccountWithType(client, e.ledger, companyAbbr, companyName);
+        resolved.push({ ...e, erpAccount: acct, accountType });
+      }
+      v.resolvedAccounts = resolved;
+    }
+
+    // Pre-create missing parties for payment vouchers.
+    // Strategy: use account_type when available; fall back to voucherType inference
+    // (Receipt = customer side, Payment = supplier side) when account_type is blank.
+    const _peParties = { Customer: new Set(), Supplier: new Set() };
+    for (const v of paymentVouchers) {
+      const rows = v.resolvedAccounts || [];
+      for (const row of rows) {
+        if (row.accountType === "Receivable" && row.ledger) {
+          _peParties.Customer.add(row.ledger.trim());
+        } else if (row.accountType === "Payable" && row.ledger) {
+          _peParties.Supplier.add(row.ledger.trim());
+        } else if (!row.accountType && row.ledger) {
+          // Account type is blank — infer from voucherType + debit/credit direction
+          if (v.voucherType === "Receipt" && !row.isDebit) {
+            _peParties.Customer.add(row.ledger.trim()); // credited in Receipt = customer
+          } else if (v.voucherType === "Payment" && row.isDebit) {
+            _peParties.Supplier.add(row.ledger.trim()); // debited in Payment = supplier
+          }
+        }
+      }
+    }
+    // Remove bank/cash account names from party sets — they are accounts, not parties
+    // (their names often match account names like "Cash", "HDFC Bank" etc.)
+    const bankCashNames = new Set(
+      paymentVouchers
+        .flatMap((v) => (v.resolvedAccounts || []))
+        .filter((r) => r.accountType === "Bank" || r.accountType === "Cash")
+        .map((r) => (r.ledger || "").trim().toLowerCase())
+    );
+    for (const n of [..._peParties.Customer]) if (bankCashNames.has(n.toLowerCase())) _peParties.Customer.delete(n);
+    for (const n of [..._peParties.Supplier]) if (bankCashNames.has(n.toLowerCase())) _peParties.Supplier.delete(n);
+
+    logger.info("[PE pre-sync] Ensuring parties — Customers: " + _peParties.Customer.size + ", Suppliers: " + _peParties.Supplier.size);
+    for (const name of _peParties.Customer) {
+      try { await client.get("/api/resource/Customer/" + encodeURIComponent(name)); }
+      catch (_) {
+        try { await client.post("/api/resource/Customer", { doctype: "Customer", customer_name: name, customer_type: "Individual", customer_group: _customerGroup || "Commercial", territory: "India" }); logger.info("[PE pre-sync] Auto-created Customer: " + name); }
+        catch (e) { logger.warn("[PE pre-sync] Could not create Customer \"" + name + "\": " + parseErpError(e)); }
+        await sleep(300);
+      }
+    }
+    for (const name of _peParties.Supplier) {
+      try { await client.get("/api/resource/Supplier/" + encodeURIComponent(name)); }
+      catch (_) {
+        try { await client.post("/api/resource/Supplier", { doctype: "Supplier", supplier_name: name, supplier_type: "Individual", supplier_group: _supplierGroup || "Services" }); logger.info("[PE pre-sync] Auto-created Supplier: " + name); }
+        catch (e) { logger.warn("[PE pre-sync] Could not create Supplier \"" + name + "\": " + parseErpError(e)); }
+        await sleep(300);
+      }
+    }
+
+    // ── Resolve a default bank/cash account for this company ──────────────────
+    // Used when the payment voucher has no explicit bank/cash row (e.g. simple
+    // payment with only the party ledger entry). ERPNext requires a valid Bank
+    // or Cash account for paid_from / paid_to — the company name itself is not valid.
+    let _defaultBankAcct = null;
+    let _defaultBankType = "Bank";
+    try {
+      const bankRes = await client.get("/api/resource/Account", {
+        params: {
+          filters: JSON.stringify([
+            ["Account", "account_type", "in", ["Bank", "Cash"]],
+            ["Account", "company",      "=",  companyName],
+            ["Account", "is_group",     "=",  0],
+          ]),
+          fields: '["name","account_type"]',
+          limit:  1,
+          order_by: "account_type asc", // Bank before Cash
+        },
+      });
+      const found = bankRes?.data?.data?.[0];
+      if (found) {
+        _defaultBankAcct = found.name;
+        _defaultBankType = found.account_type || "Bank";
+        logger.info("[PE] Default bank/cash account: " + _defaultBankAcct + " (" + _defaultBankType + ")");
+      }
+    } catch (_) {}
+
+    if (!_defaultBankAcct) {
+      // Hard fallback: construct the standard ERPNext account name
+      _defaultBankAcct = "Cash - " + companyAbbr;
+      _defaultBankType = "Cash";
+      logger.warn("[PE] Could not resolve default bank account — using fallback: " + _defaultBankAcct);
+    }
+
+    const peMapper = (v) => {
+      const rows = v.resolvedAccounts || [];
+
+      // ── Identify party row and bank/cash row ──────────────────────────────
+      // Primary strategy: find by account_type (Receivable = customer, Payable = supplier)
+      // Fallback strategy: use voucherType to infer party side when account_type is blank
+      //   Receipt = money received FROM customer → party side is the CREDIT row (isDebit=false)
+      //   Payment = money paid TO supplier       → party side is the DEBIT row (isDebit=true)
+      //
+      // This handles the common case where customer/supplier accounts were auto-created
+      // with account_type="" (blank) because ERPNext didn't classify them as Receivable/Payable.
+      let partyRow = rows.find((r) => r.accountType === "Receivable" || r.accountType === "Payable");
+      let bankRow  = rows.find((r) => r.accountType === "Bank" || r.accountType === "Cash");
+
+      // Fallback: if no typed party row, infer from voucherType + debit/credit direction
+      if (!partyRow && rows.length >= 2) {
+        const isReceipt = v.voucherType === "Receipt";
+        // Receipt: customer credited (isDebit=false on their ledger in Tally)
+        // Payment: supplier debited  (isDebit=true on their ledger in Tally)
+        // FIX: Exclude Bank/Cash/Income/Expense accounts from being picked as party —
+        // these are gl accounts, not customers/suppliers. Vouchers like "Receipt from RAJLAXMI"
+        // (a bank account) or "Payment to Sales 24" (an income account) should fall back
+        // to Journal Entry rather than producing a broken Payment Entry with a non-party party.
+        const nonBankRows = rows.filter((r) =>
+          r.accountType !== "Bank" &&
+          r.accountType !== "Cash" &&
+          r.accountType !== "Income Account" &&
+          r.accountType !== "Expense Account"
+        );
+        const candidateRows = nonBankRows.length > 0 ? nonBankRows : rows;
+        partyRow = isReceipt
+          ? candidateRows.find((r) => !r.isDebit)  // credited = customer paying us
+          : candidateRows.find((r) =>  r.isDebit); // debited  = supplier we're paying
+        if (partyRow) {
+          // FIX: If the inferred row is still a Bank/Cash/Income account, it's a
+          // contra/transfer voucher with no real party — fall back to JE.
+          if (partyRow.accountType === "Bank" || partyRow.accountType === "Cash" ||
+              partyRow.accountType === "Income Account" || partyRow.accountType === "Expense Account") {
+            partyRow = null;
+          } else {
+            // Infer accountType from voucherType
+            partyRow = { ...partyRow, accountType: isReceipt ? "Receivable" : "Payable" };
+            logger.info("[PE] Inferred party row for voucher " + (v.voucherNumber || v.guid) + " from voucherType (" + v.voucherType + ")");
+          }
+        }
+      }
+
+      if (!partyRow) {
+        logger.warn("Payment voucher " + (v.voucherNumber || v.guid) + " has no party row — falling back to Journal Entry");
+        return null;
+      }
+
+      // Bank/cash row: prefer typed account; fall back to the non-party row
+      if (!bankRow) {
+        bankRow = rows.find((r) => r !== partyRow);
+      }
+
+      const isReceipt   = v.voucherType === "Receipt";
+      const partyType   = partyRow.accountType === "Receivable" ? "Customer" : "Supplier";
+      const paymentType = isReceipt ? "Receive" : "Pay";
+      const amount      = Math.abs(partyRow.amount) || v.netAmount || 0;
+      const remarkKey   = "Tally:" + v.voucherType + ":" + (v.voucherNumber || v.guid);
+
+      // Use the resolved bank account; fall back to the company default if still missing
+      const bankAcct     = bankRow ? bankRow.erpAccount : _defaultBankAcct;
+      const bankAcctType = bankRow
+        ? (bankRow.accountType === "Cash" ? "Cash" : "Bank")
+        : _defaultBankType;
+      const partyAcct    = partyRow.erpAccount;
+      const partyAcctType = partyRow.accountType === "Receivable" ? "Receivable" : "Payable";
+
+      // ERPNext Payment Entry requires paid_from_account_type + paid_to_account_type
+      // These must be exact ERPNext enum values: "Bank", "Cash", "Receivable", "Payable"
+      const paidFromAcct     = isReceipt ? bankAcct     : partyAcct;
+      const paidFromAcctType = isReceipt ? bankAcctType : partyAcctType;
+      const paidToAcct       = isReceipt ? partyAcct    : bankAcct;
+      const paidToAcctType   = isReceipt ? partyAcctType : bankAcctType;
+
+      return {
+        filters: { remarks: remarkKey },
+        doc: {
+          doctype:                  "Payment Entry",
+          payment_type:             paymentType,
+          posting_date:             v.voucherDate,
+          company:                  companyName,
+          party_type:               partyType,
+          party:                    (partyRow.ledger || "").trim(),
+          paid_from:                paidFromAcct,
+          paid_from_account_type:   paidFromAcctType,  // required by ERPNext validation
+          paid_to:                  paidToAcct,
+          paid_to_account_type:     paidToAcctType,    // required by ERPNext validation
+          paid_amount:              amount,
+          received_amount:          amount,
+          source_exchange_rate:     1,
+          target_exchange_rate:     1,
+          reference_no:             v.voucherNumber || v.guid,
+          reference_date:           v.voucherDate,
+          remarks:                  remarkKey,
+          custom_tally_id:          v.guid || v.voucherNumber,
+          // FIX: Store Tally voucher number in the new custom field so it appears
+          // as a dedicated "Tally Vch No" column in the ERPNext Payment Entry list view.
+          custom_tally_voucher_no:  v.voucherNumber || v.guid,
+        },
+      };
+    };
+
+    const validPE    = [];
+    const fallbackJE = [];
+    for (const v of paymentVouchers) {
+      if (v._skip || !v.resolvedAccounts) { peResults.failed++; continue; }
+      const mapped = peMapper(v);
+      if (mapped === null) fallbackJE.push(v);
+      else validPE.push({ v, mapped });
+    }
+
+    for (const { v, mapped } of validPE) {
+      try {
+        const result = await upsert(client, "Payment Entry", mapped.filters, mapped.doc);
+        if (result.action === "created") peResults.created++;
+        else peResults.updated++;
+      } catch (e) {
+        peResults.failed++;
+        logger.warn("Payment Entry failed for " + (v.voucherNumber || v.guid) + ": " + parseErpError(e));
+      }
+      await sleep(300);
+    }
+
+    if (fallbackJE.length > 0) {
+      logger.info(fallbackJE.length + " payment vouchers without party rows falling back to Journal Entry");
+      journalVouchers = [...journalVouchers, ...fallbackJE];
+    }
+    logger.info("Payment Entry sync done — created: " + peResults.created + ", updated: " + peResults.updated + ", failed: " + peResults.failed);
+  }
 
   // ── Resolve accounts and annotate party info for Receivable/Payable rows ────
   for (const v of journalVouchers) {
@@ -1544,8 +1849,12 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
     };
   });
 
-  logger.success("Voucher sync done - JE created: " + jeResults.created + ", updated: " + jeResults.updated + ", failed: " + jeResults.failed);
-  return { journalEntries: jeResults, salesInvoices: { created: 0, updated: 0, failed: salesVouchers.length } };
+  logger.success(
+    "Voucher sync done — " +
+    "Payment Entry: +" + peResults.created + "/~" + peResults.updated + "/x" + peResults.failed + " | " +
+    "Journal Entry: +" + jeResults.created + "/~" + jeResults.updated + "/x" + jeResults.failed
+  );
+  return { paymentEntries: peResults, journalEntries: jeResults, salesInvoices: { created: 0, updated: 0, failed: salesVouchers.length } };
 }
 
 // -- Chart of Accounts --------------------------------------------------------
@@ -2590,6 +2899,8 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
 
   // Ensure HSN field is non-mandatory so placeholder items can be created without an HSN
   await ensureHsnNotMandatory(client);
+  // Create custom_tally_voucher_no field on Sales Invoice (shows Tally number in list)
+  await ensureTallyCustomFields(client);
   // Resolve real leaf Customer/Supplier groups before auto-creating parties
   await resolveGroups(client);
 
@@ -2642,11 +2953,18 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         due_date:          effectiveSalesDate,   // Payment Due Date = voucher date (Tally default)
         set_posting_time:  1,                    // preserve Tally date, not today
         company:           companyName,
-        po_no:             vSalesNum,
-        remarks:           salesRemarks,
-        custom_tally_id:   v.guid || vSalesNum,
+        // ── Tally voucher number storage ────────────────────────────────────────
+        // po_no   = "Customer's PO No." — always visible in Sales Invoice list view.
+        //           We store the Tally number here so it appears in the ID/No. column.
+        // custom_tally_voucher_no = our own custom field (created by ensureTallyCustomFields).
+        //           Provides a searchable, non-overwritable copy of the Tally number.
+        po_no:                   vSalesNum,
+        custom_tally_voucher_no: vSalesNum,
+        custom_tally_id:         v.guid || vSalesNum,
+        remarks:                 salesRemarks,
         items,
       },
+
     };
   };
 
@@ -2903,6 +3221,55 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
 
   const salesResults    = await batchSync(client, "Sales Invoice",    salesVouchers,    salesMapper);
   const purchaseResults = await batchSync(client, "Purchase Invoice", purchaseVouchers, purchaseMapper);
+
+  // ── Rename Sales Invoices to Tally voucher numbers ─────────────────────────
+  // ERPNext REST POST always auto-generates a name (SINV-26-XXXXX) regardless of
+  // any `name` field in the body. The only way to force Tally's own number
+  // (e.g. "10", "Sales/25-26/0010") as the visible ID is to rename the doc
+  // AFTER creation using frappe.client.rename_doc.
+  // Purchase Invoice already shows Tally's number via bill_no (Supplier Invoice No).
+  // For Sales Invoice we rename so the ID column shows the Tally number directly.
+  logger.info("Renaming Sales Invoices to Tally voucher numbers...");
+  let renamed = 0, renameSkipped = 0, renameFailed = 0;
+  for (const v of salesVouchers) {
+    const vNum = v.voucherNumber;
+    if (!vNum) { renameSkipped++; continue; } // no Tally number — skip
+
+    try {
+      // Find the ERPNext doc by remarks (reliable idempotency key set on create)
+      const remarksPrefix = "Tally Voucher No: " + vNum;
+      const listRes = await client.get("/api/resource/Sales Invoice", {
+        params: {
+          filters: JSON.stringify([["Sales Invoice","remarks","like", remarksPrefix + "%"]]),
+          fields:  '["name","docstatus"]',
+          limit:   1,
+        },
+      });
+      const existing = listRes?.data?.data?.[0];
+      if (!existing) { renameSkipped++; logger.warn("Rename: no doc found for Tally voucher " + vNum); continue; }
+
+      // Already renamed to the Tally number — nothing to do
+      if (existing.name === String(vNum)) { renameSkipped++; continue; }
+
+      // Cannot rename submitted docs
+      if (existing.docstatus === 1) { renameSkipped++; logger.warn("Rename skipped (submitted): " + existing.name); continue; }
+
+      // Rename via frappe.client.rename_doc
+      await client.post("/api/method/frappe.client.rename_doc", {
+        doctype:  "Sales Invoice",
+        old_name: existing.name,
+        new_name: vNum,
+        merge:    false,
+      });
+      renamed++;
+      logger.info("Renamed Sales Invoice " + existing.name + " → " + vNum);
+    } catch (e) {
+      renameFailed++;
+      logger.warn("Could not rename Sales Invoice to " + vNum + ": " + (e?.response?.data?.message || e?.message || e));
+    }
+    await sleep(300); // gentle throttle — rename is a heavy Frappe operation
+  }
+  logger.info("Sales Invoice rename complete: " + renamed + " renamed, " + renameSkipped + " skipped, " + renameFailed + " failed");
 
   // Submit all draft invoices using ERPNext's submit endpoint
   async function submitDraftInvoices(doctype, vouchers) {

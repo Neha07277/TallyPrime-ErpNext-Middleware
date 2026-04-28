@@ -1,5 +1,25 @@
 [
   {
+    "id": 1777294268420.4656,
+    "ts": "2026-04-27T12:51:08.420Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "Company1"
+    },
+    "company": "Company1"
+  },
+  {
+    "id": 1777291298600.8728,
+    "ts": "2026-04-27T12:01:38.600Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company1"
+    },
+    "company": "Company1"
+  },
+  {
     "id": 1776938376105.6646,
     "ts": "2026-04-23T09:59:36.105Z",
     "level": "info",

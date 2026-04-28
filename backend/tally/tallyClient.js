@@ -94,6 +94,32 @@ function parseTallyAmount(raw) {
   return isNaN(n) ? 0 : Math.abs(n);
 }
 
+// FIX: Signed variant — preserves negative sign from Tally.
+// Tally exports opening/closing balances as negative for assets (debtors, bank, cash)
+// and positive for liabilities (creditors). The OB sync uses bal < 0 to decide
+// debit vs credit — so the sign MUST be preserved here.
+// Use ONLY for balance fields (openingBalance, closingBalance on ledgers).
+// Strip UoM suffixes from Tally quantity/rate fields.
+// Tally exports: "1 Nos", "79.00 /Nos" — parseFloat stops at the first non-numeric char.
+function parseTallyQty(raw) {
+  if (!raw) return 1;
+  const n = parseFloat(String(raw));
+  return isNaN(n) || n === 0 ? 1 : Math.abs(n);
+}
+function parseTallyRate(raw) {
+  if (!raw) return 0;
+  const n = parseFloat(String(raw));
+  return isNaN(n) ? 0 : Math.abs(n);
+}
+
+// All money/amount fields on vouchers remain unsigned (use parseTallyAmount).
+function parseTallyAmountSigned(raw) {
+  if (!raw) return 0;
+  const str = String(raw).replace(/[, ]/g, "");
+  const n = parseFloat(str);
+  return isNaN(n) ? 0 : n;
+}
+
 function tallyDateToISO(raw) {
   if (!raw || String(raw).length < 8) return null;
   const s = String(raw).replace(/-/g, "");
@@ -271,25 +297,22 @@ export async function fetchTallyLedgers(companyName) {
     const guid = val(l.GUID) || null;
     if (!name || !guid) continue;
 
-    const blob = [
-      val(l.LEDGERMOBILE),
-      val(l.LEDGERPHONE),
-      val(l.EMAIL),
-      extractAddress(l.ADDRESS),
-    ]
-      .filter(Boolean)
-      .join(" ");
+    // Extract phone/email from their dedicated Tally fields only.
+    // Do NOT mix address text into a blob — address strings can accidentally
+    // match phone/email regex patterns and produce false contact data.
+    const rawPhone = val(l.LEDGERMOBILE) || val(l.LEDGERPHONE) || null;
+    const rawEmail = val(l.EMAIL) || null;
 
     ledgers.push({
       guid,
       name,
       alterId: val(l.ALTERID) || null,
       parentGroup: val(l.PARENT) || "Sundry Debtors",
-      openingBalance: parseTallyAmount(l.OPENINGBALANCE?._ || l.OPENINGBALANCE),
-      closingBalance: parseTallyAmount(l.CLOSINGBALANCE?._ || l.CLOSINGBALANCE),
+      openingBalance: parseTallyAmountSigned(l.OPENINGBALANCE?._ || l.OPENINGBALANCE),
+      closingBalance: parseTallyAmountSigned(l.CLOSINGBALANCE?._ || l.CLOSINGBALANCE),
       type: val(l.ISBILLWISEON) === "Yes" ? "Party" : "General",
-      phone: extractPhone(blob),
-      email: extractEmail(blob),
+      phone: extractPhone(rawPhone),
+      email: extractEmail(rawEmail),
       pan: val(l.INCOMETAXNUMBER) || null,
       gstin: (() => {
         const g = l["GSTIN.LIST"];
@@ -308,6 +331,10 @@ export async function fetchTallyLedgers(companyName) {
       ifsc:        val(l.IFSCODE)    || null,
       swiftCode:   val(l.SWIFTCODE)  || null,
       bankName:    val(l.BANKNAME)   || null,
+      country: (() => {
+        const c = val(l.COUNTRYNAME) || "";
+        return (c && c.toLowerCase() !== "not applicable") ? c : "India";
+      })(),
       address: (() => {
         // Try MAILINGDETAILS.LIST first (multi-line address), fall back to ADDRESS
         const md = l["MAILINGDETAILS.LIST"] || l.MAILINGDETAILS;
@@ -934,21 +961,6 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     //   RATE          → string with UoM suffix    e.g. "79.00 /Nos" — strip non-numeric
     //   AMOUNT        → plain number string       e.g. "-79.00"
     //
-    // parseTallyQty / parseTallyRate strip the UoM suffix before parsing.
-
-    function parseTallyQty(raw) {
-      if (!raw) return 1;
-      // "1 Nos", "2.5 Kgs", "10 Box" → keep only leading number
-      const n = parseFloat(String(raw).replace(/[^0-9.\-]/g, "").trim());
-      return isNaN(n) || n === 0 ? 1 : Math.abs(n);
-    }
-    function parseTallyRate(raw) {
-      if (!raw) return 0;
-      // "79.00 /Nos", "150.00/ Pcs" → keep only leading number
-      const n = parseFloat(String(raw).replace(/[^0-9.\-]/g, "").trim());
-      return isNaN(n) ? 0 : Math.abs(n);
-    }
-
     // Merge both inventory entry lists — order: ALLINVENTORYENTRIES first
     const rawInvAll  = v["ALLINVENTORYENTRIES.LIST"] || [];
     const rawInvSimp = v["INVENTORYENTRIES.LIST"]    || [];
