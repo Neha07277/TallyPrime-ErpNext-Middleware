@@ -3222,55 +3222,6 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
   const salesResults    = await batchSync(client, "Sales Invoice",    salesVouchers,    salesMapper);
   const purchaseResults = await batchSync(client, "Purchase Invoice", purchaseVouchers, purchaseMapper);
 
-  // ── Rename Sales Invoices to Tally voucher numbers ─────────────────────────
-  // ERPNext REST POST always auto-generates a name (SINV-26-XXXXX) regardless of
-  // any `name` field in the body. The only way to force Tally's own number
-  // (e.g. "10", "Sales/25-26/0010") as the visible ID is to rename the doc
-  // AFTER creation using frappe.client.rename_doc.
-  // Purchase Invoice already shows Tally's number via bill_no (Supplier Invoice No).
-  // For Sales Invoice we rename so the ID column shows the Tally number directly.
-  logger.info("Renaming Sales Invoices to Tally voucher numbers...");
-  let renamed = 0, renameSkipped = 0, renameFailed = 0;
-  for (const v of salesVouchers) {
-    const vNum = v.voucherNumber;
-    if (!vNum) { renameSkipped++; continue; } // no Tally number — skip
-
-    try {
-      // Find the ERPNext doc by remarks (reliable idempotency key set on create)
-      const remarksPrefix = "Tally Voucher No: " + vNum;
-      const listRes = await client.get("/api/resource/Sales Invoice", {
-        params: {
-          filters: JSON.stringify([["Sales Invoice","remarks","like", remarksPrefix + "%"]]),
-          fields:  '["name","docstatus"]',
-          limit:   1,
-        },
-      });
-      const existing = listRes?.data?.data?.[0];
-      if (!existing) { renameSkipped++; logger.warn("Rename: no doc found for Tally voucher " + vNum); continue; }
-
-      // Already renamed to the Tally number — nothing to do
-      if (existing.name === String(vNum)) { renameSkipped++; continue; }
-
-      // Cannot rename submitted docs
-      if (existing.docstatus === 1) { renameSkipped++; logger.warn("Rename skipped (submitted): " + existing.name); continue; }
-
-      // Rename via frappe.client.rename_doc
-      await client.post("/api/method/frappe.client.rename_doc", {
-        doctype:  "Sales Invoice",
-        old_name: existing.name,
-        new_name: vNum,
-        merge:    false,
-      });
-      renamed++;
-      logger.info("Renamed Sales Invoice " + existing.name + " → " + vNum);
-    } catch (e) {
-      renameFailed++;
-      logger.warn("Could not rename Sales Invoice to " + vNum + ": " + (e?.response?.data?.message || e?.message || e));
-    }
-    await sleep(300); // gentle throttle — rename is a heavy Frappe operation
-  }
-  logger.info("Sales Invoice rename complete: " + renamed + " renamed, " + renameSkipped + " skipped, " + renameFailed + " failed");
-
   // Submit all draft invoices using ERPNext's submit endpoint
   async function submitDraftInvoices(doctype, vouchers) {
     let submitted = 0, failed = 0;
