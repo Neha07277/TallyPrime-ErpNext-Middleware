@@ -1605,7 +1605,12 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
       const paidToAcctType   = isReceipt ? partyAcctType : bankAcctType;
 
       return {
-        filters: { remarks: remarkKey },
+        // FIX: Use custom_tally_voucher_no as the idempotency key instead of remarks.
+        // `remarks` is a Text field on Payment Entry — ERPNext's `like` filter is
+        // unreliable on Text fields and causes "not found → create duplicate" on every
+        // re-sync. custom_tally_voucher_no is a plain Data field we control, so an
+        // exact-match filter reliably finds the existing record.
+        filters: { custom_tally_voucher_no: v.voucherNumber || v.guid },
         doc: {
           doctype:                  "Payment Entry",
           payment_type:             paymentType,
@@ -1632,32 +1637,64 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
       };
     };
 
-    const validPE    = [];
-    const fallbackJE = [];
+    // Separate valid PE vouchers from ones that need JE fallback
+    const validPEVouchers = [];
+    const fallbackJE      = [];
     for (const v of paymentVouchers) {
       if (v._skip || !v.resolvedAccounts) { peResults.failed++; continue; }
       const mapped = peMapper(v);
       if (mapped === null) fallbackJE.push(v);
-      else validPE.push({ v, mapped });
+      else validPEVouchers.push(v);
     }
 
-    for (const { v, mapped } of validPE) {
-      try {
-        const result = await upsert(client, "Payment Entry", mapped.filters, mapped.doc);
-        if (result.action === "created") peResults.created++;
-        else peResults.updated++;
-      } catch (e) {
-        peResults.failed++;
-        logger.warn("Payment Entry failed for " + (v.voucherNumber || v.guid) + ": " + parseErpError(e));
-      }
-      await sleep(300);
-    }
+    // FIX: Use batchSync (same as Sales/Purchase Invoice) so Payment Entry gets
+    // automatic retry, throttling, burst pausing, and transient-failure final pass.
+    // peMapper is called inside batchSync just like salesMapper / purchaseMapper.
+    const _peResults = await batchSync(client, "Payment Entry", validPEVouchers, peMapper);
+    peResults.created += _peResults.created;
+    peResults.updated += _peResults.updated;
+    peResults.failed  += _peResults.failed;
 
     if (fallbackJE.length > 0) {
       logger.info(fallbackJE.length + " payment vouchers without party rows falling back to Journal Entry");
       journalVouchers = [...journalVouchers, ...fallbackJE];
     }
     logger.info("Payment Entry sync done — created: " + peResults.created + ", updated: " + peResults.updated + ", failed: " + peResults.failed);
+
+    // FIX: Submit draft Payment Entries so they affect the ledger — mirrors the
+    // submitDraftInvoices pattern used for Sales/Purchase Invoice below.
+    // Search by custom_tally_voucher_no (the same reliable key used for upsert)
+    // instead of remarks to avoid the Text-field filter issue.
+    {
+      let peSubmitted = 0, peFailed = 0;
+      for (const v of validPEVouchers) {
+        const vchKey = v.voucherNumber || v.guid;
+        try {
+          const list = await client.get("/api/resource/Payment Entry", {
+            params: {
+              filters: JSON.stringify([["Payment Entry", "custom_tally_voucher_no", "=", vchKey]]),
+              fields:  '["name","docstatus"]',
+              limit:   1,
+            },
+          });
+          const stub = list?.data?.data?.[0];
+          if (!stub || stub.docstatus === 1) continue; // not found or already submitted
+
+          // Fetch full doc for current `modified` timestamp (Frappe optimistic locking)
+          const fullRes = await client.get("/api/resource/Payment Entry/" + encodeURIComponent(stub.name));
+          const fullDoc = fullRes?.data?.data;
+          if (!fullDoc) continue;
+
+          await client.post("/api/method/frappe.client.submit", { doc: fullDoc });
+          peSubmitted++;
+        } catch (e) {
+          peFailed++;
+          logger.warn("Could not submit Payment Entry for voucher " + vchKey + ": " + parseErpError(e));
+        }
+        await sleep(200);
+      }
+      logger.info("Submit Payment Entry: " + peSubmitted + " submitted, " + peFailed + " failed");
+    }
   }
 
   // ── Resolve accounts and annotate party info for Receivable/Payable rows ────
@@ -2950,7 +2987,7 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         title:             "Tally:" + vSalesNum,
         customer:          v.partyName || "Walk-in Customer",
         posting_date:      effectiveSalesDate,   // Tally voucher date (not today)
-        due_date:          effectiveSalesDate,   // Payment Due Date = voucher date (Tally default)
+        due_date:          v.dueDate || effectiveSalesDate, // Tally bill due date, else voucher date
         set_posting_time:  1,                    // preserve Tally date, not today
         company:           companyName,
         // ── Tally voucher number storage ────────────────────────────────────────
@@ -3005,7 +3042,7 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         company:           companyName,
         bill_no:           vPurchaseNum,
         bill_date:         effectivePurchaseDate,  // Supplier invoice date = Tally voucher date
-        due_date:          effectivePurchaseDate,  // Payment Due Date = voucher date
+        due_date:          v.dueDate || effectivePurchaseDate, // Tally bill due date, else voucher date
         remarks:           purchaseRemarks,
         custom_tally_id:   v.guid || vPurchaseNum,
         items,
@@ -3221,6 +3258,55 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
 
   const salesResults    = await batchSync(client, "Sales Invoice",    salesVouchers,    salesMapper);
   const purchaseResults = await batchSync(client, "Purchase Invoice", purchaseVouchers, purchaseMapper);
+
+  // ── Rename Sales Invoices to Tally voucher numbers ─────────────────────────
+  // ERPNext REST POST always auto-generates a name (SINV-26-XXXXX) regardless of
+  // any `name` field in the body. The only way to force Tally's own number
+  // (e.g. "10", "Sales/25-26/0010") as the visible ID is to rename the doc
+  // AFTER creation using frappe.client.rename_doc.
+  // Purchase Invoice already shows Tally's number via bill_no (Supplier Invoice No).
+  // For Sales Invoice we rename so the ID column shows the Tally number directly.
+  logger.info("Renaming Sales Invoices to Tally voucher numbers...");
+  let renamed = 0, renameSkipped = 0, renameFailed = 0;
+  for (const v of salesVouchers) {
+    const vNum = v.voucherNumber;
+    if (!vNum) { renameSkipped++; continue; } // no Tally number — skip
+
+    try {
+      // Find the ERPNext doc by remarks (reliable idempotency key set on create)
+      const remarksPrefix = "Tally Voucher No: " + vNum;
+      const listRes = await client.get("/api/resource/Sales Invoice", {
+        params: {
+          filters: JSON.stringify([["Sales Invoice","remarks","like", remarksPrefix + "%"]]),
+          fields:  '["name","docstatus"]',
+          limit:   1,
+        },
+      });
+      const existing = listRes?.data?.data?.[0];
+      if (!existing) { renameSkipped++; logger.warn("Rename: no doc found for Tally voucher " + vNum); continue; }
+
+      // Already renamed to the Tally number — nothing to do
+      if (existing.name === String(vNum)) { renameSkipped++; continue; }
+
+      // Cannot rename submitted docs
+      if (existing.docstatus === 1) { renameSkipped++; logger.warn("Rename skipped (submitted): " + existing.name); continue; }
+
+      // Rename via frappe.client.rename_doc
+      await client.post("/api/method/frappe.client.rename_doc", {
+        doctype:  "Sales Invoice",
+        old_name: existing.name,
+        new_name: vNum,
+        merge:    false,
+      });
+      renamed++;
+      logger.info("Renamed Sales Invoice " + existing.name + " → " + vNum);
+    } catch (e) {
+      renameFailed++;
+      logger.warn("Could not rename Sales Invoice to " + vNum + ": " + (e?.response?.data?.message || e?.message || e));
+    }
+    await sleep(300); // gentle throttle — rename is a heavy Frappe operation
+  }
+  logger.info("Sales Invoice rename complete: " + renamed + " renamed, " + renameSkipped + " skipped, " + renameFailed + " failed");
 
   // Submit all draft invoices using ERPNext's submit endpoint
   async function submitDraftInvoices(doctype, vouchers) {

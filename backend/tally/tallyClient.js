@@ -897,7 +897,7 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     <TDLMESSAGE>
      <COLLECTION NAME="VoucherCollection" ISMODIFY="No">
       <TYPE>Voucher</TYPE>
-      <FETCH>GUID,DATE,VOUCHERNUMBER,VOUCHERTYPENAME,PARTYLEDGERNAME,NARRATION,REFERENCE,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST,ALLINVENTORYENTRIES.LIST,INVENTORYENTRIES.LIST</FETCH>
+      <FETCH>GUID,DATE,VOUCHERNUMBER,VOUCHERTYPENAME,PARTYLEDGERNAME,NARRATION,REFERENCE,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST,ALLINVENTORYENTRIES.LIST,INVENTORYENTRIES.LIST,BILLALLOCATIONS.LIST</FETCH>
      </COLLECTION>
     </TDLMESSAGE>
    </TDL>
@@ -994,6 +994,12 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
       });
     }
 
+    // Extract due date from Tally bill allocations (set by credit terms on the voucher)
+    const billAllocs = v["BILLALLOCATIONS.LIST"] || [];
+    const billArr    = Array.isArray(billAllocs) ? billAllocs : (billAllocs ? [billAllocs] : []);
+    const firstBill  = billArr.find((b) => b && val(b.BILLDATE));
+    const dueDate    = firstBill ? tallyDateToISO(val(firstBill.BILLDATE)) : null;
+
     vouchers.push({
       guid: guid || `voucher-${vouchers.length}`,
       voucherDate:    tallyDateToISO(val(v.DATE)),
@@ -1002,6 +1008,7 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
       referenceNo:    val(v.REFERENCE),
       partyName:      val(v.PARTYLEDGERNAME),
       narration:      val(v.NARRATION),
+      dueDate,        // ← bill due date from Tally credit terms (null if not set)
       netAmount,
       entries,
       inventoryItems,                          // ← real item rows from Tally

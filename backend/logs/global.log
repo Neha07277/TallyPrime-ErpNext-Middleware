@@ -1,5 +1,3591 @@
 [
   {
+    "id": 1777365228571.15,
+    "ts": "2026-04-28T08:33:48.571Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365228569.547,
+    "ts": "2026-04-28T08:33:48.569Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365228567.041,
+    "ts": "2026-04-28T08:33:48.567Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365228560.743,
+    "ts": "2026-04-28T08:33:48.560Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227968.022,
+    "ts": "2026-04-28T08:33:47.968Z",
+    "level": "info",
+    "message": "syncState: checkpoint saved → vouchers up to 2026-04-28",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227964.9084,
+    "ts": "2026-04-28T08:33:47.964Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-usq-xoo.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-28",
+      "lastMasterSyncAt": "2026-04-28T08:33:47.957Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777365227958.4197,
+    "ts": "2026-04-28T08:33:47.958Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227953.871,
+    "ts": "2026-04-28T08:33:47.953Z",
+    "level": "info",
+    "message": "Full sync job full-1777364771480-mp7rg done",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227948.747,
+    "ts": "2026-04-28T08:33:47.948Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "NewCompany"
+    },
+    "company": "NewCompany"
+  },
+  {
+    "id": 1777365227945.8506,
+    "ts": "2026-04-28T08:33:47.945Z",
+    "level": "success",
+    "message": "Invoice sync done - sales: +0 new/26 updated/0 failed | purchase: +0 new/17 updated/0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227941.8364,
+    "ts": "2026-04-28T08:33:47.941Z",
+    "level": "info",
+    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227633.743,
+    "ts": "2026-04-28T08:33:47.633Z",
+    "level": "info",
+    "message": "Submit Sales Invoice: 0 submitted, 0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227139.4321,
+    "ts": "2026-04-28T08:33:47.139Z",
+    "level": "info",
+    "message": "Sales Invoice rename complete: 0 renamed, 26 skipped, 0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227135.449,
+    "ts": "2026-04-28T08:33:47.135Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00026",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227115.8862,
+    "ts": "2026-04-28T08:33:47.115Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00025",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227094.0195,
+    "ts": "2026-04-28T08:33:47.094Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00024",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227039.6946,
+    "ts": "2026-04-28T08:33:47.039Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00023",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365227018.5386,
+    "ts": "2026-04-28T08:33:47.018Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00022",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226993.8132,
+    "ts": "2026-04-28T08:33:46.993Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00021",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226970.865,
+    "ts": "2026-04-28T08:33:46.970Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00020",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226949.1853,
+    "ts": "2026-04-28T08:33:46.949Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00019",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226927.262,
+    "ts": "2026-04-28T08:33:46.927Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00018",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226904.3176,
+    "ts": "2026-04-28T08:33:46.904Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00017",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226883.4792,
+    "ts": "2026-04-28T08:33:46.883Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00016",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226865.1567,
+    "ts": "2026-04-28T08:33:46.865Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00015",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226837.659,
+    "ts": "2026-04-28T08:33:46.837Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00014",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226796.7036,
+    "ts": "2026-04-28T08:33:46.796Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00013",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226776.718,
+    "ts": "2026-04-28T08:33:46.776Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00012",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226753.946,
+    "ts": "2026-04-28T08:33:46.753Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00011",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226732.1929,
+    "ts": "2026-04-28T08:33:46.732Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00010",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226711.2798,
+    "ts": "2026-04-28T08:33:46.711Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00009",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226688.7441,
+    "ts": "2026-04-28T08:33:46.688Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00008",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226670.4885,
+    "ts": "2026-04-28T08:33:46.670Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00007",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226646.6377,
+    "ts": "2026-04-28T08:33:46.646Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00006",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226626.8655,
+    "ts": "2026-04-28T08:33:46.626Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00005",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226602.7703,
+    "ts": "2026-04-28T08:33:46.602Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00004",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226543.808,
+    "ts": "2026-04-28T08:33:46.543Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00003",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226522.9983,
+    "ts": "2026-04-28T08:33:46.522Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00002",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226502.5876,
+    "ts": "2026-04-28T08:33:46.502Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00001",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365226474.142,
+    "ts": "2026-04-28T08:33:46.474Z",
+    "level": "info",
+    "message": "Renaming Sales Invoices to Tally voucher numbers...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365203029.939,
+    "ts": "2026-04-28T08:33:23.029Z",
+    "level": "info",
+    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365172686.2537,
+    "ts": "2026-04-28T08:32:52.686Z",
+    "level": "info",
+    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365145021.3003,
+    "ts": "2026-04-28T08:32:25.021Z",
+    "level": "info",
+    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365128800.8179,
+    "ts": "2026-04-28T08:32:08.800Z",
+    "level": "info",
+    "message": "Pre-syncing 8 Tally stock items to ERPNext before invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365128044.242,
+    "ts": "2026-04-28T08:32:08.044Z",
+    "level": "info",
+    "message": "Pre-syncing 12 customers before Sales Invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127756.6611,
+    "ts": "2026-04-28T08:32:07.756Z",
+    "level": "info",
+    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127752.2568,
+    "ts": "2026-04-28T08:32:07.752Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Purchase Item",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127719.3667,
+    "ts": "2026-04-28T08:32:07.719Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Sales Item",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127320.5364,
+    "ts": "2026-04-28T08:32:07.320Z",
+    "level": "info",
+    "message": "Invoice breakdown - sales: 26, purchase: 17",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127199.0364,
+    "ts": "2026-04-28T08:32:07.199Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127094.903,
+    "ts": "2026-04-28T08:32:07.094Z",
+    "level": "info",
+    "message": "Syncing invoices to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365127090.5298,
+    "ts": "2026-04-28T08:32:07.090Z",
+    "level": "success",
+    "message": "Voucher sync done — Payment Entry: +0/~32/x0 | Journal Entry: +1/~52/x0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365116004.072,
+    "ts": "2026-04-28T08:31:56.004Z",
+    "level": "info",
+    "message": "[Journal Entry] 50/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365094551.6785,
+    "ts": "2026-04-28T08:31:34.551Z",
+    "level": "info",
+    "message": "[Journal Entry] 40/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365067919.1873,
+    "ts": "2026-04-28T08:31:07.919Z",
+    "level": "info",
+    "message": "[Journal Entry] 30/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365046476.9038,
+    "ts": "2026-04-28T08:30:46.476Z",
+    "level": "info",
+    "message": "[Journal Entry] 20/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365024569.3264,
+    "ts": "2026-04-28T08:30:24.569Z",
+    "level": "info",
+    "message": "[Journal Entry] 10/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365008259.2473,
+    "ts": "2026-04-28T08:30:08.259Z",
+    "level": "info",
+    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 13",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365008256.719,
+    "ts": "2026-04-28T08:30:08.256Z",
+    "level": "info",
+    "message": "Syncing 53/53 vouchers",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365008143.635,
+    "ts": "2026-04-28T08:30:08.143Z",
+    "level": "info",
+    "message": "Submit Payment Entry: 0 submitted, 32 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365007938.9673,
+    "ts": "2026-04-28T08:30:07.938Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 1: Date 01-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365007661.8347,
+    "ts": "2026-04-28T08:30:07.661Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 35: Payment Entry ACC-PAY-2026-00031: Supplier is required against Payable account ABC Traders - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365007378.7698,
+    "ts": "2026-04-28T08:30:07.378Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 34: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365007097.052,
+    "ts": "2026-04-28T08:30:07.097Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 33: Payment Entry ACC-PAY-2026-00029: Supplier is required against Payable account Sudhir - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365006798.6294,
+    "ts": "2026-04-28T08:30:06.798Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 31: Payment Entry ACC-PAY-2026-00028: Supplier is required against Payable account ShivamRamKhaw - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365006518.9302,
+    "ts": "2026-04-28T08:30:06.518Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 30: Payment Entry ACC-PAY-2026-00027: Supplier is required against Payable account Banana - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365006239.552,
+    "ts": "2026-04-28T08:30:06.239Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 15: Payment Entry ACC-PAY-2026-00026: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365005915.8936,
+    "ts": "2026-04-28T08:30:05.915Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 14: Payment Entry ACC-PAY-2026-00025: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365005615.1416,
+    "ts": "2026-04-28T08:30:05.615Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 29: Payment Entry ACC-PAY-2026-00024: Supplier is required against Payable account Ram500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365005319.574,
+    "ts": "2026-04-28T08:30:05.319Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 13: Payment Entry ACC-PAY-2026-00013: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365004930.0996,
+    "ts": "2026-04-28T08:30:04.930Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 12: Payment Entry ACC-PAY-2026-00012: Supplier is required against Payable account Ram500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365004643.6238,
+    "ts": "2026-04-28T08:30:04.643Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 28: Payment Entry ACC-PAY-2026-00021: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365004360.3403,
+    "ts": "2026-04-28T08:30:04.360Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 11: Payment Entry ACC-PAY-2026-00011: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365004078.0178,
+    "ts": "2026-04-28T08:30:04.078Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 27: Payment Entry ACC-PAY-2026-00019: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365003762.2026,
+    "ts": "2026-04-28T08:30:03.762Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 10: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash322 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365003484.7834,
+    "ts": "2026-04-28T08:30:03.484Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 9: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash322 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365003197.3267,
+    "ts": "2026-04-28T08:30:03.197Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 8: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash322 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365002887.0908,
+    "ts": "2026-04-28T08:30:02.887Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 5: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365002616.5154,
+    "ts": "2026-04-28T08:30:02.616Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 4: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365002331.9873,
+    "ts": "2026-04-28T08:30:02.331Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 13: Payment Entry ACC-PAY-2026-00013: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365002005.1133,
+    "ts": "2026-04-28T08:30:02.005Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 12: Payment Entry ACC-PAY-2026-00012: Supplier is required against Payable account Ram500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365001724.7363,
+    "ts": "2026-04-28T08:30:01.724Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 11: Payment Entry ACC-PAY-2026-00011: Supplier is required against Payable account Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365001440.7612,
+    "ts": "2026-04-28T08:30:01.440Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 32: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365001151.3047,
+    "ts": "2026-04-28T08:30:01.151Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 3: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365000839.7427,
+    "ts": "2026-04-28T08:30:00.839Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 9: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash322 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365000515.866,
+    "ts": "2026-04-28T08:30:00.515Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 2: Party Type and Party can only be set for Receivable / Payable account<br><br>RAJLAXMI - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777365000223.239,
+    "ts": "2026-04-28T08:30:00.223Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 1: Date 01-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364999814.5405,
+    "ts": "2026-04-28T08:29:59.814Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 8: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash322 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364999403.706,
+    "ts": "2026-04-28T08:29:59.403Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 7: Party Type and Party can only be set for Receivable / Payable account<br><br>Suryavanshi - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364999102.3308,
+    "ts": "2026-04-28T08:29:59.102Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 6: Party Type and Party can only be set for Receivable / Payable account<br><br>Suryavanshi - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364998789.299,
+    "ts": "2026-04-28T08:29:58.789Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 5: Party Type and Party can only be set for Receivable / Payable account<br><br>Cash - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364998380.8733,
+    "ts": "2026-04-28T08:29:58.380Z",
+    "level": "warn",
+    "message": "Could not submit Payment Entry for voucher 1: Date 01-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364998249.6436,
+    "ts": "2026-04-28T08:29:58.249Z",
+    "level": "info",
+    "message": "Payment Entry sync done — created: 0, updated: 32, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364998246.123,
+    "ts": "2026-04-28T08:29:58.246Z",
+    "level": "info",
+    "message": "4 payment vouchers without party rows falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364989961.9045,
+    "ts": "2026-04-28T08:29:49.962Z",
+    "level": "info",
+    "message": "[Payment Entry] 30/32 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364968658.1619,
+    "ts": "2026-04-28T08:29:28.658Z",
+    "level": "info",
+    "message": "[Payment Entry] 20/32 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364947363.0103,
+    "ts": "2026-04-28T08:29:07.363Z",
+    "level": "info",
+    "message": "[Payment Entry] 10/32 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364931087.8196,
+    "ts": "2026-04-28T08:28:51.087Z",
+    "level": "warn",
+    "message": "Payment voucher 7 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364931084.4229,
+    "ts": "2026-04-28T08:28:51.084Z",
+    "level": "warn",
+    "message": "Payment voucher 6 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364931081.241,
+    "ts": "2026-04-28T08:28:51.081Z",
+    "level": "warn",
+    "message": "Payment voucher 10 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364931079.6213,
+    "ts": "2026-04-28T08:28:51.079Z",
+    "level": "warn",
+    "message": "Payment voucher 3 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364931076.8296,
+    "ts": "2026-04-28T08:28:51.076Z",
+    "level": "info",
+    "message": "[PE] Default bank/cash account: RAJLAXMI - N (Bank)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364930693.26,
+    "ts": "2026-04-28T08:28:50.693Z",
+    "level": "info",
+    "message": "[PE pre-sync] Ensuring parties — Customers: 0, Suppliers: 21",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929789.513,
+    "ts": "2026-04-28T08:28:49.789Z",
+    "level": "info",
+    "message": "Syncing 36 Payment/Receipt vouchers to Payment Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929786.1582,
+    "ts": "2026-04-28T08:28:49.786Z",
+    "level": "info",
+    "message": "Voucher split — Payment Entry: 36, Journal Entry: 49, Sales (invoice sync): 26",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929783.6807,
+    "ts": "2026-04-28T08:28:49.783Z",
+    "level": "info",
+    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929742.482,
+    "ts": "2026-04-28T08:28:49.742Z",
+    "level": "info",
+    "message": "Resolving accounts with company abbreviation: N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929740.363,
+    "ts": "2026-04-28T08:28:49.740Z",
+    "level": "info",
+    "message": "Syncing 129 vouchers to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364929735.6768,
+    "ts": "2026-04-28T08:28:49.735Z",
+    "level": "success",
+    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364914335.8591,
+    "ts": "2026-04-28T08:28:34.335Z",
+    "level": "info",
+    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364914310.8948,
+    "ts": "2026-04-28T08:28:34.310Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364914178.797,
+    "ts": "2026-04-28T08:28:34.178Z",
+    "level": "info",
+    "message": "Syncing 9 stock items to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364914175.4587,
+    "ts": "2026-04-28T08:28:34.175Z",
+    "level": "success",
+    "message": "Cost centres sync done - created: 0, updated: 3, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364909439.9314,
+    "ts": "2026-04-28T08:28:29.439Z",
+    "level": "info",
+    "message": "Cost Centre sync: fetched 10 existing cost centers",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364909388.9275,
+    "ts": "2026-04-28T08:28:29.388Z",
+    "level": "info",
+    "message": "Root cost centre resolved: NewCompany - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364909366.205,
+    "ts": "2026-04-28T08:28:29.366Z",
+    "level": "info",
+    "message": "Syncing 3 cost centres to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364909363.048,
+    "ts": "2026-04-28T08:28:29.363Z",
+    "level": "success",
+    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364907762.4124,
+    "ts": "2026-04-28T08:28:27.762Z",
+    "level": "info",
+    "message": "Root warehouse resolved: All Warehouses - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364907740.8435,
+    "ts": "2026-04-28T08:28:27.740Z",
+    "level": "info",
+    "message": "Syncing 1 godowns to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364907737.812,
+    "ts": "2026-04-28T08:28:27.737Z",
+    "level": "info",
+    "message": "Opening balance sync complete - 0 created, 0 updated, 3 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364907733.3179,
+    "ts": "2026-04-28T08:28:27.733Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [GL]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364907346.5732,
+    "ts": "2026-04-28T08:28:27.346Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Creditors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364903631.7852,
+    "ts": "2026-04-28T08:28:23.631Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Debtors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364889499.4268,
+    "ts": "2026-04-28T08:28:09.499Z",
+    "level": "info",
+    "message": "[OB] Retrying 3 failed groups after 10s",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364889496.297,
+    "ts": "2026-04-28T08:28:09.496Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [GL]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364888616.004,
+    "ts": "2026-04-28T08:28:08.616Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Creditors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887744.6116,
+    "ts": "2026-04-28T08:28:07.744Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Debtors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887669.8286,
+    "ts": "2026-04-28T08:28:07.669Z",
+    "level": "info",
+    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887622.348,
+    "ts": "2026-04-28T08:28:07.622Z",
+    "level": "info",
+    "message": "Resolved 14 / 14 ledgers to JE account rows",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887575.5356,
+    "ts": "2026-04-28T08:28:07.575Z",
+    "level": "info",
+    "message": "  UpdateLedgerTest -> GL: UpdateLedgerTest - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887529.0354,
+    "ts": "2026-04-28T08:28:07.529Z",
+    "level": "info",
+    "message": "  TEST-SUPPLIER2 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887482.1567,
+    "ts": "2026-04-28T08:28:07.482Z",
+    "level": "info",
+    "message": "  Test Ledger 999 -> GL: Test Ledger 999 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887436.979,
+    "ts": "2026-04-28T08:28:07.436Z",
+    "level": "info",
+    "message": "  Test GST Customer -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887389.0122,
+    "ts": "2026-04-28T08:28:07.389Z",
+    "level": "info",
+    "message": "  TestCustomer4 -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887341.5027,
+    "ts": "2026-04-28T08:28:07.341Z",
+    "level": "info",
+    "message": "  Test600 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887293.6365,
+    "ts": "2026-04-28T08:28:07.293Z",
+    "level": "info",
+    "message": "  Test500 -> GL (Payable — adding party): Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887246.504,
+    "ts": "2026-04-28T08:28:07.246Z",
+    "level": "info",
+    "message": "  Test18022026 -> GL: Test18022026 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887200.9492,
+    "ts": "2026-04-28T08:28:07.200Z",
+    "level": "info",
+    "message": "  Suryavanshi -> GL: Suryavanshi - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887153.3477,
+    "ts": "2026-04-28T08:28:07.153Z",
+    "level": "info",
+    "message": "  Suppliers5 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887105.1716,
+    "ts": "2026-04-28T08:28:07.105Z",
+    "level": "info",
+    "message": "  SudhirMorchale -> GL (Payable — adding party): SudhirMorchale - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887059.4397,
+    "ts": "2026-04-28T08:28:07.059Z",
+    "level": "info",
+    "message": "  Sudhir26022026 -> GL: Sudhir26022026 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364887012.384,
+    "ts": "2026-04-28T08:28:07.012Z",
+    "level": "info",
+    "message": "  RAJLAXMI -> GL: RAJLAXMI - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886969.8125,
+    "ts": "2026-04-28T08:28:06.969Z",
+    "level": "info",
+    "message": "  Customers5 -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886967.1128,
+    "ts": "2026-04-28T08:28:06.967Z",
+    "level": "info",
+    "message": "[OB] Known customers: 24, suppliers: 33",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886923.986,
+    "ts": "2026-04-28T08:28:06.923Z",
+    "level": "info",
+    "message": "Control accounts - Receivable: Debtors - N, Payable: ABC Traders - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886921.6726,
+    "ts": "2026-04-28T08:28:06.921Z",
+    "level": "info",
+    "message": "Fetched 129 accounts from ERPNext for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886884.7861,
+    "ts": "2026-04-28T08:28:06.884Z",
+    "level": "info",
+    "message": "Found 14 ledgers with opening balances: Customers5=-777777, RAJLAXMI=-242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=-2, Test600=7, TestCustomer4=-67567575, Test GST Customer=-76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886881.4092,
+    "ts": "2026-04-28T08:28:06.881Z",
+    "level": "info",
+    "message": "Syncing opening balances for 68 ledgers in NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886876.3308,
+    "ts": "2026-04-28T08:28:06.876Z",
+    "level": "success",
+    "message": "Ledger sync done - customers: +0 created, ~18 updated, x0 failed | suppliers: +0 created, ~10 updated, x1 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886873.6396,
+    "ts": "2026-04-28T08:28:06.873Z",
+    "level": "info",
+    "message": "Address/contact sync done",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886561.0022,
+    "ts": "2026-04-28T08:28:06.561Z",
+    "level": "warn",
+    "message": "Address sync skipped for Neha: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364886044.255,
+    "ts": "2026-04-28T08:28:06.044Z",
+    "level": "warn",
+    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364885636.986,
+    "ts": "2026-04-28T08:28:05.636Z",
+    "level": "warn",
+    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364884284.4797,
+    "ts": "2026-04-28T08:28:04.284Z",
+    "level": "warn",
+    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364884281.7732,
+    "ts": "2026-04-28T08:28:04.281Z",
+    "level": "info",
+    "message": "Syncing addresses/contacts for 6 parties from Tally",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364877616.064,
+    "ts": "2026-04-28T08:27:57.616Z",
+    "level": "info",
+    "message": "[Supplier] 10/11 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364866545.0513,
+    "ts": "2026-04-28T08:27:46.545Z",
+    "level": "warn",
+    "message": "ERPNext sync error [Supplier]: Duplicate: SudhirMorchale",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364859342.6643,
+    "ts": "2026-04-28T08:27:39.342Z",
+    "level": "info",
+    "message": "Invalid PAN ignored for customer \"TestGstCustomer2\" (will sync without PAN): 4444444444",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364857763.3347,
+    "ts": "2026-04-28T08:27:37.763Z",
+    "level": "info",
+    "message": "Invalid PAN ignored for customer \"Test GST Customer\" (will sync without PAN): 4654563565",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364834212.1174,
+    "ts": "2026-04-28T08:27:14.212Z",
+    "level": "info",
+    "message": "[Customer] 10/18 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817808.2573,
+    "ts": "2026-04-28T08:26:57.808Z",
+    "level": "info",
+    "message": "Ledger breakdown - customers: 18, suppliers: 11, skipped (GL-only groups): 40",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817802.3687,
+    "ts": "2026-04-28T08:26:57.802Z",
+    "level": "info",
+    "message": "Using default Territory: India",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817800.6343,
+    "ts": "2026-04-28T08:26:57.800Z",
+    "level": "info",
+    "message": "Using Supplier Group: Services",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817779.334,
+    "ts": "2026-04-28T08:26:57.779Z",
+    "level": "info",
+    "message": "Using Customer Group: Commercial",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817727.755,
+    "ts": "2026-04-28T08:26:57.727Z",
+    "level": "info",
+    "message": "Syncing 68 ledgers to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364817724.2253,
+    "ts": "2026-04-28T08:26:57.724Z",
+    "level": "success",
+    "message": "Chart of Accounts sync done - created: 0, updated: 12, skipped: 15, failed: 1",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364816210.3723,
+    "ts": "2026-04-28T08:26:56.210Z",
+    "level": "info",
+    "message": "COA updated: Unsecured Loans - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364814624.7195,
+    "ts": "2026-04-28T08:26:54.624Z",
+    "level": "info",
+    "message": "COA updated: Secured Loans - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364813036.7727,
+    "ts": "2026-04-28T08:26:53.036Z",
+    "level": "info",
+    "message": "COA updated: Bank OD A/c - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364811399.652,
+    "ts": "2026-04-28T08:26:51.399Z",
+    "level": "info",
+    "message": "COA updated: Sundry Creditors - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364809785.7295,
+    "ts": "2026-04-28T08:26:49.785Z",
+    "level": "info",
+    "message": "COA updated: Provisions - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364808236.6448,
+    "ts": "2026-04-28T08:26:48.236Z",
+    "level": "info",
+    "message": "COA updated: Duties & Taxes - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364806687.9062,
+    "ts": "2026-04-28T08:26:46.687Z",
+    "level": "info",
+    "message": "COA updated: Sundry Debtors - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364805076.7163,
+    "ts": "2026-04-28T08:26:45.076Z",
+    "level": "info",
+    "message": "COA updated: Stock-in-Hand - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364804335.2947,
+    "ts": "2026-04-28T08:26:44.335Z",
+    "level": "warn",
+    "message": "COA sync error [Loans & Advances (Asset)]: read ECONNRESET",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364802388.2075,
+    "ts": "2026-04-28T08:26:42.388Z",
+    "level": "info",
+    "message": "COA updated: Deposits (Asset) - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364800755.2349,
+    "ts": "2026-04-28T08:26:40.755Z",
+    "level": "info",
+    "message": "COA updated: Cash-in-Hand - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364799218.6536,
+    "ts": "2026-04-28T08:26:39.218Z",
+    "level": "info",
+    "message": "COA updated: Bank Accounts - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364797676.5981,
+    "ts": "2026-04-28T08:26:37.676Z",
+    "level": "info",
+    "message": "COA updated: Reserves & Surplus - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772251.793,
+    "ts": "2026-04-28T08:26:12.251Z",
+    "level": "info",
+    "message": "COA root accounts — Asset: Application of Funds (Assets) - N, Liability: Source of Funds (Liabilities) - N, Equity(fallback): Source of Funds (Liabilities) - N, Income: Income - N, Expense: Expenses - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772247.5952,
+    "ts": "2026-04-28T08:26:12.247Z",
+    "level": "info",
+    "message": "COA: fetched 129 existing ERPNext accounts for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772208.8757,
+    "ts": "2026-04-28T08:26:12.208Z",
+    "level": "info",
+    "message": "Syncing 28 account groups to ERPNext for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772203.183,
+    "ts": "2026-04-28T08:26:12.203Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3548000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772104.3652,
+    "ts": "2026-04-28T08:26:12.104Z",
+    "level": "info",
+    "message": "Using ERPNext company: \"NewCompany\" (from Sync UI)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772100.2402,
+    "ts": "2026-04-28T08:26:12.100Z",
+    "level": "info",
+    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364772091.638,
+    "ts": "2026-04-28T08:26:12.091Z",
+    "level": "success",
+    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-28) from 129 total",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364772082.3188,
+    "ts": "2026-04-28T08:26:12.082Z",
+    "level": "info",
+    "message": "Vouchers parsed successfully: 129",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364772071.6143,
+    "ts": "2026-04-28T08:26:12.071Z",
+    "level": "info",
+    "message": "Raw vouchers received from Tally: 129",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771814.691,
+    "ts": "2026-04-28T08:26:11.814Z",
+    "level": "info",
+    "message": "Fetching ALL vouchers from Tally",
+    "meta": {
+      "company": "Tally",
+      "fromDate": "2025-01-01",
+      "toDate": "2026-04-28"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771810.4226,
+    "ts": "2026-04-28T08:26:11.810Z",
+    "level": "info",
+    "message": "Vouchers: full window 2025-01-01 → 2026-04-28",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771805.2344,
+    "ts": "2026-04-28T08:26:11.805Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771801.8508,
+    "ts": "2026-04-28T08:26:11.801Z",
+    "level": "info",
+    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771793.5889,
+    "ts": "2026-04-28T08:26:11.793Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771767.3408,
+    "ts": "2026-04-28T08:26:11.767Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771763.7488,
+    "ts": "2026-04-28T08:26:11.763Z",
+    "level": "info",
+    "message": "Ledgers: 68 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771755.3767,
+    "ts": "2026-04-28T08:26:11.755Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771698.0195,
+    "ts": "2026-04-28T08:26:11.698Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771694.8435,
+    "ts": "2026-04-28T08:26:11.694Z",
+    "level": "info",
+    "message": "Godowns: 1 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771686.2083,
+    "ts": "2026-04-28T08:26:11.686Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771666.5256,
+    "ts": "2026-04-28T08:26:11.666Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771661.3225,
+    "ts": "2026-04-28T08:26:11.661Z",
+    "level": "info",
+    "message": "Cost Centres: 3 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771652.7463,
+    "ts": "2026-04-28T08:26:11.652Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771631.5266,
+    "ts": "2026-04-28T08:26:11.631Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771627.6902,
+    "ts": "2026-04-28T08:26:11.627Z",
+    "level": "info",
+    "message": "Groups: 28 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771618.7139,
+    "ts": "2026-04-28T08:26:11.618Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771564.3435,
+    "ts": "2026-04-28T08:26:11.564Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777364771559.8357,
+    "ts": "2026-04-28T08:26:11.559Z",
+    "level": "info",
+    "message": "Sync mode: FULL (first run) for \"Tally\" → https://erpnext-usq-xoo.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771555.0024,
+    "ts": "2026-04-28T08:26:11.555Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771551.902,
+    "ts": "2026-04-28T08:26:11.551Z",
+    "level": "info",
+    "message": "Tally ping OK (60ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771488.4944,
+    "ts": "2026-04-28T08:26:11.488Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364771480.5354,
+    "ts": "2026-04-28T08:26:11.480Z",
+    "level": "info",
+    "message": "Full sync job full-1777364771480-mp7rg started for: Tally → https://erpnext-usq-xoo.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777364743574.9834,
+    "ts": "2026-04-28T08:25:43.574Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364743572.1528,
+    "ts": "2026-04-28T08:25:43.572Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364743571.3787,
+    "ts": "2026-04-28T08:25:43.571Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364743563.5093,
+    "ts": "2026-04-28T08:25:43.563Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364385380.4578,
+    "ts": "2026-04-28T08:19:45.380Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364385376.4019,
+    "ts": "2026-04-28T08:19:45.376Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364385373.7974,
+    "ts": "2026-04-28T08:19:45.373Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364385360.5654,
+    "ts": "2026-04-28T08:19:45.360Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364384358.577,
+    "ts": "2026-04-28T08:19:44.358Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364384354.8765,
+    "ts": "2026-04-28T08:19:44.354Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364384350.5676,
+    "ts": "2026-04-28T08:19:44.350Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364384335.9482,
+    "ts": "2026-04-28T08:19:44.335Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364370311.1504,
+    "ts": "2026-04-28T08:19:30.311Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364370309.7966,
+    "ts": "2026-04-28T08:19:30.309Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364370306.7546,
+    "ts": "2026-04-28T08:19:30.306Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364370297.806,
+    "ts": "2026-04-28T08:19:30.297Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364367123.8503,
+    "ts": "2026-04-28T08:19:27.123Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364367120.5261,
+    "ts": "2026-04-28T08:19:27.120Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364367117.7983,
+    "ts": "2026-04-28T08:19:27.117Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777364367106.273,
+    "ts": "2026-04-28T08:19:27.106Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360688736.9673,
+    "ts": "2026-04-28T07:18:08.736Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360688732.0432,
+    "ts": "2026-04-28T07:18:08.732Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360688727.9111,
+    "ts": "2026-04-28T07:18:08.727Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360688716.9639,
+    "ts": "2026-04-28T07:18:08.716Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360687704.361,
+    "ts": "2026-04-28T07:18:07.704Z",
+    "level": "info",
+    "message": "syncState: checkpoint saved → vouchers up to 2026-04-28",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360687698.437,
+    "ts": "2026-04-28T07:18:07.698Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-usq-xoo.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-28",
+      "lastMasterSyncAt": "2026-04-28T07:18:07.689Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777360687690.3577,
+    "ts": "2026-04-28T07:18:07.690Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360687683.5403,
+    "ts": "2026-04-28T07:18:07.683Z",
+    "level": "info",
+    "message": "Full sync job full-1777359967742-7edoa done",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360687678.5596,
+    "ts": "2026-04-28T07:18:07.678Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "NewCompany"
+    },
+    "company": "NewCompany"
+  },
+  {
+    "id": 1777360687674.5864,
+    "ts": "2026-04-28T07:18:07.674Z",
+    "level": "success",
+    "message": "Invoice sync done - sales: +2 new/24 updated/0 failed | purchase: +0 new/17 updated/0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360687670.629,
+    "ts": "2026-04-28T07:18:07.670Z",
+    "level": "info",
+    "message": "Submit Purchase Invoice: 10 submitted, 0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360683067.9055,
+    "ts": "2026-04-28T07:18:03.067Z",
+    "level": "info",
+    "message": "Submit Sales Invoice: 16 submitted, 0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360676012.4573,
+    "ts": "2026-04-28T07:17:56.012Z",
+    "level": "info",
+    "message": "Sales Invoice rename complete: 0 renamed, 10 skipped, 16 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360675693.3687,
+    "ts": "2026-04-28T07:17:55.693Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 26: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360675284.371,
+    "ts": "2026-04-28T07:17:55.284Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 25: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360674874.8977,
+    "ts": "2026-04-28T07:17:54.874Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 24: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360674465.97,
+    "ts": "2026-04-28T07:17:54.465Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 23: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360674036.7715,
+    "ts": "2026-04-28T07:17:54.036Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 22: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360673645.905,
+    "ts": "2026-04-28T07:17:53.645Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 21: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360673030.4402,
+    "ts": "2026-04-28T07:17:53.030Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 20: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360672623.9927,
+    "ts": "2026-04-28T07:17:52.623Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 19: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360672212.7725,
+    "ts": "2026-04-28T07:17:52.212Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 18: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360671701.1333,
+    "ts": "2026-04-28T07:17:51.701Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 17: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360671289.738,
+    "ts": "2026-04-28T07:17:51.289Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 16: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360670779.8423,
+    "ts": "2026-04-28T07:17:50.779Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 15: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360670365.4092,
+    "ts": "2026-04-28T07:17:50.365Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 14: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360669958.8691,
+    "ts": "2026-04-28T07:17:49.958Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 13: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360669549.151,
+    "ts": "2026-04-28T07:17:49.549Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 12: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360669140.1567,
+    "ts": "2026-04-28T07:17:49.140Z",
+    "level": "warn",
+    "message": "Could not rename Sales Invoice to 11: Request failed with status code 417",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668972.3591,
+    "ts": "2026-04-28T07:17:48.972Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00010",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668949.4744,
+    "ts": "2026-04-28T07:17:48.949Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00009",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668905.8096,
+    "ts": "2026-04-28T07:17:48.905Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00008",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668881.393,
+    "ts": "2026-04-28T07:17:48.881Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00007",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668833.8599,
+    "ts": "2026-04-28T07:17:48.833Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00006",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668734.2234,
+    "ts": "2026-04-28T07:17:48.734Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00005",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668709.5947,
+    "ts": "2026-04-28T07:17:48.709Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00004",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668687.6045,
+    "ts": "2026-04-28T07:17:48.687Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00003",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668660.2512,
+    "ts": "2026-04-28T07:17:48.660Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00002",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668636.384,
+    "ts": "2026-04-28T07:17:48.636Z",
+    "level": "warn",
+    "message": "Rename skipped (submitted): SINV-26-00001",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360668612.8914,
+    "ts": "2026-04-28T07:17:48.612Z",
+    "level": "info",
+    "message": "Renaming Sales Invoices to Tally voucher numbers...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360652119.535,
+    "ts": "2026-04-28T07:17:32.119Z",
+    "level": "info",
+    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360616949.757,
+    "ts": "2026-04-28T07:16:56.949Z",
+    "level": "warn",
+    "message": "[Purchase Invoice:undefined] attempt 3/5 failed (network) — getaddrinfo ENOTFOUND erpnext-usq-xoo.m.frappe.cloud — retrying in 24000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360600939.39,
+    "ts": "2026-04-28T07:16:40.939Z",
+    "level": "warn",
+    "message": "[Purchase Invoice:undefined] attempt 2/5 failed (network) — getaddrinfo ENOTFOUND erpnext-usq-xoo.m.frappe.cloud — retrying in 16000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360592762.5405,
+    "ts": "2026-04-28T07:16:32.762Z",
+    "level": "warn",
+    "message": "[Purchase Invoice:undefined] attempt 1/5 failed (network) — getaddrinfo ENOTFOUND erpnext-usq-xoo.m.frappe.cloud — retrying in 8000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360344503.6794,
+    "ts": "2026-04-28T07:12:24.503Z",
+    "level": "info",
+    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360322077.4224,
+    "ts": "2026-04-28T07:12:02.077Z",
+    "level": "info",
+    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360293762.1353,
+    "ts": "2026-04-28T07:11:33.762Z",
+    "level": "info",
+    "message": "Pre-syncing 8 Tally stock items to ERPNext before invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360293361.6304,
+    "ts": "2026-04-28T07:11:33.361Z",
+    "level": "info",
+    "message": "Pre-syncing 12 customers before Sales Invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360293159.163,
+    "ts": "2026-04-28T07:11:33.159Z",
+    "level": "info",
+    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360293154.2197,
+    "ts": "2026-04-28T07:11:33.154Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Purchase Item",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360293132.269,
+    "ts": "2026-04-28T07:11:33.132Z",
+    "level": "info",
+    "message": "Placeholder item already exists: Sales Item",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360292887.3015,
+    "ts": "2026-04-28T07:11:32.887Z",
+    "level": "info",
+    "message": "Invoice breakdown - sales: 26, purchase: 17",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360292825.236,
+    "ts": "2026-04-28T07:11:32.825Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360292744.6135,
+    "ts": "2026-04-28T07:11:32.744Z",
+    "level": "info",
+    "message": "Syncing invoices to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360292738.153,
+    "ts": "2026-04-28T07:11:32.738Z",
+    "level": "success",
+    "message": "Voucher sync done — Payment Entry: +32/~0/x0 | Journal Entry: +1/~52/x0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360282872.6902,
+    "ts": "2026-04-28T07:11:22.872Z",
+    "level": "info",
+    "message": "[Journal Entry] 50/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360260234.2104,
+    "ts": "2026-04-28T07:11:00.234Z",
+    "level": "info",
+    "message": "[Journal Entry] 40/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360228186.1853,
+    "ts": "2026-04-28T07:10:28.186Z",
+    "level": "info",
+    "message": "[Journal Entry] 30/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360206172.273,
+    "ts": "2026-04-28T07:10:06.172Z",
+    "level": "info",
+    "message": "[Journal Entry] 20/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360175144.1064,
+    "ts": "2026-04-28T07:09:35.144Z",
+    "level": "info",
+    "message": "[Journal Entry] 10/53 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360158381.267,
+    "ts": "2026-04-28T07:09:18.381Z",
+    "level": "info",
+    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 13",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360158377.594,
+    "ts": "2026-04-28T07:09:18.377Z",
+    "level": "info",
+    "message": "Syncing 53/53 vouchers",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360158241.0674,
+    "ts": "2026-04-28T07:09:18.241Z",
+    "level": "info",
+    "message": "Payment Entry sync done — created: 32, updated: 0, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360158238.4927,
+    "ts": "2026-04-28T07:09:18.238Z",
+    "level": "info",
+    "message": "4 payment vouchers without party rows falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143902.353,
+    "ts": "2026-04-28T07:09:03.902Z",
+    "level": "warn",
+    "message": "Payment voucher 7 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143897.1006,
+    "ts": "2026-04-28T07:09:03.897Z",
+    "level": "warn",
+    "message": "Payment voucher 6 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143890.517,
+    "ts": "2026-04-28T07:09:03.890Z",
+    "level": "warn",
+    "message": "Payment voucher 10 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143885.6436,
+    "ts": "2026-04-28T07:09:03.885Z",
+    "level": "warn",
+    "message": "Payment voucher 3 has no party row — falling back to Journal Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143879.7122,
+    "ts": "2026-04-28T07:09:03.879Z",
+    "level": "info",
+    "message": "[PE] Default bank/cash account: RAJLAXMI - N (Bank)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360143052.0842,
+    "ts": "2026-04-28T07:09:03.052Z",
+    "level": "info",
+    "message": "[PE pre-sync] Ensuring parties — Customers: 0, Suppliers: 21",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126270.4038,
+    "ts": "2026-04-28T07:08:46.270Z",
+    "level": "info",
+    "message": "Syncing 36 Payment/Receipt vouchers to Payment Entry",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126266.8137,
+    "ts": "2026-04-28T07:08:46.266Z",
+    "level": "info",
+    "message": "Voucher split — Payment Entry: 36, Journal Entry: 49, Sales (invoice sync): 26",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126261.018,
+    "ts": "2026-04-28T07:08:46.261Z",
+    "level": "info",
+    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126202.8743,
+    "ts": "2026-04-28T07:08:46.202Z",
+    "level": "info",
+    "message": "Resolving accounts with company abbreviation: N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126199.2341,
+    "ts": "2026-04-28T07:08:46.199Z",
+    "level": "info",
+    "message": "Syncing 129 vouchers to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360126191.0103,
+    "ts": "2026-04-28T07:08:46.191Z",
+    "level": "success",
+    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360110535.9216,
+    "ts": "2026-04-28T07:08:30.535Z",
+    "level": "info",
+    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360110510.8213,
+    "ts": "2026-04-28T07:08:30.510Z",
+    "level": "info",
+    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360110424.4456,
+    "ts": "2026-04-28T07:08:30.424Z",
+    "level": "info",
+    "message": "Syncing 9 stock items to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360110418.256,
+    "ts": "2026-04-28T07:08:30.419Z",
+    "level": "success",
+    "message": "Cost centres sync done - created: 0, updated: 3, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360105484.739,
+    "ts": "2026-04-28T07:08:25.484Z",
+    "level": "info",
+    "message": "Cost Centre sync: fetched 10 existing cost centers",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360105437.3599,
+    "ts": "2026-04-28T07:08:25.437Z",
+    "level": "info",
+    "message": "Root cost centre resolved: NewCompany - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360105402.7234,
+    "ts": "2026-04-28T07:08:25.402Z",
+    "level": "info",
+    "message": "Syncing 3 cost centres to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360105396.0415,
+    "ts": "2026-04-28T07:08:25.396Z",
+    "level": "success",
+    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103782.4414,
+    "ts": "2026-04-28T07:08:23.782Z",
+    "level": "info",
+    "message": "Root warehouse resolved: All Warehouses - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103753.904,
+    "ts": "2026-04-28T07:08:23.753Z",
+    "level": "info",
+    "message": "Syncing 1 godowns to ERPNext for NewCompany (abbr: N)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103745.7725,
+    "ts": "2026-04-28T07:08:23.745Z",
+    "level": "info",
+    "message": "Opening balance sync complete - 0 created, 0 updated, 3 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103739.828,
+    "ts": "2026-04-28T07:08:23.739Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [GL]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103689.5415,
+    "ts": "2026-04-28T07:08:23.689Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Creditors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360103587.7021,
+    "ts": "2026-04-28T07:08:23.587Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Debtors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360093433.6797,
+    "ts": "2026-04-28T07:08:13.433Z",
+    "level": "info",
+    "message": "[OB] Retrying 3 failed groups after 10s",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360093429.8037,
+    "ts": "2026-04-28T07:08:13.429Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [GL]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360092529.6838,
+    "ts": "2026-04-28T07:08:12.529Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Creditors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091606.0334,
+    "ts": "2026-04-28T07:08:11.606Z",
+    "level": "error",
+    "message": "Failed to post Opening Entry [Debtors]: Date 28-04-2026 is not in any active Fiscal Year for <strong>NewCompany</strong>",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091517.0298,
+    "ts": "2026-04-28T07:08:11.517Z",
+    "level": "info",
+    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091467.7498,
+    "ts": "2026-04-28T07:08:11.467Z",
+    "level": "info",
+    "message": "Resolved 14 / 14 ledgers to JE account rows",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091419.702,
+    "ts": "2026-04-28T07:08:11.419Z",
+    "level": "info",
+    "message": "  UpdateLedgerTest -> GL: UpdateLedgerTest - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091373.4746,
+    "ts": "2026-04-28T07:08:11.373Z",
+    "level": "info",
+    "message": "  TEST-SUPPLIER2 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091326.2988,
+    "ts": "2026-04-28T07:08:11.326Z",
+    "level": "info",
+    "message": "  Test Ledger 999 -> GL: Test Ledger 999 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091279.2832,
+    "ts": "2026-04-28T07:08:11.279Z",
+    "level": "info",
+    "message": "  Test GST Customer -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091232.866,
+    "ts": "2026-04-28T07:08:11.232Z",
+    "level": "info",
+    "message": "  TestCustomer4 -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091185.4368,
+    "ts": "2026-04-28T07:08:11.185Z",
+    "level": "info",
+    "message": "  Test600 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091139.464,
+    "ts": "2026-04-28T07:08:11.139Z",
+    "level": "info",
+    "message": "  Test500 -> GL (Payable — adding party): Test500 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091092.902,
+    "ts": "2026-04-28T07:08:11.092Z",
+    "level": "info",
+    "message": "  Test18022026 -> GL: Test18022026 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091045.5469,
+    "ts": "2026-04-28T07:08:11.045Z",
+    "level": "info",
+    "message": "  Suryavanshi -> GL: Suryavanshi - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360091003.2646,
+    "ts": "2026-04-28T07:08:11.003Z",
+    "level": "info",
+    "message": "  Suppliers5 -> Payable: ABC Traders - N (Supplier)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090967.9856,
+    "ts": "2026-04-28T07:08:10.967Z",
+    "level": "info",
+    "message": "  SudhirMorchale -> GL (Payable — adding party): SudhirMorchale - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090920.344,
+    "ts": "2026-04-28T07:08:10.920Z",
+    "level": "info",
+    "message": "  Sudhir26022026 -> GL: Sudhir26022026 - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090874.4958,
+    "ts": "2026-04-28T07:08:10.874Z",
+    "level": "info",
+    "message": "  RAJLAXMI -> GL: RAJLAXMI - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090836.677,
+    "ts": "2026-04-28T07:08:10.836Z",
+    "level": "info",
+    "message": "  Customers5 -> Receivable: Debtors - N (Customer)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090832.9702,
+    "ts": "2026-04-28T07:08:10.832Z",
+    "level": "info",
+    "message": "[OB] Known customers: 24, suppliers: 33",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090791.987,
+    "ts": "2026-04-28T07:08:10.791Z",
+    "level": "info",
+    "message": "Control accounts - Receivable: Debtors - N, Payable: ABC Traders - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090787.704,
+    "ts": "2026-04-28T07:08:10.787Z",
+    "level": "info",
+    "message": "Fetched 129 accounts from ERPNext for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090701.8555,
+    "ts": "2026-04-28T07:08:10.701Z",
+    "level": "info",
+    "message": "Found 14 ledgers with opening balances: Customers5=-777777, RAJLAXMI=-242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=-2, Test600=7, TestCustomer4=-67567575, Test GST Customer=-76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090697.1306,
+    "ts": "2026-04-28T07:08:10.697Z",
+    "level": "info",
+    "message": "Syncing opening balances for 68 ledgers in NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090692.6853,
+    "ts": "2026-04-28T07:08:10.692Z",
+    "level": "success",
+    "message": "Ledger sync done - customers: +1 created, ~17 updated, x0 failed | suppliers: +0 created, ~11 updated, x0 failed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360090687.545,
+    "ts": "2026-04-28T07:08:10.687Z",
+    "level": "info",
+    "message": "Address/contact sync done",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360089872.2668,
+    "ts": "2026-04-28T07:08:09.872Z",
+    "level": "warn",
+    "message": "Address sync skipped for Neha: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360089432.2727,
+    "ts": "2026-04-28T07:08:09.432Z",
+    "level": "warn",
+    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360089055.0972,
+    "ts": "2026-04-28T07:08:09.055Z",
+    "level": "warn",
+    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360087896.476,
+    "ts": "2026-04-28T07:08:07.896Z",
+    "level": "warn",
+    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360087891.7727,
+    "ts": "2026-04-28T07:08:07.891Z",
+    "level": "info",
+    "message": "Syncing addresses/contacts for 7 parties from Tally",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360081240.1292,
+    "ts": "2026-04-28T07:08:01.240Z",
+    "level": "info",
+    "message": "[Supplier] 10/11 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360054517.2986,
+    "ts": "2026-04-28T07:07:34.517Z",
+    "level": "info",
+    "message": "Invalid PAN ignored for customer \"TestGstCustomer2\" (will sync without PAN): 4444444444",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360052774.9421,
+    "ts": "2026-04-28T07:07:32.774Z",
+    "level": "info",
+    "message": "Invalid PAN ignored for customer \"Test GST Customer\" (will sync without PAN): 4654563565",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360037923.1418,
+    "ts": "2026-04-28T07:07:17.923Z",
+    "level": "info",
+    "message": "[Customer] 10/18 synced - pausing 5000ms",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360021009.242,
+    "ts": "2026-04-28T07:07:01.009Z",
+    "level": "info",
+    "message": "Ledger breakdown - customers: 18, suppliers: 11, skipped (GL-only groups): 40",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360020998.4465,
+    "ts": "2026-04-28T07:07:00.998Z",
+    "level": "info",
+    "message": "Using default Territory: India",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360020994.9534,
+    "ts": "2026-04-28T07:07:00.994Z",
+    "level": "info",
+    "message": "Using Supplier Group: Services",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360020972.2893,
+    "ts": "2026-04-28T07:07:00.972Z",
+    "level": "info",
+    "message": "Using Customer Group: Commercial",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360020929.644,
+    "ts": "2026-04-28T07:07:00.929Z",
+    "level": "info",
+    "message": "Syncing 68 ledgers to ERPNext",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360020923.2869,
+    "ts": "2026-04-28T07:07:00.923Z",
+    "level": "success",
+    "message": "Chart of Accounts sync done - created: 0, updated: 13, skipped: 15, failed: 0",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360019413.622,
+    "ts": "2026-04-28T07:06:59.413Z",
+    "level": "info",
+    "message": "COA updated: Unsecured Loans - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360017777.2717,
+    "ts": "2026-04-28T07:06:57.777Z",
+    "level": "info",
+    "message": "COA updated: Secured Loans - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360016181.5376,
+    "ts": "2026-04-28T07:06:56.181Z",
+    "level": "info",
+    "message": "COA updated: Bank OD A/c - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360014600.563,
+    "ts": "2026-04-28T07:06:54.600Z",
+    "level": "info",
+    "message": "COA updated: Sundry Creditors - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360012963.3694,
+    "ts": "2026-04-28T07:06:52.963Z",
+    "level": "info",
+    "message": "COA updated: Provisions - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360011346.1216,
+    "ts": "2026-04-28T07:06:51.346Z",
+    "level": "info",
+    "message": "COA updated: Duties & Taxes - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360008354.2598,
+    "ts": "2026-04-28T07:06:48.354Z",
+    "level": "info",
+    "message": "COA updated: Sundry Debtors - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360004258.7021,
+    "ts": "2026-04-28T07:06:44.258Z",
+    "level": "info",
+    "message": "COA updated: Stock-in-Hand - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777360000802.6301,
+    "ts": "2026-04-28T07:06:40.802Z",
+    "level": "info",
+    "message": "COA updated: Loans & Advances (Asset) - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359996271.7622,
+    "ts": "2026-04-28T07:06:36.271Z",
+    "level": "info",
+    "message": "COA updated: Deposits (Asset) - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359994633.152,
+    "ts": "2026-04-28T07:06:34.633Z",
+    "level": "info",
+    "message": "COA updated: Cash-in-Hand - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359992994.4707,
+    "ts": "2026-04-28T07:06:32.994Z",
+    "level": "info",
+    "message": "COA updated: Bank Accounts - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359991368.394,
+    "ts": "2026-04-28T07:06:31.368Z",
+    "level": "info",
+    "message": "COA updated: Reserves & Surplus - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968648.8105,
+    "ts": "2026-04-28T07:06:08.648Z",
+    "level": "info",
+    "message": "COA root accounts — Asset: Application of Funds (Assets) - N, Liability: Source of Funds (Liabilities) - N, Equity(fallback): Source of Funds (Liabilities) - N, Income: Income - N, Expense: Expenses - N",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968643.4797,
+    "ts": "2026-04-28T07:06:08.643Z",
+    "level": "info",
+    "message": "COA: fetched 129 existing ERPNext accounts for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968528.6638,
+    "ts": "2026-04-28T07:06:08.528Z",
+    "level": "info",
+    "message": "Syncing 28 account groups to ERPNext for NewCompany",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968522.7998,
+    "ts": "2026-04-28T07:06:08.522Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3564000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968358.502,
+    "ts": "2026-04-28T07:06:08.358Z",
+    "level": "info",
+    "message": "Using ERPNext company: \"NewCompany\" (from Sync UI)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968354.6187,
+    "ts": "2026-04-28T07:06:08.354Z",
+    "level": "info",
+    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968344.6567,
+    "ts": "2026-04-28T07:06:08.344Z",
+    "level": "success",
+    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-28) from 129 total",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968336.812,
+    "ts": "2026-04-28T07:06:08.336Z",
+    "level": "info",
+    "message": "Vouchers parsed successfully: 129",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968324.7952,
+    "ts": "2026-04-28T07:06:08.324Z",
+    "level": "info",
+    "message": "Raw vouchers received from Tally: 129",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968069.9019,
+    "ts": "2026-04-28T07:06:08.069Z",
+    "level": "info",
+    "message": "Fetching ALL vouchers from Tally",
+    "meta": {
+      "company": "Tally",
+      "fromDate": "2025-01-01",
+      "toDate": "2026-04-28"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968065.2087,
+    "ts": "2026-04-28T07:06:08.065Z",
+    "level": "info",
+    "message": "Vouchers: full window 2025-01-01 → 2026-04-28",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968061.542,
+    "ts": "2026-04-28T07:06:08.061Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968057.2292,
+    "ts": "2026-04-28T07:06:08.057Z",
+    "level": "info",
+    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968049.132,
+    "ts": "2026-04-28T07:06:08.049Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968023.4312,
+    "ts": "2026-04-28T07:06:08.023Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359968018.4731,
+    "ts": "2026-04-28T07:06:08.018Z",
+    "level": "info",
+    "message": "Ledgers: 68 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359968011.7817,
+    "ts": "2026-04-28T07:06:08.011Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967962.982,
+    "ts": "2026-04-28T07:06:07.962Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967958.6304,
+    "ts": "2026-04-28T07:06:07.958Z",
+    "level": "info",
+    "message": "Godowns: 1 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967949.9548,
+    "ts": "2026-04-28T07:06:07.949Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967928.1985,
+    "ts": "2026-04-28T07:06:07.928Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967921.1567,
+    "ts": "2026-04-28T07:06:07.921Z",
+    "level": "info",
+    "message": "Cost Centres: 3 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967912.679,
+    "ts": "2026-04-28T07:06:07.912Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967891.3394,
+    "ts": "2026-04-28T07:06:07.891Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967885.4417,
+    "ts": "2026-04-28T07:06:07.885Z",
+    "level": "info",
+    "message": "Groups: 28 to sync, 0 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967875.6282,
+    "ts": "2026-04-28T07:06:07.875Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967811.7874,
+    "ts": "2026-04-28T07:06:07.811Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777359967800.5796,
+    "ts": "2026-04-28T07:06:07.800Z",
+    "level": "info",
+    "message": "Sync mode: FULL (first run) for \"Tally\" → https://erpnext-usq-xoo.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967790.8486,
+    "ts": "2026-04-28T07:06:07.790Z",
+    "level": "warn",
+    "message": "syncState: could not parse sync_state.json — starting fresh",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967779.5002,
+    "ts": "2026-04-28T07:06:07.779Z",
+    "level": "info",
+    "message": "Tally ping OK (21ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967750.5234,
+    "ts": "2026-04-28T07:06:07.750Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359967742.8047,
+    "ts": "2026-04-28T07:06:07.742Z",
+    "level": "info",
+    "message": "Full sync job full-1777359967742-7edoa started for: Tally → https://erpnext-usq-xoo.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777359948673.3057,
+    "ts": "2026-04-28T07:05:48.673Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3564000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359904367.9902,
+    "ts": "2026-04-28T07:05:04.367Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359904362.2227,
+    "ts": "2026-04-28T07:05:04.362Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359904357.2656,
+    "ts": "2026-04-28T07:05:04.357Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359904345.9143,
+    "ts": "2026-04-28T07:05:04.345Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359747864.066,
+    "ts": "2026-04-28T07:02:27.864Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359747860.3757,
+    "ts": "2026-04-28T07:02:27.860Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359747849.193,
+    "ts": "2026-04-28T07:02:27.849Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359747837.0518,
+    "ts": "2026-04-28T07:02:27.837Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359746696.1077,
+    "ts": "2026-04-28T07:02:26.696Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359746690.6458,
+    "ts": "2026-04-28T07:02:26.690Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359746687.5088,
+    "ts": "2026-04-28T07:02:26.687Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359746673.708,
+    "ts": "2026-04-28T07:02:26.673Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359725519.4878,
+    "ts": "2026-04-28T07:02:05.519Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359725515.1245,
+    "ts": "2026-04-28T07:02:05.515Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359725513.649,
+    "ts": "2026-04-28T07:02:05.513Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359725504.857,
+    "ts": "2026-04-28T07:02:05.504Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359597405.0823,
+    "ts": "2026-04-28T06:59:57.405Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359597401.8235,
+    "ts": "2026-04-28T06:59:57.401Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359597397.457,
+    "ts": "2026-04-28T06:59:57.397Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359597386.746,
+    "ts": "2026-04-28T06:59:57.386Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359254218.187,
+    "ts": "2026-04-28T06:54:14.218Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359254215.9382,
+    "ts": "2026-04-28T06:54:14.215Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359254212.5132,
+    "ts": "2026-04-28T06:54:14.212Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359254200.2866,
+    "ts": "2026-04-28T06:54:14.200Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359238633.0388,
+    "ts": "2026-04-28T06:53:58.633Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359238627.4702,
+    "ts": "2026-04-28T06:53:58.627Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359238623.8494,
+    "ts": "2026-04-28T06:53:58.623Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777359238611.92,
+    "ts": "2026-04-28T06:53:58.611Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
     "id": 1777356311885.2112,
     "ts": "2026-04-28T06:05:11.885Z",
     "level": "info",
@@ -4601,3600 +8187,5 @@
     "message": "Could not submit Sales Invoice for voucher 12: Date 31-01-2026 is not in any active Fiscal Year for <strong>company1</strong>",
     "meta": {},
     "company": null
-  },
-  {
-    "id": 1777291269127.5852,
-    "ts": "2026-04-27T12:01:09.127Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 11: Date 31-01-2026 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291268767.426,
-    "ts": "2026-04-27T12:01:08.767Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 10: Date 31-12-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291268316.8752,
-    "ts": "2026-04-27T12:01:08.316Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 9: Date 31-12-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291267867.4587,
-    "ts": "2026-04-27T12:01:07.867Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 8: Date 31-12-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291267531.408,
-    "ts": "2026-04-27T12:01:07.531Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 7: Date 31-12-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291267144.0269,
-    "ts": "2026-04-27T12:01:07.144Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 6: Date 31-12-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291266782.3848,
-    "ts": "2026-04-27T12:01:06.782Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 5: Date 01-04-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291266429.1702,
-    "ts": "2026-04-27T12:01:06.429Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 4: Date 01-04-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291266079.2727,
-    "ts": "2026-04-27T12:01:06.079Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 3: Date 01-04-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291265723.5613,
-    "ts": "2026-04-27T12:01:05.723Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 2: Date 01-04-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291265387.267,
-    "ts": "2026-04-27T12:01:05.387Z",
-    "level": "warn",
-    "message": "Could not submit Sales Invoice for voucher 1: Date 01-04-2025 is not in any active Fiscal Year for <strong>company1</strong>",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291265217.515,
-    "ts": "2026-04-27T12:01:05.217Z",
-    "level": "info",
-    "message": "Sales Invoice rename complete: 0 renamed, 0 skipped, 26 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291264899.8638,
-    "ts": "2026-04-27T12:01:04.899Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 26: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291264556.6855,
-    "ts": "2026-04-27T12:01:04.556Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 25: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291264168.6582,
-    "ts": "2026-04-27T12:01:04.168Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 24: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291263807.6233,
-    "ts": "2026-04-27T12:01:03.807Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 23: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291263447.502,
-    "ts": "2026-04-27T12:01:03.447Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 22: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291263091.3408,
-    "ts": "2026-04-27T12:01:03.091Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 21: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291262743.6023,
-    "ts": "2026-04-27T12:01:02.743Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 20: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291262363.1707,
-    "ts": "2026-04-27T12:01:02.363Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 19: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291262010.384,
-    "ts": "2026-04-27T12:01:02.010Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 18: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291261639.5315,
-    "ts": "2026-04-27T12:01:01.639Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 17: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291261241.5115,
-    "ts": "2026-04-27T12:01:01.241Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 16: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291260876.6223,
-    "ts": "2026-04-27T12:01:00.876Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 15: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291260474.8276,
-    "ts": "2026-04-27T12:01:00.474Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 14: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291260110.1484,
-    "ts": "2026-04-27T12:01:00.110Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 13: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291259751.1746,
-    "ts": "2026-04-27T12:00:59.751Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 12: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291259393.1208,
-    "ts": "2026-04-27T12:00:59.393Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 11: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291259041.3916,
-    "ts": "2026-04-27T12:00:59.041Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 10: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291258638.5042,
-    "ts": "2026-04-27T12:00:58.638Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 9: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291258278.256,
-    "ts": "2026-04-27T12:00:58.278Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 8: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291257810.2463,
-    "ts": "2026-04-27T12:00:57.810Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 7: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291257446.5938,
-    "ts": "2026-04-27T12:00:57.446Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 6: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291257087.6025,
-    "ts": "2026-04-27T12:00:57.087Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 5: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291256701.8389,
-    "ts": "2026-04-27T12:00:56.701Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 4: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291256316.0828,
-    "ts": "2026-04-27T12:00:56.316Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 3: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291255599.7668,
-    "ts": "2026-04-27T12:00:55.599Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 2: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291255137.5115,
-    "ts": "2026-04-27T12:00:55.137Z",
-    "level": "warn",
-    "message": "Could not rename Sales Invoice to 1: Request failed with status code 417",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291254859.3003,
-    "ts": "2026-04-27T12:00:54.859Z",
-    "level": "info",
-    "message": "Renaming Sales Invoices to Tally voucher numbers...",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291237043.7153,
-    "ts": "2026-04-27T12:00:37.043Z",
-    "level": "info",
-    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291204993.3093,
-    "ts": "2026-04-27T12:00:04.993Z",
-    "level": "info",
-    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291173759.0896,
-    "ts": "2026-04-27T11:59:33.759Z",
-    "level": "info",
-    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291154802.9563,
-    "ts": "2026-04-27T11:59:14.802Z",
-    "level": "info",
-    "message": "Pre-syncing 8 Tally stock items to ERPNext before invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291154489.8442,
-    "ts": "2026-04-27T11:59:14.489Z",
-    "level": "info",
-    "message": "Auto-created customer: Supplier1",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291154135.8738,
-    "ts": "2026-04-27T11:59:14.135Z",
-    "level": "info",
-    "message": "Auto-created customer: SudhirMorchale",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291153744.823,
-    "ts": "2026-04-27T11:59:13.744Z",
-    "level": "info",
-    "message": "Auto-created customer: RAJLAXMI",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291153311.1797,
-    "ts": "2026-04-27T11:59:13.311Z",
-    "level": "info",
-    "message": "Auto-created customer: Test600",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291152948.948,
-    "ts": "2026-04-27T11:59:12.948Z",
-    "level": "info",
-    "message": "Auto-created customer: Banana",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291152841.2395,
-    "ts": "2026-04-27T11:59:12.841Z",
-    "level": "info",
-    "message": "Pre-syncing 12 customers before Sales Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291152431.8804,
-    "ts": "2026-04-27T11:59:12.431Z",
-    "level": "info",
-    "message": "Auto-created supplier: Customers5",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291152073.749,
-    "ts": "2026-04-27T11:59:12.073Z",
-    "level": "info",
-    "message": "Auto-created supplier: Customer2",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151977.521,
-    "ts": "2026-04-27T11:59:11.977Z",
-    "level": "info",
-    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151972.2273,
-    "ts": "2026-04-27T11:59:11.972Z",
-    "level": "info",
-    "message": "Created placeholder item (with fallback HSN): Purchase Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151767.6023,
-    "ts": "2026-04-27T11:59:11.767Z",
-    "level": "info",
-    "message": "Created placeholder item (with fallback HSN): Sales Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151356.467,
-    "ts": "2026-04-27T11:59:11.356Z",
-    "level": "info",
-    "message": "Auto-created fallback party: Unknown Supplier (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151254.7966,
-    "ts": "2026-04-27T11:59:11.254Z",
-    "level": "info",
-    "message": "Auto-created fallback party: Walk-in Customer (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291151049.6677,
-    "ts": "2026-04-27T11:59:11.049Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Purchase - C\" (type: Expense Account, parent: Direct Expenses - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291150849.1218,
-    "ts": "2026-04-27T11:59:10.849Z",
-    "level": "info",
-    "message": "Invoice breakdown - sales: 26, purchase: 17",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291150845.4712,
-    "ts": "2026-04-27T11:59:10.845Z",
-    "level": "info",
-    "message": "Created custom field: Sales Invoice.custom_tally_voucher_no",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291149841.7632,
-    "ts": "2026-04-27T11:59:09.841Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291149527.7139,
-    "ts": "2026-04-27T11:59:09.527Z",
-    "level": "info",
-    "message": "Syncing invoices to ERPNext for Company1 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291149522.7605,
-    "ts": "2026-04-27T11:59:09.522Z",
-    "level": "success",
-    "message": "Voucher sync done — Payment Entry: +32/~0/x4 | Journal Entry: +46/~3/x0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291119887.2126,
-    "ts": "2026-04-27T11:58:39.887Z",
-    "level": "info",
-    "message": "[Journal Entry] 40/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291098492.5637,
-    "ts": "2026-04-27T11:58:18.492Z",
-    "level": "info",
-    "message": "[Journal Entry] 30/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291077495.0781,
-    "ts": "2026-04-27T11:57:57.495Z",
-    "level": "info",
-    "message": "[Journal Entry] 20/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291056201.045,
-    "ts": "2026-04-27T11:57:36.201Z",
-    "level": "info",
-    "message": "[Journal Entry] 10/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291039400.6982,
-    "ts": "2026-04-27T11:57:19.400Z",
-    "level": "info",
-    "message": "[JE pre-sync] Auto-created Supplier: Amey",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038819.3123,
-    "ts": "2026-04-27T11:57:18.819Z",
-    "level": "info",
-    "message": "[JE pre-sync] Auto-created Supplier: JOJO",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038658.7764,
-    "ts": "2026-04-27T11:57:18.658Z",
-    "level": "info",
-    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 13",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038654.973,
-    "ts": "2026-04-27T11:57:18.654Z",
-    "level": "info",
-    "message": "Syncing 49/49 vouchers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038615.456,
-    "ts": "2026-04-27T11:57:18.615Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Amey - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038410.3628,
-    "ts": "2026-04-27T11:57:18.410Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"JOJO - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291038201.2407,
-    "ts": "2026-04-27T11:57:18.201Z",
-    "level": "info",
-    "message": "Payment Entry sync done — created: 32, updated: 0, failed: 4",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291030367.9412,
-    "ts": "2026-04-27T11:57:10.367Z",
-    "level": "warn",
-    "message": "Payment Entry failed for 7: Could not find Party: RAJLAXMI",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291030013.6292,
-    "ts": "2026-04-27T11:57:10.013Z",
-    "level": "warn",
-    "message": "Payment Entry failed for 6: Could not find Party: RAJLAXMI",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291027449.2905,
-    "ts": "2026-04-27T11:57:07.449Z",
-    "level": "warn",
-    "message": "Payment Entry failed for 10: Could not find Party: Sales 24",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023929.4458,
-    "ts": "2026-04-27T11:57:03.929Z",
-    "level": "warn",
-    "message": "Payment Entry failed for 3: Could not find Party: Cash322",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023414.1062,
-    "ts": "2026-04-27T11:57:03.414Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 7 from voucherType (Receipt)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023408.1804,
-    "ts": "2026-04-27T11:57:03.408Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 6 from voucherType (Receipt)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023404.902,
-    "ts": "2026-04-27T11:57:03.404Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 10 from voucherType (Payment)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023401.7778,
-    "ts": "2026-04-27T11:57:03.401Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 3 from voucherType (Payment)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023397.6018,
-    "ts": "2026-04-27T11:57:03.397Z",
-    "level": "info",
-    "message": "[PE] Default bank/cash account: RAJLAXMI - C (Bank)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291023044.433,
-    "ts": "2026-04-27T11:57:03.044Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Rajnivas Enterprises",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291022693.162,
-    "ts": "2026-04-27T11:57:02.693Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: ABCDTraders",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291022312.404,
-    "ts": "2026-04-27T11:57:02.312Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Sudhir",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291021946.586,
-    "ts": "2026-04-27T11:57:01.946Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Test500",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291021510.0417,
-    "ts": "2026-04-27T11:57:01.510Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: ShivamRamKhaw",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291021138.873,
-    "ts": "2026-04-27T11:57:01.138Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Test Customer",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291020783.822,
-    "ts": "2026-04-27T11:57:00.783Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Ram500",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291020416.8284,
-    "ts": "2026-04-27T11:57:00.416Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Scam",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291020031.7766,
-    "ts": "2026-04-27T11:57:00.031Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: ABC Traders",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291019654.6064,
-    "ts": "2026-04-27T11:56:59.654Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Aniket",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291019299.065,
-    "ts": "2026-04-27T11:56:59.299Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Amay",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291018844.2346,
-    "ts": "2026-04-27T11:56:58.844Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Omkar Dahifale",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291018478.996,
-    "ts": "2026-04-27T11:56:58.478Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Shivam Khaw",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291018055.9429,
-    "ts": "2026-04-27T11:56:58.055Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Please",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291017670.7842,
-    "ts": "2026-04-27T11:56:57.670Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Manish",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291017280.5845,
-    "ts": "2026-04-27T11:56:57.280Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Spyderman",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016872.5789,
-    "ts": "2026-04-27T11:56:56.872Z",
-    "level": "info",
-    "message": "[PE pre-sync] Auto-created Supplier: Ram",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016819.6494,
-    "ts": "2026-04-27T11:56:56.819Z",
-    "level": "info",
-    "message": "[PE pre-sync] Ensuring parties — Customers: 0, Suppliers: 21",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016816.0444,
-    "ts": "2026-04-27T11:56:56.816Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Supplier1 - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016551.0195,
-    "ts": "2026-04-27T11:56:56.551Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Rajnivas Enterprises - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016441.2725,
-    "ts": "2026-04-27T11:56:56.441Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"ABCDTraders - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016309.423,
-    "ts": "2026-04-27T11:56:56.309Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"SudhirMorchale - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016175.1565,
-    "ts": "2026-04-27T11:56:56.175Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Sudhir - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291016038.7422,
-    "ts": "2026-04-27T11:56:56.038Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Test500 - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015862.759,
-    "ts": "2026-04-27T11:56:55.862Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"ShivamRamKhaw - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015719.6924,
-    "ts": "2026-04-27T11:56:55.719Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Banana - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015599.9988,
-    "ts": "2026-04-27T11:56:55.599Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Test Customer - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015463.179,
-    "ts": "2026-04-27T11:56:55.463Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Ram500 - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015341.265,
-    "ts": "2026-04-27T11:56:55.341Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Scam - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015180.1726,
-    "ts": "2026-04-27T11:56:55.180Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Sales 24 - C\" (type: Income Account, parent: Direct Income - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291015069.0352,
-    "ts": "2026-04-27T11:56:55.069Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"ABC Traders - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291014938.4321,
-    "ts": "2026-04-27T11:56:54.938Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Burger - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291014662.1174,
-    "ts": "2026-04-27T11:56:54.662Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Aniket - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291014448.4353,
-    "ts": "2026-04-27T11:56:54.448Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Amay - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291014243.9792,
-    "ts": "2026-04-27T11:56:54.243Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Omkar Dahifale - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291013936.0437,
-    "ts": "2026-04-27T11:56:53.936Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Shivam Khaw - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291013731.9363,
-    "ts": "2026-04-27T11:56:53.731Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Please - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291013425.4517,
-    "ts": "2026-04-27T11:56:53.425Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Manish - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291013219.6536,
-    "ts": "2026-04-27T11:56:53.219Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Spyderman - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291013014.7751,
-    "ts": "2026-04-27T11:56:53.014Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Cash322 - C\" (type: Cash, parent: Cash In Hand - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012881.155,
-    "ts": "2026-04-27T11:56:52.881Z",
-    "level": "info",
-    "message": "Auto-created missing account: \"Ram - C\" (type: Payable, parent: Sundry Creditors - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012707.5151,
-    "ts": "2026-04-27T11:56:52.707Z",
-    "level": "info",
-    "message": "Syncing 36 Payment/Receipt vouchers to Payment Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012702.1465,
-    "ts": "2026-04-27T11:56:52.702Z",
-    "level": "info",
-    "message": "Voucher split — Payment Entry: 36, Journal Entry: 49, Sales (invoice sync): 26",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012698.0427,
-    "ts": "2026-04-27T11:56:52.698Z",
-    "level": "info",
-    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012692.4377,
-    "ts": "2026-04-27T11:56:52.692Z",
-    "level": "info",
-    "message": "Resolving accounts with company abbreviation: C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012688.0015,
-    "ts": "2026-04-27T11:56:52.688Z",
-    "level": "info",
-    "message": "Syncing 129 vouchers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777291012683.6519,
-    "ts": "2026-04-27T11:56:52.683Z",
-    "level": "success",
-    "message": "Stock sync done - created: 9, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290997052.4287,
-    "ts": "2026-04-27T11:56:37.052Z",
-    "level": "info",
-    "message": "Created Item Group: General",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290996868.0212,
-    "ts": "2026-04-27T11:56:36.868Z",
-    "level": "info",
-    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290996844.7551,
-    "ts": "2026-04-27T11:56:36.844Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (POST)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290996712.6562,
-    "ts": "2026-04-27T11:56:36.712Z",
-    "level": "info",
-    "message": "Syncing 9 stock items to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290996707.2468,
-    "ts": "2026-04-27T11:56:36.707Z",
-    "level": "success",
-    "message": "Cost centres sync done - created: 3, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290991829.865,
-    "ts": "2026-04-27T11:56:31.829Z",
-    "level": "info",
-    "message": "Cost Centre sync: fetched 4 existing cost centers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290991806.012,
-    "ts": "2026-04-27T11:56:31.806Z",
-    "level": "info",
-    "message": "Root cost centre resolved: company1 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290991779.8672,
-    "ts": "2026-04-27T11:56:31.779Z",
-    "level": "info",
-    "message": "Syncing 3 cost centres to ERPNext for Company1 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290991774.8005,
-    "ts": "2026-04-27T11:56:31.774Z",
-    "level": "success",
-    "message": "Godown sync done - created: 1, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290990193.1006,
-    "ts": "2026-04-27T11:56:30.193Z",
-    "level": "info",
-    "message": "Root warehouse resolved: All Warehouses - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290990166.7148,
-    "ts": "2026-04-27T11:56:30.166Z",
-    "level": "info",
-    "message": "Syncing 1 godowns to ERPNext for Company1 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290990162.1091,
-    "ts": "2026-04-27T11:56:30.162Z",
-    "level": "info",
-    "message": "Opening balance sync complete - 3 created, 0 updated, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290990158.4846,
-    "ts": "2026-04-27T11:56:30.158Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [GL]: ACC-JV-2026-00003",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290989084.1772,
-    "ts": "2026-04-27T11:56:29.084Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Creditors]: ACC-JV-2026-00002",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290988016.0283,
-    "ts": "2026-04-27T11:56:28.016Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Debtors]: ACC-JV-2026-00001",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987682.8306,
-    "ts": "2026-04-27T11:56:27.682Z",
-    "level": "info",
-    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987641.6414,
-    "ts": "2026-04-27T11:56:27.641Z",
-    "level": "info",
-    "message": "Resolved 14 / 14 ledgers to JE account rows",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987604.4778,
-    "ts": "2026-04-27T11:56:27.604Z",
-    "level": "info",
-    "message": "  UpdateLedgerTest -> GL (auto-created): UpdateLedgerTest - C (parentGroup: Capital Account)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987601.0588,
-    "ts": "2026-04-27T11:56:27.601Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"UpdateLedgerTest - C\" (type: Equity, parent: Capital Account - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987470.8804,
-    "ts": "2026-04-27T11:56:27.470Z",
-    "level": "info",
-    "message": "  TEST-SUPPLIER2 -> Payable: Creditors - C (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987426.7874,
-    "ts": "2026-04-27T11:56:27.426Z",
-    "level": "info",
-    "message": "  Test Ledger 999 -> GL (auto-created): Test Ledger 999 - C (parentGroup: Capital Account)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987422.1008,
-    "ts": "2026-04-27T11:56:27.422Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"Test Ledger 999 - C\" (type: Equity, parent: Capital Account - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987281.338,
-    "ts": "2026-04-27T11:56:27.281Z",
-    "level": "info",
-    "message": "  Test GST Customer -> Receivable: Debtors - C (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987234.3933,
-    "ts": "2026-04-27T11:56:27.234Z",
-    "level": "info",
-    "message": "  TestCustomer4 -> Receivable: Debtors - C (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987187.5486,
-    "ts": "2026-04-27T11:56:27.187Z",
-    "level": "info",
-    "message": "  Test600 -> Payable: Creditors - C (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987140.9197,
-    "ts": "2026-04-27T11:56:27.140Z",
-    "level": "info",
-    "message": "  Test500 -> Receivable: Debtors - C (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987104.6443,
-    "ts": "2026-04-27T11:56:27.104Z",
-    "level": "info",
-    "message": "  Test18022026 -> GL (auto-created): Test18022026 - C (parentGroup: Capital Account)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290987101.1716,
-    "ts": "2026-04-27T11:56:27.101Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"Test18022026 - C\" (type: Equity, parent: Capital Account - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986994.088,
-    "ts": "2026-04-27T11:56:26.994Z",
-    "level": "info",
-    "message": "  Suryavanshi -> GL (auto-created): Suryavanshi - C (parentGroup: Cash-in-Hand)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986990.5637,
-    "ts": "2026-04-27T11:56:26.990Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"Suryavanshi - C\" (type: Cash, parent: Cash-in-Hand - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986735.3208,
-    "ts": "2026-04-27T11:56:26.735Z",
-    "level": "info",
-    "message": "  Suppliers5 -> Payable: Creditors - C (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986688.284,
-    "ts": "2026-04-27T11:56:26.688Z",
-    "level": "info",
-    "message": "  SudhirMorchale -> Payable: Creditors - C (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986645.3281,
-    "ts": "2026-04-27T11:56:26.645Z",
-    "level": "info",
-    "message": "  Sudhir26022026 -> GL (auto-created): Sudhir26022026 - C (parentGroup: Capital Account)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986643.8982,
-    "ts": "2026-04-27T11:56:26.643Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"Sudhir26022026 - C\" (type: Equity, parent: Capital Account - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986506.7522,
-    "ts": "2026-04-27T11:56:26.506Z",
-    "level": "info",
-    "message": "  RAJLAXMI -> GL (auto-created): RAJLAXMI - C (parentGroup: Bank Accounts)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986504.602,
-    "ts": "2026-04-27T11:56:26.504Z",
-    "level": "info",
-    "message": "  [OB] Auto-created missing account: \"RAJLAXMI - C\" (type: Bank, parent: Bank Accounts - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986374.203,
-    "ts": "2026-04-27T11:56:26.374Z",
-    "level": "info",
-    "message": "  Customers5 -> Receivable: Debtors - C (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986371.383,
-    "ts": "2026-04-27T11:56:26.371Z",
-    "level": "info",
-    "message": "[OB] Known customers: 18, suppliers: 11",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986290.7346,
-    "ts": "2026-04-27T11:56:26.290Z",
-    "level": "info",
-    "message": "Control accounts - Receivable: Debtors - C, Payable: Creditors - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986288.2715,
-    "ts": "2026-04-27T11:56:26.288Z",
-    "level": "info",
-    "message": "Fetched 97 accounts from ERPNext for Company1",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986198.4595,
-    "ts": "2026-04-27T11:56:26.198Z",
-    "level": "info",
-    "message": "Found 14 ledgers with opening balances: Customers5=-777777, RAJLAXMI=-242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=-2, Test600=7, TestCustomer4=-67567575, Test GST Customer=-76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986196.4543,
-    "ts": "2026-04-27T11:56:26.196Z",
-    "level": "info",
-    "message": "Syncing opening balances for 68 ledgers in Company1",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986192.603,
-    "ts": "2026-04-27T11:56:26.192Z",
-    "level": "success",
-    "message": "Ledger sync done - customers: +18 created, ~0 updated, x0 failed | suppliers: +11 created, ~0 updated, x0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290986189.334,
-    "ts": "2026-04-27T11:56:26.189Z",
-    "level": "info",
-    "message": "Address/contact sync done",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290985373.5146,
-    "ts": "2026-04-27T11:56:25.373Z",
-    "level": "warn",
-    "message": "Address sync skipped for Neha: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290984962.6416,
-    "ts": "2026-04-27T11:56:24.962Z",
-    "level": "warn",
-    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290984540.3296,
-    "ts": "2026-04-27T11:56:24.540Z",
-    "level": "warn",
-    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290983380.1072,
-    "ts": "2026-04-27T11:56:23.380Z",
-    "level": "warn",
-    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290983377.3816,
-    "ts": "2026-04-27T11:56:23.377Z",
-    "level": "info",
-    "message": "Syncing addresses/contacts for 7 parties from Tally",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290976733.328,
-    "ts": "2026-04-27T11:56:16.733Z",
-    "level": "info",
-    "message": "[Supplier] 10/11 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290958913.8064,
-    "ts": "2026-04-27T11:55:58.913Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"TestGstCustomer2\" (will sync without PAN): 4444444444",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290957276.095,
-    "ts": "2026-04-27T11:55:57.276Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"Test GST Customer\" (will sync without PAN): 4654563565",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290942174.376,
-    "ts": "2026-04-27T11:55:42.174Z",
-    "level": "info",
-    "message": "[Customer] 10/18 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925621.9316,
-    "ts": "2026-04-27T11:55:25.621Z",
-    "level": "info",
-    "message": "Ledger breakdown - customers: 18, suppliers: 11, skipped (GL-only groups): 40",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925616.588,
-    "ts": "2026-04-27T11:55:25.616Z",
-    "level": "info",
-    "message": "Using default Territory: India",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925613.5132,
-    "ts": "2026-04-27T11:55:25.613Z",
-    "level": "info",
-    "message": "Using Supplier Group: Services",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925583.124,
-    "ts": "2026-04-27T11:55:25.583Z",
-    "level": "info",
-    "message": "Using Customer Group: Commercial",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925546.129,
-    "ts": "2026-04-27T11:55:25.546Z",
-    "level": "info",
-    "message": "Syncing 68 ledgers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290925542.3435,
-    "ts": "2026-04-27T11:55:25.542Z",
-    "level": "success",
-    "message": "Chart of Accounts sync done - created: 18, updated: 3, skipped: 7, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290924029.6235,
-    "ts": "2026-04-27T11:55:24.029Z",
-    "level": "info",
-    "message": "COA updated: Unsecured Loans - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290922391.195,
-    "ts": "2026-04-27T11:55:22.391Z",
-    "level": "info",
-    "message": "COA updated: Secured Loans - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290920813.6465,
-    "ts": "2026-04-27T11:55:20.813Z",
-    "level": "info",
-    "message": "COA created: Bank OD A/c - C (parent: Loans (Liability) - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290919216.4902,
-    "ts": "2026-04-27T11:55:19.216Z",
-    "level": "info",
-    "message": "COA created: Sundry Creditors - C (parent: Current Liabilities - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290917598.8022,
-    "ts": "2026-04-27T11:55:17.598Z",
-    "level": "info",
-    "message": "COA created: Provisions - C (parent: Current Liabilities - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290915939.1907,
-    "ts": "2026-04-27T11:55:15.939Z",
-    "level": "info",
-    "message": "COA created: Duties & Taxes - C (parent: Current Liabilities - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290914348.0073,
-    "ts": "2026-04-27T11:55:14.348Z",
-    "level": "info",
-    "message": "COA created: Sundry Debtors - C (parent: Current Assets - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290912765.7354,
-    "ts": "2026-04-27T11:55:12.765Z",
-    "level": "info",
-    "message": "COA created: Stock-in-Hand - C (parent: Current Assets - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290911129.797,
-    "ts": "2026-04-27T11:55:11.129Z",
-    "level": "info",
-    "message": "COA created: Loans & Advances (Asset) - C (parent: Current Assets - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290909479.188,
-    "ts": "2026-04-27T11:55:09.479Z",
-    "level": "info",
-    "message": "COA created: Deposits (Asset) - C (parent: Current Assets - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290907850.4568,
-    "ts": "2026-04-27T11:55:07.850Z",
-    "level": "info",
-    "message": "COA created: Cash-in-Hand - C (parent: Current Assets - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290906211.452,
-    "ts": "2026-04-27T11:55:06.211Z",
-    "level": "info",
-    "message": "COA updated: Bank Accounts - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290904626.2458,
-    "ts": "2026-04-27T11:55:04.626Z",
-    "level": "info",
-    "message": "COA created: Reserves & Surplus - C (parent: Capital Account - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290903036.922,
-    "ts": "2026-04-27T11:55:03.036Z",
-    "level": "info",
-    "message": "COA created: Suspense A/c - C (parent: Source of Funds (Liabilities) - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290901402.7312,
-    "ts": "2026-04-27T11:55:01.402Z",
-    "level": "info",
-    "message": "COA created: Sales Accounts - C (parent: Income - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290899761.1675,
-    "ts": "2026-04-27T11:54:59.761Z",
-    "level": "info",
-    "message": "COA created: Purchase Accounts - C (parent: Expenses - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290898122.104,
-    "ts": "2026-04-27T11:54:58.122Z",
-    "level": "info",
-    "message": "COA created: Misc. Expenses (ASSET) - C (parent: Application of Funds (Assets) - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290896484.235,
-    "ts": "2026-04-27T11:54:56.484Z",
-    "level": "info",
-    "message": "COA created: Loans (Liability) - C (parent: Source of Funds (Liabilities) - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290893310.0046,
-    "ts": "2026-04-27T11:54:53.310Z",
-    "level": "info",
-    "message": "COA created: Indirect Incomes - C (parent: Income - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290888599.2942,
-    "ts": "2026-04-27T11:54:48.599Z",
-    "level": "info",
-    "message": "COA created: Direct Incomes - C (parent: Income - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880909.1272,
-    "ts": "2026-04-27T11:54:40.909Z",
-    "level": "info",
-    "message": "COA created: Branch / Divisions - C (parent: Application of Funds (Assets) - C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880805.9937,
-    "ts": "2026-04-27T11:54:40.805Z",
-    "level": "info",
-    "message": "COA root accounts — Asset: Application of Funds (Assets) - C, Liability: Source of Funds (Liabilities) - C, Equity(fallback): Source of Funds (Liabilities) - C, Income: Income - C, Expense: Expenses - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880801.0002,
-    "ts": "2026-04-27T11:54:40.801Z",
-    "level": "info",
-    "message": "COA: fetched 79 existing ERPNext accounts for Company1",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880741.147,
-    "ts": "2026-04-27T11:54:40.741Z",
-    "level": "info",
-    "message": "Syncing 28 account groups to ERPNext for Company1",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880736.5308,
-    "ts": "2026-04-27T11:54:40.736Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3573000000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880624.654,
-    "ts": "2026-04-27T11:54:40.624Z",
-    "level": "info",
-    "message": "Using ERPNext company: \"Company1\" (from Sync UI)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880621.9568,
-    "ts": "2026-04-27T11:54:40.621Z",
-    "level": "info",
-    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880611.1943,
-    "ts": "2026-04-27T11:54:40.611Z",
-    "level": "success",
-    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-27) from 129 total",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880603.8472,
-    "ts": "2026-04-27T11:54:40.603Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880591.288,
-    "ts": "2026-04-27T11:54:40.591Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880355.5405,
-    "ts": "2026-04-27T11:54:40.355Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2025-01-01",
-      "toDate": "2026-04-27"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880351.0017,
-    "ts": "2026-04-27T11:54:40.351Z",
-    "level": "info",
-    "message": "Vouchers: full window 2025-01-01 → 2026-04-27",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880347.62,
-    "ts": "2026-04-27T11:54:40.347Z",
-    "level": "info",
-    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880340.5908,
-    "ts": "2026-04-27T11:54:40.340Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880317.7249,
-    "ts": "2026-04-27T11:54:40.317Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880313.4229,
-    "ts": "2026-04-27T11:54:40.313Z",
-    "level": "info",
-    "message": "Ledgers: 68 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880306.0837,
-    "ts": "2026-04-27T11:54:40.306Z",
-    "level": "success",
-    "message": "Fetched 68 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880264.9785,
-    "ts": "2026-04-27T11:54:40.264Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880260.573,
-    "ts": "2026-04-27T11:54:40.260Z",
-    "level": "info",
-    "message": "Godowns: 1 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880252.9568,
-    "ts": "2026-04-27T11:54:40.252Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880230.4473,
-    "ts": "2026-04-27T11:54:40.230Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880225.5168,
-    "ts": "2026-04-27T11:54:40.225Z",
-    "level": "info",
-    "message": "Cost Centres: 3 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880215.6812,
-    "ts": "2026-04-27T11:54:40.215Z",
-    "level": "success",
-    "message": "Fetched 3 cost centres",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880194.9292,
-    "ts": "2026-04-27T11:54:40.194Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880189.0327,
-    "ts": "2026-04-27T11:54:40.189Z",
-    "level": "info",
-    "message": "Groups: 28 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880179.373,
-    "ts": "2026-04-27T11:54:40.179Z",
-    "level": "success",
-    "message": "Fetched 28 groups",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880136.1018,
-    "ts": "2026-04-27T11:54:40.136Z",
-    "level": "info",
-    "message": "Fetching groups from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777290880132.0972,
-    "ts": "2026-04-27T11:54:40.132Z",
-    "level": "info",
-    "message": "Sync mode: FULL (first run) for \"Tally\" → https://erpnext-wtj-ggp.m.frappe.cloud/",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880125.023,
-    "ts": "2026-04-27T11:54:40.125Z",
-    "level": "info",
-    "message": "Tally ping OK (14ms)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880107.5645,
-    "ts": "2026-04-27T11:54:40.107Z",
-    "level": "info",
-    "message": "Full sync: fetching Tally data with incremental logic...",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777290880101.758,
-    "ts": "2026-04-27T11:54:40.101Z",
-    "level": "info",
-    "message": "Full sync job full-1777290880101-92dkz started for: Tally → https://erpnext-wtj-ggp.m.frappe.cloud/",
-    "meta": {
-      "syncLedgers": true,
-      "syncStock": true,
-      "syncVouchers": true,
-      "syncGodowns": true,
-      "syncCostCentres": true,
-      "syncOpeningBalances": true,
-      "syncInvoices": true,
-      "syncTaxes": false,
-      "syncChartOfAccounts": true
-    },
-    "company": null
-  },
-  {
-    "id": 1777290861264.0266,
-    "ts": "2026-04-27T11:54:21.264Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3573000000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289820088.7568,
-    "ts": "2026-04-27T11:37:00.088Z",
-    "level": "info",
-    "message": "Run POST /api/middleware/check to validate all Tally data",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289820085.382,
-    "ts": "2026-04-27T11:37:00.085Z",
-    "level": "info",
-    "message": "Tally endpoint: http://localhost:9000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289820083.0242,
-    "ts": "2026-04-27T11:37:00.083Z",
-    "level": "info",
-    "message": "Tally Middleware server running on http://localhost:4000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289820073.5605,
-    "ts": "2026-04-27T11:37:00.073Z",
-    "level": "info",
-    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819554.9238,
-    "ts": "2026-04-27T11:36:59.554Z",
-    "level": "info",
-    "message": "syncState: checkpoint saved → vouchers up to 2026-04-27",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819550.2542,
-    "ts": "2026-04-27T11:36:59.550Z",
-    "level": "info",
-    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-nrg-urf.m.frappe.cloud",
-    "meta": {
-      "lastVoucherSyncDate": "2026-04-27",
-      "lastMasterSyncAt": "2026-04-27T11:36:59.541Z"
-    },
-    "company": null
-  },
-  {
-    "id": 1777289819542.0203,
-    "ts": "2026-04-27T11:36:59.542Z",
-    "level": "warn",
-    "message": "syncState: could not parse sync_state.json — starting fresh",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819537.0657,
-    "ts": "2026-04-27T11:36:59.537Z",
-    "level": "info",
-    "message": "Full sync job full-1777289463945-9tt0o done",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819533.3066,
-    "ts": "2026-04-27T11:36:59.533Z",
-    "level": "info",
-    "message": "Full sync complete: ok",
-    "meta": {
-      "company": "TallyCompany"
-    },
-    "company": "TallyCompany"
-  },
-  {
-    "id": 1777289819528.0972,
-    "ts": "2026-04-27T11:36:59.528Z",
-    "level": "success",
-    "message": "Invoice sync done - sales: +0 new/26 updated/0 failed | purchase: +0 new/17 updated/0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819524.9014,
-    "ts": "2026-04-27T11:36:59.524Z",
-    "level": "info",
-    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289819023.437,
-    "ts": "2026-04-27T11:36:59.023Z",
-    "level": "info",
-    "message": "Submit Sales Invoice: 0 submitted, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818494.618,
-    "ts": "2026-04-27T11:36:58.494Z",
-    "level": "info",
-    "message": "Sales Invoice rename complete: 0 renamed, 26 skipped, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818490.4668,
-    "ts": "2026-04-27T11:36:58.490Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00026",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818465.0942,
-    "ts": "2026-04-27T11:36:58.465Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00025",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818441.4973,
-    "ts": "2026-04-27T11:36:58.441Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00024",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818386.9053,
-    "ts": "2026-04-27T11:36:58.386Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00023",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818361.286,
-    "ts": "2026-04-27T11:36:58.361Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00022",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818338.5652,
-    "ts": "2026-04-27T11:36:58.338Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00021",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818313.7612,
-    "ts": "2026-04-27T11:36:58.313Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00020",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818216.4565,
-    "ts": "2026-04-27T11:36:58.216Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00019",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818077.4458,
-    "ts": "2026-04-27T11:36:58.077Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00018",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818055.6094,
-    "ts": "2026-04-27T11:36:58.055Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00017",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818033.2253,
-    "ts": "2026-04-27T11:36:58.033Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00016",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289818009.86,
-    "ts": "2026-04-27T11:36:58.009Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00015",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817874.0466,
-    "ts": "2026-04-27T11:36:57.874Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00014",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817829.1409,
-    "ts": "2026-04-27T11:36:57.829Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00013",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817806.2668,
-    "ts": "2026-04-27T11:36:57.806Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00012",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817703.3865,
-    "ts": "2026-04-27T11:36:57.703Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00011",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817622.4514,
-    "ts": "2026-04-27T11:36:57.622Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00010",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817600.0676,
-    "ts": "2026-04-27T11:36:57.600Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00009",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817499.8264,
-    "ts": "2026-04-27T11:36:57.499Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00008",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817293.611,
-    "ts": "2026-04-27T11:36:57.293Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00007",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817222.46,
-    "ts": "2026-04-27T11:36:57.222Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00006",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817189.8594,
-    "ts": "2026-04-27T11:36:57.189Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00005",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817137.4526,
-    "ts": "2026-04-27T11:36:57.137Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00004",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289817088.5288,
-    "ts": "2026-04-27T11:36:57.088Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00003",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289816986.8223,
-    "ts": "2026-04-27T11:36:56.986Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00002",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289816884.8787,
-    "ts": "2026-04-27T11:36:56.884Z",
-    "level": "warn",
-    "message": "Rename skipped (submitted): SINV-26-00001",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289816824.1868,
-    "ts": "2026-04-27T11:36:56.824Z",
-    "level": "info",
-    "message": "Renaming Sales Invoices to Tally voucher numbers...",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289801011.0571,
-    "ts": "2026-04-27T11:36:41.011Z",
-    "level": "info",
-    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289771375.1768,
-    "ts": "2026-04-27T11:36:11.375Z",
-    "level": "info",
-    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289750739.6973,
-    "ts": "2026-04-27T11:35:50.739Z",
-    "level": "info",
-    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289735167.1982,
-    "ts": "2026-04-27T11:35:35.167Z",
-    "level": "info",
-    "message": "Pre-syncing 8 Tally stock items to ERPNext before invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734898.4348,
-    "ts": "2026-04-27T11:35:34.898Z",
-    "level": "info",
-    "message": "Pre-syncing 12 customers before Sales Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734483.9019,
-    "ts": "2026-04-27T11:35:34.483Z",
-    "level": "info",
-    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734478.7468,
-    "ts": "2026-04-27T11:35:34.478Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Purchase Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734451.7764,
-    "ts": "2026-04-27T11:35:34.451Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Sales Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734125.8372,
-    "ts": "2026-04-27T11:35:34.125Z",
-    "level": "info",
-    "message": "Invoice breakdown - sales: 26, purchase: 17",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289734041.4956,
-    "ts": "2026-04-27T11:35:34.041Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289733869.6726,
-    "ts": "2026-04-27T11:35:33.869Z",
-    "level": "info",
-    "message": "Syncing invoices to ERPNext for TallyCompany (abbr: T)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289733862.0957,
-    "ts": "2026-04-27T11:35:33.862Z",
-    "level": "success",
-    "message": "Voucher sync done — Payment Entry: +36/~0/x0 | Journal Entry: +0/~49/x0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289714256.3572,
-    "ts": "2026-04-27T11:35:14.256Z",
-    "level": "info",
-    "message": "[Journal Entry] 40/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289692646.1482,
-    "ts": "2026-04-27T11:34:52.646Z",
-    "level": "info",
-    "message": "[Journal Entry] 30/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289671298.8218,
-    "ts": "2026-04-27T11:34:31.298Z",
-    "level": "info",
-    "message": "[Journal Entry] 20/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289649957.676,
-    "ts": "2026-04-27T11:34:09.957Z",
-    "level": "info",
-    "message": "[Journal Entry] 10/49 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289633407.6155,
-    "ts": "2026-04-27T11:33:53.407Z",
-    "level": "info",
-    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 13",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289633403.065,
-    "ts": "2026-04-27T11:33:53.403Z",
-    "level": "info",
-    "message": "Syncing 49/49 vouchers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289633261.298,
-    "ts": "2026-04-27T11:33:53.261Z",
-    "level": "info",
-    "message": "Payment Entry sync done — created: 36, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289618405.3718,
-    "ts": "2026-04-27T11:33:38.405Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 7 from voucherType (Receipt)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289618401.877,
-    "ts": "2026-04-27T11:33:38.401Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 6 from voucherType (Receipt)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289618398.2688,
-    "ts": "2026-04-27T11:33:38.398Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 10 from voucherType (Payment)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289618394.0845,
-    "ts": "2026-04-27T11:33:38.394Z",
-    "level": "info",
-    "message": "[PE] Inferred party row for voucher 3 from voucherType (Payment)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289618391.4307,
-    "ts": "2026-04-27T11:33:38.391Z",
-    "level": "info",
-    "message": "[PE] Default bank/cash account: RAJLAXMI - T (Bank)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289617820.5066,
-    "ts": "2026-04-27T11:33:37.820Z",
-    "level": "info",
-    "message": "[PE pre-sync] Ensuring parties — Customers: 0, Suppliers: 21",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615252.124,
-    "ts": "2026-04-27T11:33:35.252Z",
-    "level": "info",
-    "message": "Syncing 36 Payment/Receipt vouchers to Payment Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615247.9263,
-    "ts": "2026-04-27T11:33:35.247Z",
-    "level": "info",
-    "message": "Voucher split — Payment Entry: 36, Journal Entry: 49, Sales (invoice sync): 26",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615241.791,
-    "ts": "2026-04-27T11:33:35.241Z",
-    "level": "info",
-    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615236.6055,
-    "ts": "2026-04-27T11:33:35.236Z",
-    "level": "info",
-    "message": "Resolving accounts with company abbreviation: T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615233.051,
-    "ts": "2026-04-27T11:33:35.233Z",
-    "level": "info",
-    "message": "Syncing 129 vouchers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289615228.3984,
-    "ts": "2026-04-27T11:33:35.228Z",
-    "level": "success",
-    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289599387.2437,
-    "ts": "2026-04-27T11:33:19.387Z",
-    "level": "info",
-    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289599251.481,
-    "ts": "2026-04-27T11:33:19.251Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289599152.6438,
-    "ts": "2026-04-27T11:33:19.152Z",
-    "level": "info",
-    "message": "Syncing 9 stock items to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289599148.1135,
-    "ts": "2026-04-27T11:33:19.148Z",
-    "level": "success",
-    "message": "Cost centres sync done - created: 0, updated: 3, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289594275.4116,
-    "ts": "2026-04-27T11:33:14.275Z",
-    "level": "info",
-    "message": "Cost Centre sync: fetched 10 existing cost centers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289594239.5222,
-    "ts": "2026-04-27T11:33:14.239Z",
-    "level": "info",
-    "message": "Root cost centre resolved: TallyCompany - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289594208.2104,
-    "ts": "2026-04-27T11:33:14.208Z",
-    "level": "info",
-    "message": "Syncing 3 cost centres to ERPNext for TallyCompany (abbr: T)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289594203.7969,
-    "ts": "2026-04-27T11:33:14.203Z",
-    "level": "success",
-    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289592607.4924,
-    "ts": "2026-04-27T11:33:12.607Z",
-    "level": "info",
-    "message": "Root warehouse resolved: All Warehouses - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289592581.4944,
-    "ts": "2026-04-27T11:33:12.581Z",
-    "level": "info",
-    "message": "Syncing 1 godowns to ERPNext for TallyCompany (abbr: T)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289592577.7803,
-    "ts": "2026-04-27T11:33:12.577Z",
-    "level": "info",
-    "message": "Opening balance sync complete - 0 created, 3 updated, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289592574.6255,
-    "ts": "2026-04-27T11:33:12.574Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [GL]: ACC-JV-2026-00089",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289591539.9324,
-    "ts": "2026-04-27T11:33:11.539Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Creditors]: ACC-JV-2026-00088",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289590434.1062,
-    "ts": "2026-04-27T11:33:10.434Z",
-    "level": "success",
-    "message": "Created & submitted Opening Entry JE [Debtors]: ACC-JV-2026-00087",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289590043.1133,
-    "ts": "2026-04-27T11:33:10.043Z",
-    "level": "info",
-    "message": "Splitting 14 accounts into 3 Journal Entries (Debtors / Creditors / GL)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589999.4731,
-    "ts": "2026-04-27T11:33:09.999Z",
-    "level": "info",
-    "message": "Resolved 14 / 14 ledgers to JE account rows",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589953.2854,
-    "ts": "2026-04-27T11:33:09.953Z",
-    "level": "info",
-    "message": "  UpdateLedgerTest -> GL: UpdateLedgerTest - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589907.3694,
-    "ts": "2026-04-27T11:33:09.907Z",
-    "level": "info",
-    "message": "  TEST-SUPPLIER2 -> Payable: ABC Traders - T (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589861.4749,
-    "ts": "2026-04-27T11:33:09.861Z",
-    "level": "info",
-    "message": "  Test Ledger 999 -> GL: Test Ledger 999 - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589815.638,
-    "ts": "2026-04-27T11:33:09.815Z",
-    "level": "info",
-    "message": "  Test GST Customer -> Receivable: Debtors - T (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589768.7622,
-    "ts": "2026-04-27T11:33:09.768Z",
-    "level": "info",
-    "message": "  TestCustomer4 -> Receivable: Debtors - T (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589722.5588,
-    "ts": "2026-04-27T11:33:09.722Z",
-    "level": "info",
-    "message": "  Test600 -> Payable: ABC Traders - T (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589676.0256,
-    "ts": "2026-04-27T11:33:09.676Z",
-    "level": "info",
-    "message": "  Test500 -> GL (Payable — adding party): Test500 - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589628.2676,
-    "ts": "2026-04-27T11:33:09.628Z",
-    "level": "info",
-    "message": "  Test18022026 -> GL: Test18022026 - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589581.5308,
-    "ts": "2026-04-27T11:33:09.581Z",
-    "level": "info",
-    "message": "  Suryavanshi -> GL: Suryavanshi - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589535.2861,
-    "ts": "2026-04-27T11:33:09.535Z",
-    "level": "info",
-    "message": "  Suppliers5 -> Payable: ABC Traders - T (Supplier)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589488.3215,
-    "ts": "2026-04-27T11:33:09.488Z",
-    "level": "info",
-    "message": "  SudhirMorchale -> GL (Payable — adding party): SudhirMorchale - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589440.2998,
-    "ts": "2026-04-27T11:33:09.440Z",
-    "level": "info",
-    "message": "  Sudhir26022026 -> GL: Sudhir26022026 - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589392.9343,
-    "ts": "2026-04-27T11:33:09.392Z",
-    "level": "info",
-    "message": "  RAJLAXMI -> GL: RAJLAXMI - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589354.0793,
-    "ts": "2026-04-27T11:33:09.354Z",
-    "level": "info",
-    "message": "  Customers5 -> Receivable: Debtors - T (Customer)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589351.6077,
-    "ts": "2026-04-27T11:33:09.351Z",
-    "level": "info",
-    "message": "[OB] Known customers: 25, suppliers: 37",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589190.0874,
-    "ts": "2026-04-27T11:33:09.190Z",
-    "level": "info",
-    "message": "Control accounts - Receivable: Debtors - T, Payable: ABC Traders - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589186.955,
-    "ts": "2026-04-27T11:33:09.186Z",
-    "level": "info",
-    "message": "Fetched 129 accounts from ERPNext for TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589154.6582,
-    "ts": "2026-04-27T11:33:09.154Z",
-    "level": "info",
-    "message": "Found 14 ledgers with opening balances: Customers5=-777777, RAJLAXMI=-242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=-2, Test600=7, TestCustomer4=-67567575, Test GST Customer=-76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589151.2039,
-    "ts": "2026-04-27T11:33:09.151Z",
-    "level": "info",
-    "message": "Syncing opening balances for 68 ledgers in TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589145.5886,
-    "ts": "2026-04-27T11:33:09.145Z",
-    "level": "success",
-    "message": "Ledger sync done - customers: +0 created, ~18 updated, x0 failed | suppliers: +0 created, ~11 updated, x0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289589142.0146,
-    "ts": "2026-04-27T11:33:09.142Z",
-    "level": "info",
-    "message": "Address/contact sync done",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289588326.2454,
-    "ts": "2026-04-27T11:33:08.326Z",
-    "level": "warn",
-    "message": "Address sync skipped for Neha: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289587827.345,
-    "ts": "2026-04-27T11:33:07.827Z",
-    "level": "warn",
-    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289587421.5222,
-    "ts": "2026-04-27T11:33:07.421Z",
-    "level": "warn",
-    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289586261.947,
-    "ts": "2026-04-27T11:33:06.261Z",
-    "level": "warn",
-    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289586255.0544,
-    "ts": "2026-04-27T11:33:06.255Z",
-    "level": "info",
-    "message": "Syncing addresses/contacts for 7 parties from Tally",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289579538.3228,
-    "ts": "2026-04-27T11:32:59.538Z",
-    "level": "info",
-    "message": "[Supplier] 10/11 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289556752.164,
-    "ts": "2026-04-27T11:32:36.752Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"TestGstCustomer2\" (will sync without PAN): 4444444444",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289551033.6304,
-    "ts": "2026-04-27T11:32:31.033Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"Test GST Customer\" (will sync without PAN): 4654563565",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289535664.9397,
-    "ts": "2026-04-27T11:32:15.664Z",
-    "level": "info",
-    "message": "[Customer] 10/18 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289519013.9463,
-    "ts": "2026-04-27T11:31:59.013Z",
-    "level": "info",
-    "message": "Ledger breakdown - customers: 18, suppliers: 11, skipped (GL-only groups): 40",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289519007.289,
-    "ts": "2026-04-27T11:31:59.007Z",
-    "level": "info",
-    "message": "Using default Territory: India",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289519002.5664,
-    "ts": "2026-04-27T11:31:59.002Z",
-    "level": "info",
-    "message": "Using Supplier Group: Services",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289518859.8503,
-    "ts": "2026-04-27T11:31:58.859Z",
-    "level": "info",
-    "message": "Using Customer Group: Commercial",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289518683.3132,
-    "ts": "2026-04-27T11:31:58.683Z",
-    "level": "info",
-    "message": "Syncing 68 ledgers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289518677.7952,
-    "ts": "2026-04-27T11:31:58.677Z",
-    "level": "success",
-    "message": "Chart of Accounts sync done - created: 0, updated: 13, skipped: 15, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289517159.7878,
-    "ts": "2026-04-27T11:31:57.159Z",
-    "level": "info",
-    "message": "COA updated: Unsecured Loans - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289515520.849,
-    "ts": "2026-04-27T11:31:55.520Z",
-    "level": "info",
-    "message": "COA updated: Secured Loans - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289513881.0767,
-    "ts": "2026-04-27T11:31:53.881Z",
-    "level": "info",
-    "message": "COA updated: Bank OD A/c - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289512245.1992,
-    "ts": "2026-04-27T11:31:52.245Z",
-    "level": "info",
-    "message": "COA updated: Sundry Creditors - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289510606.979,
-    "ts": "2026-04-27T11:31:50.606Z",
-    "level": "info",
-    "message": "COA updated: Provisions - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289508986.2402,
-    "ts": "2026-04-27T11:31:48.986Z",
-    "level": "info",
-    "message": "COA updated: Duties & Taxes - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289507431.3232,
-    "ts": "2026-04-27T11:31:47.431Z",
-    "level": "info",
-    "message": "COA updated: Sundry Debtors - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289505793.7153,
-    "ts": "2026-04-27T11:31:45.793Z",
-    "level": "info",
-    "message": "COA updated: Stock-in-Hand - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289504155.592,
-    "ts": "2026-04-27T11:31:44.155Z",
-    "level": "info",
-    "message": "COA updated: Loans & Advances (Asset) - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289502211.1492,
-    "ts": "2026-04-27T11:31:42.211Z",
-    "level": "info",
-    "message": "COA updated: Deposits (Asset) - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289498271.0464,
-    "ts": "2026-04-27T11:31:38.271Z",
-    "level": "info",
-    "message": "COA updated: Cash-in-Hand - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289493916.3354,
-    "ts": "2026-04-27T11:31:33.916Z",
-    "level": "info",
-    "message": "COA updated: Bank Accounts - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289487566.5876,
-    "ts": "2026-04-27T11:31:27.566Z",
-    "level": "info",
-    "message": "COA updated: Reserves & Surplus - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464839.6738,
-    "ts": "2026-04-27T11:31:04.839Z",
-    "level": "info",
-    "message": "COA root accounts — Asset: Application of Funds (Assets) - T, Liability: Source of Funds (Liabilities) - T, Equity(fallback): Source of Funds (Liabilities) - T, Income: Income - T, Expense: Expenses - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464834.916,
-    "ts": "2026-04-27T11:31:04.834Z",
-    "level": "info",
-    "message": "COA: fetched 129 existing ERPNext accounts for TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464636.8582,
-    "ts": "2026-04-27T11:31:04.636Z",
-    "level": "info",
-    "message": "Syncing 28 account groups to ERPNext for TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464631.2937,
-    "ts": "2026-04-27T11:31:04.631Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3346000000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464507.107,
-    "ts": "2026-04-27T11:31:04.507Z",
-    "level": "info",
-    "message": "Using ERPNext company: \"TallyCompany\" (from Sync UI)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464503.3772,
-    "ts": "2026-04-27T11:31:04.503Z",
-    "level": "info",
-    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464495.9263,
-    "ts": "2026-04-27T11:31:04.495Z",
-    "level": "success",
-    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-27) from 129 total",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464487.0803,
-    "ts": "2026-04-27T11:31:04.487Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464474.3557,
-    "ts": "2026-04-27T11:31:04.474Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464244.7415,
-    "ts": "2026-04-27T11:31:04.244Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2025-01-01",
-      "toDate": "2026-04-27"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464239.547,
-    "ts": "2026-04-27T11:31:04.239Z",
-    "level": "info",
-    "message": "Vouchers: full window 2025-01-01 → 2026-04-27",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464236.2905,
-    "ts": "2026-04-27T11:31:04.236Z",
-    "level": "warn",
-    "message": "syncState: could not parse sync_state.json — starting fresh",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464232.3533,
-    "ts": "2026-04-27T11:31:04.232Z",
-    "level": "info",
-    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464225.6582,
-    "ts": "2026-04-27T11:31:04.225Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464201.5815,
-    "ts": "2026-04-27T11:31:04.201Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464197.924,
-    "ts": "2026-04-27T11:31:04.197Z",
-    "level": "info",
-    "message": "Ledgers: 68 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464190.4788,
-    "ts": "2026-04-27T11:31:04.190Z",
-    "level": "success",
-    "message": "Fetched 68 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464146.7388,
-    "ts": "2026-04-27T11:31:04.146Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464141.4756,
-    "ts": "2026-04-27T11:31:04.141Z",
-    "level": "info",
-    "message": "Godowns: 1 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464133.9126,
-    "ts": "2026-04-27T11:31:04.133Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464115.354,
-    "ts": "2026-04-27T11:31:04.115Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464109.4915,
-    "ts": "2026-04-27T11:31:04.109Z",
-    "level": "info",
-    "message": "Cost Centres: 3 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464100.233,
-    "ts": "2026-04-27T11:31:04.100Z",
-    "level": "success",
-    "message": "Fetched 3 cost centres",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464079.2253,
-    "ts": "2026-04-27T11:31:04.079Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464074.411,
-    "ts": "2026-04-27T11:31:04.074Z",
-    "level": "info",
-    "message": "Groups: 28 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464066.5623,
-    "ts": "2026-04-27T11:31:04.066Z",
-    "level": "success",
-    "message": "Fetched 28 groups",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464023.774,
-    "ts": "2026-04-27T11:31:04.023Z",
-    "level": "info",
-    "message": "Fetching groups from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289464018.601,
-    "ts": "2026-04-27T11:31:04.018Z",
-    "level": "info",
-    "message": "Sync mode: FULL (first run) for \"Tally\" → https://erpnext-nrg-urf.m.frappe.cloud/",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464015.4602,
-    "ts": "2026-04-27T11:31:04.015Z",
-    "level": "warn",
-    "message": "syncState: could not parse sync_state.json — starting fresh",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289464010.5823,
-    "ts": "2026-04-27T11:31:04.010Z",
-    "level": "info",
-    "message": "Tally ping OK (56ms)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289463950.3672,
-    "ts": "2026-04-27T11:31:03.950Z",
-    "level": "info",
-    "message": "Full sync: fetching Tally data with incremental logic...",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289463945.2554,
-    "ts": "2026-04-27T11:31:03.945Z",
-    "level": "info",
-    "message": "Full sync job full-1777289463945-9tt0o started for: Tally → https://erpnext-nrg-urf.m.frappe.cloud/",
-    "meta": {
-      "syncLedgers": true,
-      "syncStock": true,
-      "syncVouchers": true,
-      "syncGodowns": true,
-      "syncCostCentres": true,
-      "syncOpeningBalances": true,
-      "syncInvoices": true,
-      "syncTaxes": false,
-      "syncChartOfAccounts": true
-    },
-    "company": null
-  },
-  {
-    "id": 1777289453871.9348,
-    "ts": "2026-04-27T11:30:53.871Z",
-    "level": "info",
-    "message": "Run POST /api/middleware/check to validate all Tally data",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289453868.1357,
-    "ts": "2026-04-27T11:30:53.868Z",
-    "level": "info",
-    "message": "Tally endpoint: http://localhost:9000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289453866.641,
-    "ts": "2026-04-27T11:30:53.866Z",
-    "level": "info",
-    "message": "Tally Middleware server running on http://localhost:4000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289453857.1396,
-    "ts": "2026-04-27T11:30:53.857Z",
-    "level": "info",
-    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289452034.1343,
-    "ts": "2026-04-27T11:30:52.034Z",
-    "level": "info",
-    "message": "COA updated: Sundry Creditors - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289450395.4275,
-    "ts": "2026-04-27T11:30:50.395Z",
-    "level": "info",
-    "message": "COA updated: Provisions - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289447445.1265,
-    "ts": "2026-04-27T11:30:47.445Z",
-    "level": "info",
-    "message": "COA updated: Duties & Taxes - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289444459.4812,
-    "ts": "2026-04-27T11:30:44.459Z",
-    "level": "info",
-    "message": "COA updated: Sundry Debtors - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289440360.9685,
-    "ts": "2026-04-27T11:30:40.360Z",
-    "level": "info",
-    "message": "COA updated: Stock-in-Hand - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289436263.8027,
-    "ts": "2026-04-27T11:30:36.263Z",
-    "level": "info",
-    "message": "COA updated: Loans & Advances (Asset) - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289434625.9333,
-    "ts": "2026-04-27T11:30:34.625Z",
-    "level": "info",
-    "message": "COA updated: Deposits (Asset) - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289432987.135,
-    "ts": "2026-04-27T11:30:32.987Z",
-    "level": "info",
-    "message": "COA updated: Cash-in-Hand - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289431348.4287,
-    "ts": "2026-04-27T11:30:31.348Z",
-    "level": "info",
-    "message": "COA updated: Bank Accounts - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289429710.7507,
-    "ts": "2026-04-27T11:30:29.710Z",
-    "level": "info",
-    "message": "COA updated: Reserves & Surplus - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406882.024,
-    "ts": "2026-04-27T11:30:06.882Z",
-    "level": "info",
-    "message": "COA root accounts — Asset: Application of Funds (Assets) - T, Liability: Source of Funds (Liabilities) - T, Equity(fallback): Source of Funds (Liabilities) - T, Income: Income - T, Expense: Expenses - T",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406876.2297,
-    "ts": "2026-04-27T11:30:06.876Z",
-    "level": "info",
-    "message": "COA: fetched 129 existing ERPNext accounts for TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406640.388,
-    "ts": "2026-04-27T11:30:06.640Z",
-    "level": "info",
-    "message": "Syncing 28 account groups to ERPNext for TallyCompany",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406635.7212,
-    "ts": "2026-04-27T11:30:06.635Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3346000000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406486.603,
-    "ts": "2026-04-27T11:30:06.486Z",
-    "level": "info",
-    "message": "Using ERPNext company: \"TallyCompany\" (from Sync UI)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406481.2766,
-    "ts": "2026-04-27T11:30:06.481Z",
-    "level": "info",
-    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406472.1694,
-    "ts": "2026-04-27T11:30:06.472Z",
-    "level": "success",
-    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-27) from 129 total",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289406462.1606,
-    "ts": "2026-04-27T11:30:06.462Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289406448.5479,
-    "ts": "2026-04-27T11:30:06.448Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289406202.2795,
-    "ts": "2026-04-27T11:30:06.202Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2025-01-01",
-      "toDate": "2026-04-27"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289406197.9343,
-    "ts": "2026-04-27T11:30:06.197Z",
-    "level": "info",
-    "message": "Vouchers: full window 2025-01-01 → 2026-04-27",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406192.8154,
-    "ts": "2026-04-27T11:30:06.192Z",
-    "level": "warn",
-    "message": "syncState: could not parse sync_state.json — starting fresh",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406187.9258,
-    "ts": "2026-04-27T11:30:06.187Z",
-    "level": "info",
-    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777289406178.3462,
-    "ts": "2026-04-27T11:30:06.178Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777289406156.3462,
-    "ts": "2026-04-27T11:30:06.156Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
   }
 ]
