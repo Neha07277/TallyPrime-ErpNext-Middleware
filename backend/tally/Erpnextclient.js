@@ -749,9 +749,50 @@ async function upsert(client, doctype, filters, doc) {
     });
     const existing = list.data && list.data.data && list.data.data[0];
     if (existing) {
-      // Skip PUT for submitted docs (docstatus=1) — ERPNext does not allow editing them.
-      // The submit step handles submission; if already submitted we just treat as "updated".
       if (existing.docstatus === 1) {
+        // ── SUBMITTED DOC: patch only the Tally custom fields via set_value ──
+        // ERPNext won’t accept a full PUT on a submitted document, but individual
+        // read_only custom fields (tally_sales_ledger, party_balance, etc.) can be
+        // patched directly with frappe.client.set_value without cancel/amend.
+        // We only attempt this for Sales Invoice / Purchase Invoice doctypes where
+        // the Tally custom fields are defined — other doctypes just skip silently.
+        const tallyPatchFields = [
+          "custom_tally_sales_ledger",
+          "custom_tally_party_balance",
+          "custom_tally_sales_ledger_balance",
+          "custom_tally_voucher_no",
+          "custom_tally_id",
+        ];
+        const patchValues = {};
+        for (const f of tallyPatchFields) {
+          if (doc[f] !== undefined && doc[f] !== null) {
+            patchValues[f] = doc[f];
+          }
+        }
+        if (Object.keys(patchValues).length > 0) {
+          try {
+            await client.post("/api/method/frappe.client.set_value", {
+              doctype,
+              name:     existing.name,
+              fieldname: patchValues,
+            });
+          } catch (patchErr) {
+            // set_value with a fieldname object failed on some ERPNext versions.
+            // Fall back to patching each field individually, one at a time.
+            for (const [fieldname, value] of Object.entries(patchValues)) {
+              try {
+                await client.post("/api/method/frappe.client.set_value", {
+                  doctype,
+                  name:     existing.name,
+                  fieldname,
+                  value,
+                });
+              } catch (singleErr) {
+                logger.warn("[set_value] Could not patch " + fieldname + " on " + existing.name + ": " + (singleErr?.response?.data?.message || singleErr?.message || singleErr));
+              }
+            }
+          }
+        }
         return { action: "updated", name: existing.name };
       }
       // Always include doctype + name in PUT body — ERPNext requires them to validate mandatory fields
@@ -1070,6 +1111,7 @@ async function ensureTallyCustomFields(client) {
       in_list_view: 1,       // show in the Sales Invoice list — this is the key flag
       in_standard_filter: 1, // also filterable
       read_only: 1,
+      allow_on_submit: 1,    // allow set_value on submitted docs
     },
     {
       // FIX: Add Tally Vch No column to Payment Entry list so users can cross-reference
@@ -1082,6 +1124,50 @@ async function ensureTallyCustomFields(client) {
       in_list_view: 1,       // visible in the Payment Entry list
       in_standard_filter: 1, // filterable by Tally voucher number
       read_only: 1,
+      allow_on_submit: 1,
+    },
+    // ── NEW: Tally Sales Ledger name (e.g. "Sales", "Sales - Retail") ──────────
+    // Tally shows "Sales ledger: Sales" at the top of every sales voucher.
+    // This field maps that ledger name into ERPNext so no data is lost.
+    // in_list_view: 1 so it appears as a column in the Sales Invoice list view.
+    {
+      dt:           "Sales Invoice",
+      fieldname:    "custom_tally_sales_ledger",
+      label:        "Tally Sales Ledger",
+      fieldtype:    "Data",
+      insert_after: "custom_tally_voucher_no",
+      in_list_view: 1,
+      in_standard_filter: 1,
+      read_only: 1,
+      allow_on_submit: 1,
+    },
+    // ── NEW: Party (Customer) current balance from Tally at time of sync ───────
+    // Tally shows "Current balance: 25,68,68,636.00 Dr" next to the party name.
+    // Stored as a plain string to preserve Tally's Dr/Cr suffix.
+    {
+      dt:           "Sales Invoice",
+      fieldname:    "custom_tally_party_balance",
+      label:        "Tally Party Balance",
+      fieldtype:    "Data",
+      insert_after: "custom_tally_sales_ledger",
+      in_list_view: 0,
+      in_standard_filter: 0,
+      read_only: 1,
+      allow_on_submit: 1,
+    },
+    // ── NEW: Sales Ledger current balance from Tally at time of sync ──────────
+    // Tally shows "Current balance: 5,59,40,29,876.00 Cr" next to the sales ledger.
+    // Stored as a plain string to preserve Tally's Dr/Cr suffix.
+    {
+      dt:           "Sales Invoice",
+      fieldname:    "custom_tally_sales_ledger_balance",
+      label:        "Tally Sales Ledger Balance",
+      fieldtype:    "Data",
+      insert_after: "custom_tally_party_balance",
+      in_list_view: 0,
+      in_standard_filter: 0,
+      read_only: 1,
+      allow_on_submit: 1,
     },
   ];
 
@@ -1091,10 +1177,27 @@ async function ensureTallyCustomFields(client) {
       const existing = await client.get("/api/resource/Custom Field", {
         params: {
           filters: JSON.stringify([["Custom Field","dt","=",f.dt],["Custom Field","fieldname","=",f.fieldname]]),
+          fields: '["name","in_list_view","in_standard_filter","allow_on_submit"]',
           limit: 1,
         },
       });
-      if ((existing?.data?.data || []).length > 0) continue; // already exists
+      const existingField = (existing?.data?.data || [])[0];
+      if (existingField) {
+        // Field exists — update in_list_view/in_standard_filter if they changed
+        const needsUpdate =
+          (existingField.in_list_view      || 0) !== (f.in_list_view      || 0) ||
+          (existingField.in_standard_filter || 0) !== (f.in_standard_filter || 0) ||
+          (existingField.allow_on_submit    || 0) !== (f.allow_on_submit    || 0);
+        if (needsUpdate) {
+          await client.put("/api/resource/Custom Field/" + encodeURIComponent(existingField.name), {
+            in_list_view:       f.in_list_view,
+            in_standard_filter: f.in_standard_filter,
+            allow_on_submit:    f.allow_on_submit || 0,
+          });
+          logger.info("Updated custom field flags: " + f.dt + "." + f.fieldname);
+        }
+        continue;
+      }
 
       await client.post("/api/resource/Custom Field", {
         doctype:            "Custom Field",
@@ -1106,6 +1209,7 @@ async function ensureTallyCustomFields(client) {
         in_list_view:       f.in_list_view,
         in_standard_filter: f.in_standard_filter,
         read_only:          f.read_only,
+        allow_on_submit:    f.allow_on_submit || 0,
       });
       logger.info("Created custom field: " + f.dt + "." + f.fieldname);
     } catch (e) {
@@ -1605,12 +1709,7 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
       const paidToAcctType   = isReceipt ? partyAcctType : bankAcctType;
 
       return {
-        // FIX: Use custom_tally_voucher_no as the idempotency key instead of remarks.
-        // `remarks` is a Text field on Payment Entry — ERPNext's `like` filter is
-        // unreliable on Text fields and causes "not found → create duplicate" on every
-        // re-sync. custom_tally_voucher_no is a plain Data field we control, so an
-        // exact-match filter reliably finds the existing record.
-        filters: { custom_tally_voucher_no: v.voucherNumber || v.guid },
+        filters: { remarks: remarkKey },
         doc: {
           doctype:                  "Payment Entry",
           payment_type:             paymentType,
@@ -1637,64 +1736,32 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
       };
     };
 
-    // Separate valid PE vouchers from ones that need JE fallback
-    const validPEVouchers = [];
-    const fallbackJE      = [];
+    const validPE    = [];
+    const fallbackJE = [];
     for (const v of paymentVouchers) {
       if (v._skip || !v.resolvedAccounts) { peResults.failed++; continue; }
       const mapped = peMapper(v);
       if (mapped === null) fallbackJE.push(v);
-      else validPEVouchers.push(v);
+      else validPE.push({ v, mapped });
     }
 
-    // FIX: Use batchSync (same as Sales/Purchase Invoice) so Payment Entry gets
-    // automatic retry, throttling, burst pausing, and transient-failure final pass.
-    // peMapper is called inside batchSync just like salesMapper / purchaseMapper.
-    const _peResults = await batchSync(client, "Payment Entry", validPEVouchers, peMapper);
-    peResults.created += _peResults.created;
-    peResults.updated += _peResults.updated;
-    peResults.failed  += _peResults.failed;
+    for (const { v, mapped } of validPE) {
+      try {
+        const result = await upsert(client, "Payment Entry", mapped.filters, mapped.doc);
+        if (result.action === "created") peResults.created++;
+        else peResults.updated++;
+      } catch (e) {
+        peResults.failed++;
+        logger.warn("Payment Entry failed for " + (v.voucherNumber || v.guid) + ": " + parseErpError(e));
+      }
+      await sleep(300);
+    }
 
     if (fallbackJE.length > 0) {
       logger.info(fallbackJE.length + " payment vouchers without party rows falling back to Journal Entry");
       journalVouchers = [...journalVouchers, ...fallbackJE];
     }
     logger.info("Payment Entry sync done — created: " + peResults.created + ", updated: " + peResults.updated + ", failed: " + peResults.failed);
-
-    // FIX: Submit draft Payment Entries so they affect the ledger — mirrors the
-    // submitDraftInvoices pattern used for Sales/Purchase Invoice below.
-    // Search by custom_tally_voucher_no (the same reliable key used for upsert)
-    // instead of remarks to avoid the Text-field filter issue.
-    {
-      let peSubmitted = 0, peFailed = 0;
-      for (const v of validPEVouchers) {
-        const vchKey = v.voucherNumber || v.guid;
-        try {
-          const list = await client.get("/api/resource/Payment Entry", {
-            params: {
-              filters: JSON.stringify([["Payment Entry", "custom_tally_voucher_no", "=", vchKey]]),
-              fields:  '["name","docstatus"]',
-              limit:   1,
-            },
-          });
-          const stub = list?.data?.data?.[0];
-          if (!stub || stub.docstatus === 1) continue; // not found or already submitted
-
-          // Fetch full doc for current `modified` timestamp (Frappe optimistic locking)
-          const fullRes = await client.get("/api/resource/Payment Entry/" + encodeURIComponent(stub.name));
-          const fullDoc = fullRes?.data?.data;
-          if (!fullDoc) continue;
-
-          await client.post("/api/method/frappe.client.submit", { doc: fullDoc });
-          peSubmitted++;
-        } catch (e) {
-          peFailed++;
-          logger.warn("Could not submit Payment Entry for voucher " + vchKey + ": " + parseErpError(e));
-        }
-        await sleep(200);
-      }
-      logger.info("Submit Payment Entry: " + peSubmitted + " submitted, " + peFailed + " failed");
-    }
   }
 
   // ── Resolve accounts and annotate party info for Receivable/Payable rows ────
@@ -2654,43 +2721,62 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
   } catch (_) {}
   if (!temporaryAccount) logger.warn("Could not find \"Temporary Opening\" account - JE may be unbalanced");
 
-  // -- Clean up ALL old Opening Balance JEs (Draft AND Submitted) ---------------
-  // Cancel+delete any JE for this company with user_remark starting with
-  // "Tally Opening Balance" — this cleans up both:
-  //   • Old all-in-one JEs from before the Debtors/Creditors/GL split
-  //   • Draft JEs from previously failed runs
-  // The new JEs use remarks like "Tally Opening Balance - Debtors [company]"
-  // so they will be matched by the per-group lookup inside postChunk, not here.
+  // -- Clean up duplicate Opening Balance JEs on every sync -------------------
+  // Search by TITLE (stable across syncs) to find all existing Tally OB entries.
+  // Keep only the NEWEST one per label (Debtors/Creditors/GL), delete the rest.
+  // This fixes the duplicate accumulation bug: user_remark is overwritten by
+  // Frappe on submitted Opening Entry docs, but title is stable.
+  // We also build a map of label -> existingName so postChunk can UPDATE
+  // the surviving JE instead of always creating a new one.
+  const _existingOBJEs = new Map(); // label -> { name, docstatus }
   try {
     const staleRes = await client.get("/api/resource/Journal Entry", {
       params: {
         filters: JSON.stringify([
           ["Journal Entry", "company",      "=",    companyName],
-          ["Journal Entry", "user_remark",  "like", "Tally Opening Balance%"],
+          ["Journal Entry", "title",        "like", "Tally OB - %"],
           ["Journal Entry", "voucher_type", "=",    "Opening Entry"],
         ]),
-        fields: '["name","title","docstatus"]',
-        limit:  50,
+        fields: '["name","title","docstatus","creation"]',
+        limit:  500,
+        order_by: "creation desc",
       },
     });
-    const stale = (staleRes.data && staleRes.data.data) || [];
-    // Only delete old-format "chunk N of N" JEs — leave new "Debtors/Creditors/GL" ones alone
-    const oldFormat = stale.filter((s) =>
-      s.title && !s.title.includes("Tally OB - Debtors") &&
-                 !s.title.includes("Tally OB - Creditors") &&
-                 !s.title.includes("Tally OB - GL")
-    );
-    for (const s of oldFormat) {
-      try {
-        if (s.docstatus === 1) {
-          await client.post("/api/method/frappe.client.cancel", { doctype: "Journal Entry", name: s.name });
-          logger.info("[OB] Cancelled old-format submitted JE: " + s.name + " (\"" + s.title + "\")");
-        }
-        await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(s.name));
-        logger.info("[OB] Deleted old-format JE: " + s.name + " (\"" + s.title + "\")");
-      } catch (_) {}
+    const allOB = (staleRes.data && staleRes.data.data) || [];
+
+    // Group by title — keep newest, delete extras
+    const byTitle = new Map();
+    for (const je of allOB) {
+      const t = je.title || "";
+      if (!byTitle.has(t)) byTitle.set(t, []);
+      byTitle.get(t).push(je);
     }
-    if (oldFormat.length > 0) logger.info("[OB] Cleaned up " + oldFormat.length + " old-format Opening Balance JEs");
+
+    let deletedCount = 0;
+    for (const [title, entries] of byTitle) {
+      // entries[0] = newest (order_by creation desc) — keep it
+      const keeper = entries[0];
+      // Extract label from title: "Tally OB - Debtors - Company2" -> "Debtors"
+      const labelMatch = title.match(/^Tally OB - (.+?) - /);
+      const label = labelMatch ? labelMatch[1] : title;
+      _existingOBJEs.set(label, { name: keeper.name, docstatus: keeper.docstatus });
+
+      // Delete older duplicates
+      const toDelete = entries.slice(1);
+      for (const s of toDelete) {
+        try {
+          if (s.docstatus === 1) {
+            await client.post("/api/method/frappe.client.cancel", { doctype: "Journal Entry", name: s.name });
+          }
+          await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(s.name));
+          deletedCount++;
+        } catch (_) {}
+      }
+    }
+    if (deletedCount > 0) logger.info("[OB] Cleaned up " + deletedCount + " duplicate Opening Balance JEs");
+    if (_existingOBJEs.size > 0) {
+      logger.info("[OB] Found " + _existingOBJEs.size + " existing OB JE(s): " + [..._existingOBJEs.keys()].join(", ") + " — will update in place");
+    }
   } catch (_) {}
 
   // -- Split by account type, then further chunk by OB_CHUNK_SIZE ---------------
@@ -2742,27 +2828,27 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
       });
     }
 
+    // -- IDEMPOTENT: use _existingOBJEs map built by the cleanup pass above -------
+    // user_remark is overwritten by Frappe on submitted Opening Entry docs.
+    // We look up existing JEs by TITLE (stable) via _existingOBJEs built above.
+    const existingEntry = _existingOBJEs.get(label) || null;
+
     try {
-      const existing = await client.get("/api/resource/Journal Entry", {
-        params: {
-          filters: JSON.stringify([
-            ["Journal Entry", "user_remark",  "=", remark],
-            ["Journal Entry", "voucher_type", "=", "Opening Entry"],
-          ]),
-          fields: '["name","docstatus"]',
-          limit: 1,
-        },
-      });
-      const existingEntry = existing.data && existing.data.data && existing.data.data[0];
+      // Cancel+delete the existing JE so we can post a fresh one with updated data.
+      // This is the only way to update accounts on a submitted Opening Entry in ERPNext.
+      // Because _existingOBJEs only contains ONE entry per label (deduplicated above),
+      // each sync is always a clean 1-delete-1-create — no accumulation.
       if (existingEntry) {
         try {
           if (existingEntry.docstatus === 1) {
             await client.post("/api/method/frappe.client.cancel", { doctype: "Journal Entry", name: existingEntry.name });
-            logger.info("[OB] Cancelled submitted Opening Entry: " + existingEntry.name);
+            logger.info("[OB] Cancelled existing OB JE for update: " + existingEntry.name);
           }
           await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(existingEntry.name));
-          logger.info("[OB] Deleted old Opening Entry: " + existingEntry.name);
-        } catch (_) {}
+          logger.info("[OB] Deleted existing OB JE for update: " + existingEntry.name);
+        } catch (delErr) {
+          logger.warn("[OB] Could not remove old OB JE " + existingEntry.name + " — " + parseErpError(delErr) + "; will create alongside");
+        }
       }
 
       const res = await client.post("/api/resource/Journal Entry", {
@@ -2776,16 +2862,15 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
         docstatus:    1,
       });
       const newName = res.data && res.data.data && res.data.data.name;
-      // Frappe overrides the title with the first account name for Opening Entry.
-      // Fix it with a direct rename after creation.
+      // Frappe overrides the title for Opening Entry docs — fix it immediately.
       if (newName) {
         try {
           await client.put("/api/resource/Journal Entry/" + encodeURIComponent(newName), {
             title: "Tally OB - " + label + " - " + companyName,
           });
-        } catch (_) {} // non-critical — JE still works even if rename fails
+        } catch (_) {}
       }
-      logger.success("Created & submitted Opening Entry JE [" + label + "]: " + newName);
+      logger.success((existingEntry ? "Updated" : "Created") + " & submitted Opening Entry JE [" + label + "]: " + newName);
       return existingEntry ? "updated" : "created";
     } catch (err) {
       logger.error("Failed to post Opening Entry [" + label + "]: " + parseErpError(err));
@@ -2930,9 +3015,22 @@ export async function syncCostCentresToErpNext(costCentres, companyName, creds =
 // -- Sales / Purchase Invoices ------------------------------------------------
 export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
   const client = createErpClient(creds);
+  // ── MULTI-TENANT FIX: Save the original Tally company name BEFORE resolving ──
+  // companyName starts as the Tally company name (e.g. "Tally", "ABC Corp").
+  // resolveErpNextCompany() overwrites it with the ERPNext name (e.g. "Company2").
+  // We need the Tally name later to call fetchTallyLedgers() for balance data.
+  //
+  // Two sources, in priority order:
+  //   1. creds._tallyCompanyName — set by runFullSync() for full-sync jobs
+  //   2. companyName before resolution — correct for standalone /sync/invoices calls
+  //
+  // This works correctly in multi-tenant mode: creds is a per-request object
+  // (spread-copied in runFullSync), never shared between concurrent jobs.
+  const tallyCompanyName = (creds && creds._tallyCompanyName) || companyName.trim();
+
   companyName  = await resolveErpNextCompany(client, companyName, creds);
   const companyAbbr = await getCompanyAbbr(client, companyName);
-  logger.info("Syncing invoices to ERPNext for " + companyName + " (abbr: " + companyAbbr + ")");
+  logger.info("Syncing invoices to ERPNext for " + companyName + " (abbr: " + companyAbbr + ") | Tally company: " + tallyCompanyName);
 
   // Ensure HSN field is non-mandatory so placeholder items can be created without an HSN
   await ensureHsnNotMandatory(client);
@@ -2946,31 +3044,193 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
 
   logger.info("Invoice breakdown - sales: " + salesVouchers.length + ", purchase: " + purchaseVouchers.length);
 
-  const incomeAccount  = await resolveAccount(client, "Sales",    companyAbbr, companyName) || ("Sales - "    + companyAbbr);
-  const expenseAccount = await resolveAccount(client, "Purchase", companyAbbr, companyName) || ("Purchase - " + companyAbbr);
+  // ── ensureLeafAccount ────────────────────────────────────────────────────────
+  // Resolves a Tally ledger name (e.g. "Sales", "Purchase") to a real ERPNext
+  // LEAF account. If ERPNext only has a GROUP like "Sales Accounts - C" but no
+  // "Sales - C" leaf, income_account on invoice items will be blank/wrong.
+  // This function detects that case and auto-creates the missing leaf account.
+  async function ensureLeafAccount(ledgerName, rootType, parentGroupHint) {
+    // Try normal resolution first
+    const resolved = await resolveAccount(client, ledgerName, companyAbbr, companyName);
+    if (resolved) {
+      try {
+        const chk = await client.get("/api/resource/Account/" + encodeURIComponent(resolved), {
+          params: { fields: '["is_group","account_type"]' },
+        });
+        const acctData = chk && chk.data && chk.data.data;
+        if (acctData && !acctData.is_group) {
+          // Fix wrong account_type — e.g. "Godsman - C" created as Payable but used as Income
+          const expectedType = rootType === "Income" ? "Income Account" : "Expense Account";
+          if (acctData.account_type && acctData.account_type !== expectedType &&
+              acctData.account_type !== "" && acctData.account_type !== "null") {
+            try {
+              await client.put("/api/resource/Account/" + encodeURIComponent(resolved), {
+                account_type: expectedType,
+                root_type:    rootType,
+              });
+              logger.info("[Invoice] Fixed account_type on " + resolved + ": " + acctData.account_type + " → " + expectedType);
+            } catch (_) {}
+          }
+          logger.info("[Invoice] income/expense account resolved: " + ledgerName + " → " + resolved);
+          return resolved;
+        }
+        logger.info("[Invoice] " + resolved + " is a GROUP — will auto-create leaf \"" + ledgerName + " - " + companyAbbr + "\" under it");
+      } catch (_) {}
+    }
+
+    // Find the correct parent group
+    const suffixedName = ledgerName + " - " + companyAbbr;
+    let parentAccount = resolved || null; // use the group we found if any
+
+    if (!parentAccount && parentGroupHint) {
+      try {
+        const hintRes = await client.get("/api/resource/Account", {
+          params: {
+            filters: JSON.stringify([
+              ["Account", "account_name", "like", "%" + parentGroupHint + "%"],
+              ["Account", "company",      "=",    companyName],
+              ["Account", "is_group",     "=",    1],
+            ]),
+            fields: '["name"]', limit: 1,
+          },
+        });
+        const found = hintRes && hintRes.data && hintRes.data.data && hintRes.data.data[0] && hintRes.data.data[0].name;
+        if (found) parentAccount = found;
+      } catch (_) {}
+    }
+
+    if (!parentAccount) {
+      try {
+        const rtRes = await client.get("/api/resource/Account", {
+          params: {
+            filters: JSON.stringify([
+              ["Account", "root_type", "=", rootType],
+              ["Account", "company",   "=", companyName],
+              ["Account", "is_group",  "=", 1],
+            ]),
+            fields: '["name"]', limit: 1,
+          },
+        });
+        const found = rtRes && rtRes.data && rtRes.data.data && rtRes.data.data[0] && rtRes.data.data[0].name;
+        if (found) parentAccount = found;
+      } catch (_) {}
+    }
+
+    const accountType = rootType === "Income" ? "Income Account" : "Expense Account";
+    try {
+      await client.post("/api/resource/Account", {
+        doctype:        "Account",
+        account_name:   ledgerName,
+        company:        companyName,
+        is_group:       0,
+        account_type:   accountType,
+        root_type:      rootType,
+        parent_account: parentAccount,
+      });
+      logger.info("[Invoice] Auto-created leaf account: \"" + suffixedName + "\" under " + parentAccount);
+      _accountCache.set(ledgerName + "::" + companyAbbr, suffixedName);
+    } catch (err) {
+      const msg = parseErpError(err);
+      if (msg.toLowerCase().includes("duplicate") || msg.toLowerCase().includes("already")) {
+        logger.info("[Invoice] Leaf account already exists: " + suffixedName);
+      } else {
+        logger.warn("[Invoice] Could not auto-create leaf account \"" + suffixedName + "\": " + msg);
+      }
+    }
+    return suffixedName;
+  }
+
+  // Resolve global income/expense accounts — ensure they are LEAF accounts not groups.
+  // ERPNext India COA has "Sales Accounts - C" as a group with no "Sales - C" leaf.
+  // ensureLeafAccount detects this and auto-creates the missing leaf so income_account
+  // on every invoice item line is always populated correctly.
+  const incomeAccount  = await ensureLeafAccount("Sales",    "Income",  "Sales Accounts")
+                      || ("Sales - " + companyAbbr);
+  const expenseAccount = await ensureLeafAccount("Purchase", "Expense", "Purchase Accounts")
+                      || ("Purchase - " + companyAbbr);
+  logger.info("[Invoice] Global income account: " + incomeAccount + ", expense account: " + expenseAccount);
 
   const salesMapper = (v) => {
+    // ── Resolve the income account for this voucher ──────────────────────────────
+    // Priority: Tally sales ledger entry name (e.g. "Sales", "Sales - Retail") resolved
+    // to its ERPNext account. Falls back to the globally resolved incomeAccount.
+    // This is the same ledger that shows as "Sales ledger: Sales" in the Tally voucher.
+    const resolvedIncomeAccount = v._resolvedSalesAccount || incomeAccount;
+
+    // ── Resolve cost centre ──────────────────────────────────────────────────────
+    // Use the cost centre attached to the sales ledger entry first; fall back to
+    // the first cost centre found on any entry in the voucher.
+    const tallyCC      = v.salesCostCentre || v.firstCostCentre || null;
+    const costCenterERP = tallyCC ? (tallyCC + " - " + companyAbbr) : null;
+
     // Use real Tally inventory items if available, else fall back to single placeholder row.
     // rate = Tally RATE field (UoM suffix already stripped in tallyClient).
     // If rate is 0 but amount and qty are set, derive rate = amount / qty.
-    const items = (v.inventoryItems && v.inventoryItems.length > 0)
-      ? v.inventoryItems.map((i) => {
-          const qty    = i.qty    || 1;
-          const amount = i.amount || 0;
-          const rate   = i.rate   || (amount / qty) || 0;
-          return {
-            item_code:      i.itemName,
-            item_name:      i.itemName,
-            qty,
-            rate:           Math.abs(rate),
-            amount:         Math.abs(amount) || Math.abs(rate * qty),
-            income_account: incomeAccount,
-          };
-        })
-      : [{ item_code: "Sales Item", item_name: "Sales Item", qty: 1, rate: v.netAmount || 0, income_account: incomeAccount }];
+    const inventoryRows = (v.inventoryItems || []).map((i) => {
+      const qty    = i.qty    || 1;
+      const amount = i.amount || 0;
+      const rate   = i.rate   || (amount / qty) || 0;
+      const row = {
+        item_code:      i.itemName,
+        item_name:      i.itemName,
+        qty,
+        rate:           Math.abs(rate),
+        amount:         Math.abs(amount) || Math.abs(rate * qty),
+        income_account: resolvedIncomeAccount, // Tally sales ledger → ERPNext income account
+      };
+      // Map Tally godown to ERPNext warehouse (best-effort: "GodownName - CompanyAbbr")
+      if (i.godownName) row.warehouse = i.godownName + " - " + companyAbbr;
+      // FIX: Skip "Primary Batch" — Tally's internal placeholder for non-batch items.
+      // Sending it to ERPNext causes "Could not find Batch No: Primary Batch" errors.
+      if (i.batchName && i.batchName.trim().toLowerCase() !== "primary batch")
+        row.batch_no = i.batchName;
+      // Apply cost centre to each item line if available
+      if (costCenterERP) row.cost_center = costCenterERP;
+      return row;
+    });
+
+    // ── Extra ledger-line items (e.g. "Godsman", "Cash322") ─────────────────────
+    // In Tally, some vouchers book additional income/expense lines as ALLLEDGERENTRIES
+    // (not as stock items). These appear in Tally's voucher screen as separate line
+    // amounts under the party entry. We map each non-party, non-salesLedger entry
+    // that has a positive amount as an extra item row so ERPNext totals match Tally.
+    const partyName      = (v.partyName || "").trim().toLowerCase();
+    const salesLedgerKey = (v.salesLedgerName || "").trim().toLowerCase();
+    const ledgerRows = (v.entries || [])
+      .filter((e) => {
+        const key = (e.ledger || "").trim().toLowerCase();
+        return key
+          && key !== partyName        // skip the party (customer) entry
+          && key !== salesLedgerKey   // skip the main sales ledger (already in income_account)
+          && Math.abs(e.amount || 0) > 0.001;
+      })
+      .map((e) => {
+        // Use the pre-resolved Income account (guaranteed leaf, correct account_type)
+        // instead of a raw "LedgerName - CompanyAbbr" string which may be Payable type.
+        const ledgerAccount = (v._resolvedLedgerEntryAccounts && v._resolvedLedgerEntryAccounts[e.ledger])
+          || (e.ledger + " - " + companyAbbr);
+        const amt           = Math.abs(e.amount || 0);
+        const row = {
+          item_code:      e.ledger,   // use ledger name as item_code (auto-created in pre-sync)
+          item_name:      e.ledger,
+          qty:            1,
+          rate:           amt,
+          amount:         amt,
+          income_account: ledgerAccount,
+        };
+        if (costCenterERP) row.cost_center = costCenterERP;
+        return row;
+      });
+
+    // Combine: inventory rows first, then ledger rows. If both are empty, use placeholder.
+    const items = inventoryRows.length > 0 || ledgerRows.length > 0
+      ? [...inventoryRows, ...ledgerRows]
+      : [{ item_code: "Sales Item", item_name: "Sales Item", qty: 1, rate: v.netAmount || 0,
+           income_account: resolvedIncomeAccount,
+           ...(costCenterERP ? { cost_center: costCenterERP } : {}) }];
 
     // voucherNumber fallback: use date+type as unique key if Tally didn't export a number
-    const vSalesNum   = v.voucherNumber || (v.voucherDate + "-" + (v.voucherType || "Sales") + "-" + (v.guid || "").slice(-6));
+    const vSalesNum    = v.voucherNumber || (v.voucherDate + "-" + (v.voucherType || "Sales") + "-" + (v.guid || "").slice(-6));
     const salesRemarks = "Tally Voucher No: " + vSalesNum + (v.narration ? " | " + v.narration : "");
 
     // DATE FIX: Always use the date Tally recorded on the voucher (YYYY-MM-DD).
@@ -2979,6 +3239,12 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
       logger.warn("Sales voucher missing voucherDate — check Tally DATE field", { voucher: vSalesNum, guid: v.guid });
     }
     const effectiveSalesDate = v.voucherDate || new Date().toISOString().slice(0, 10);
+
+    // ── debit_to: the party receivable account ───────────────────────────────────
+    // ERPNext requires debit_to to be the Receivable account for the customer.
+    // Standard ERPNext pattern: "Debtors - <Abbr>" (auto-resolved from party).
+    // We set it explicitly to avoid validation errors when the default differs.
+    const debitToAccount = v._resolvedDebitToAccount || ("Debtors - " + companyAbbr);
 
     return {
       // Use `remarks` (real DB column, unique per voucher) as the idempotency key.
@@ -2990,37 +3256,68 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         due_date:          v.dueDate || effectiveSalesDate, // Tally bill due date, else voucher date
         set_posting_time:  1,                    // preserve Tally date, not today
         company:           companyName,
+        // ── Receivable account (debit_to) ───────────────────────────────────────
+        // This is the "Current balance" / party account Tally shows at the top of
+        // the voucher screen (e.g. "ABCDTraders - Debtors"). ERPNext calls it debit_to.
+        debit_to:          debitToAccount,
         // ── Tally voucher number storage ────────────────────────────────────────
         // po_no   = "Customer's PO No." — always visible in Sales Invoice list view.
         //           We store the Tally number here so it appears in the ID/No. column.
         // custom_tally_voucher_no = our own custom field (created by ensureTallyCustomFields).
         //           Provides a searchable, non-overwritable copy of the Tally number.
-        po_no:                   vSalesNum,
+        po_no:                   v.referenceNo || vSalesNum, // supplier ref / Tally bill ref
         custom_tally_voucher_no: vSalesNum,
         custom_tally_id:         v.guid || vSalesNum,
-        remarks:                 salesRemarks,
+        // ── Tally Sales Ledger + Balance fields ─────────────────────────────────
+        // These three fields mirror what Tally shows at the top of the Sales voucher:
+        //   "Sales ledger : Sales"              → custom_tally_sales_ledger
+        //   "Current balance : 25,68,68,636 Dr" → custom_tally_party_balance
+        //   "Current balance : 5,59,40,29,876 Cr" → custom_tally_sales_ledger_balance
+        custom_tally_sales_ledger:         v.salesLedgerName             || "",
+        custom_tally_party_balance:        v._tallyPartyBalance           || "",
+        custom_tally_sales_ledger_balance: v._tallySalesLedgerBalance     || "",
+        // ── Narration → additional notes on the ERPNext invoice ─────────────────
+        // Tally's narration is the free-text memo on the voucher (shown below entries).
+        // Map it to both remarks (idempotency key) and terms (visible on invoice PDF).
+        remarks:           salesRemarks,
+        terms:             v.narration || "",   // Tally narration → Terms & Conditions field
         items,
       },
-
     };
   };
 
   const purchaseMapper = (v) => {
+    // Resolve expense account: prefer Tally's purchase ledger entry, fall back to global
+    const resolvedExpenseAccount = v._resolvedPurchaseLedgerAccount || expenseAccount;
+
+    // Cost centre from Tally entries
+    const tallyCC       = v.salesCostCentre || v.firstCostCentre || null;
+    const costCenterERP = tallyCC ? (tallyCC + " - " + companyAbbr) : null;
+
     const items = (v.inventoryItems && v.inventoryItems.length > 0)
       ? v.inventoryItems.map((i) => {
           const qty    = i.qty    || 1;
           const amount = i.amount || 0;
           const rate   = i.rate   || (amount / qty) || 0;
-          return {
+          const row = {
             item_code:       i.itemName,
             item_name:       i.itemName,
             qty,
             rate:            Math.abs(rate),
             amount:          Math.abs(amount) || Math.abs(rate * qty),
-            expense_account: expenseAccount,
+            expense_account: resolvedExpenseAccount, // Tally purchase ledger → ERPNext expense account
           };
+          if (i.godownName)  row.warehouse  = i.godownName + " - " + companyAbbr;
+          // FIX: Skip "Primary Batch" — Tally's internal placeholder for non-batch items.
+          // Sending it to ERPNext causes "Could not find Batch No: Primary Batch" errors.
+          if (i.batchName && i.batchName.trim().toLowerCase() !== "primary batch")
+            row.batch_no = i.batchName;
+          if (costCenterERP) row.cost_center = costCenterERP;
+          return row;
         })
-      : [{ item_code: "Purchase Item", item_name: "Purchase Item", qty: 1, rate: v.netAmount || 0, expense_account: expenseAccount }];
+      : [{ item_code: "Purchase Item", item_name: "Purchase Item", qty: 1, rate: v.netAmount || 0,
+           expense_account: resolvedExpenseAccount,
+           ...(costCenterERP ? { cost_center: costCenterERP } : {}) }];
 
     const vPurchaseNum    = v.voucherNumber || (v.voucherDate + "-" + (v.voucherType || "Purchase") + "-" + (v.guid || "").slice(-6));
     const purchaseRemarks = "Tally Voucher No: " + vPurchaseNum + (v.narration ? " | " + v.narration : "");
@@ -3032,6 +3329,9 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
     }
     const effectivePurchaseDate = v.voucherDate || new Date().toISOString().slice(0, 10);
 
+    // credit_to: the supplier payable account (mirrors debit_to on Sales Invoice)
+    const creditToAccount = v._resolvedCreditToAccount || ("Creditors - " + companyAbbr);
+
     return {
       filters: { remarks: purchaseRemarks },
       doc: {
@@ -3040,10 +3340,12 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         posting_date:      effectivePurchaseDate,  // Tally voucher date (not today)
         set_posting_time:  1,                      // preserve Tally date, not today
         company:           companyName,
-        bill_no:           vPurchaseNum,
+        credit_to:         creditToAccount,         // Tally party ledger → ERPNext Payable account
+        bill_no:           v.referenceNo || vPurchaseNum,  // supplier invoice number
         bill_date:         effectivePurchaseDate,  // Supplier invoice date = Tally voucher date
         due_date:          v.dueDate || effectivePurchaseDate, // Tally bill due date, else voucher date
         remarks:           purchaseRemarks,
+        terms:             v.narration || "",       // Tally narration → Terms & Conditions
         custom_tally_id:   v.guid || vPurchaseNum,
         items,
       },
@@ -3200,17 +3502,33 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
   }
 
   // ── Pre-sync real Tally item names to ERPNext Items ───────────────────────────
-  // Collect every unique stock-item name from inventoryItems across all vouchers.
+  // Collect every unique item name from:
+  //   1. inventoryItems (stock items from ALLINVENTORYENTRIES)
+  //   2. non-party, non-salesLedger ledger entries (e.g. "Godsman", "Cash322")
+  //      which are mapped as extra item rows on the invoice (see salesMapper/purchaseMapper)
   // Create any that don't exist yet as non-stock service items so the invoice
   // batch never fails with "Item not found".
   const allVouchersForItems = [...salesVouchers, ...purchaseVouchers];
   const uniqueItemNames = [
-    ...new Set(
-      allVouchersForItems
+    ...new Set([
+      // Stock item names from inventory entries
+      ...allVouchersForItems
         .flatMap((v) => (v.inventoryItems || []).map((i) => (i.itemName || "").trim()))
-        .filter(Boolean)
-        .filter((n) => n !== "Sales Item" && n !== "Purchase Item")
-    ),
+        .filter(Boolean),
+      // Ledger entry names that will become extra item rows
+      ...allVouchersForItems
+        .flatMap((v) => {
+          const pKey = (v.partyName || "").trim().toLowerCase();
+          const sKey = (v.salesLedgerName || "").trim().toLowerCase();
+          return (v.entries || [])
+            .filter((e) => {
+              const k = (e.ledger || "").trim().toLowerCase();
+              return k && k !== pKey && k !== sKey && Math.abs(e.amount || 0) > 0.001;
+            })
+            .map((e) => e.ledger.trim());
+        })
+        .filter(Boolean),
+    ].filter((n) => n !== "Sales Item" && n !== "Purchase Item")),
   ];
   if (uniqueItemNames.length > 0) {
     logger.info("Pre-syncing " + uniqueItemNames.length + " Tally stock items to ERPNext before invoice batch");
@@ -3256,6 +3574,186 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
     }
   }
 
+  // ── Build a ledger → closing-balance lookup from Tally masters ───────────────
+  // syncInvoicesToErpNext receives only vouchers (no ledger master array), so we
+  // fetch the ledger list fresh here. This is a single Tally API call — cheap.
+  // The result is used to populate custom_tally_party_balance and
+  // custom_tally_sales_ledger_balance on each Sales Invoice.
+  //
+  // Format helper: turns a signed number into a Tally-style string e.g.
+  //   -25686863600 → "25,68,68,636.00 Dr"   (negative = Debit for assets)
+  //    559402987600 → "5,59,40,29,876.00 Cr"  (positive = Credit for income)
+  function fmtTallyBalance(amount) {
+    if (amount === null || amount === undefined || amount === 0) return "0.00";
+    const abs = Math.abs(amount).toFixed(2);
+    // Indian number formatting (lakhs/crores)
+    const [intPart, decPart] = abs.split(".");
+    let formatted = "";
+    if (intPart.length <= 3) {
+      formatted = intPart;
+    } else {
+      const last3 = intPart.slice(-3);
+      const rest  = intPart.slice(0, -3);
+      formatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + last3;
+    }
+    const drCr = amount < 0 ? "Dr" : "Cr";
+    return formatted + "." + decPart + " " + drCr;
+  }
+
+  // We need ledgers to get current balances.
+  // Import fetchTallyLedgers lazily to avoid a circular-dep issue — the sync
+  // routes already pass the company name down, so we call it directly here.
+  let _ledgerBalanceMap = new Map(); // ledgerName (lower) → closingBalance (signed number)
+  try {
+    // Dynamically import to avoid circular dependency if erpnextClient is
+    // used standalone. In practice the route already imported tallyClient.
+    const { fetchTallyLedgers } = await import("./tallyClient.js");
+    // tallyCompanyName is captured at the top of syncInvoicesToErpNext BEFORE
+    // resolveErpNextCompany() overwrites companyName. It is always the correct
+    // Tally-side company name regardless of whether this is a full-sync job
+    // (creds._tallyCompanyName set by runFullSync) or a standalone API call.
+    logger.info("[Invoice] Fetching ledger balances from Tally company: " + tallyCompanyName);
+    const allLedgers = await fetchTallyLedgers(tallyCompanyName);
+    for (const l of allLedgers) {
+      if (l.name) _ledgerBalanceMap.set(l.name.trim().toLowerCase(), l.closingBalance ?? 0);
+    }
+    logger.info("[Invoice] Loaded " + _ledgerBalanceMap.size + " ledger balances for balance mapping");
+  } catch (e) {
+    logger.warn("[Invoice] Could not load ledger balances (party/sales-ledger balance fields will be blank): " + e.message);
+  }
+
+  // Attach pre-computed balance strings to every sales voucher so salesMapper
+  // can read them synchronously (batchSync mapper must be pure/sync).
+  for (const v of salesVouchers) {
+    // Party (Customer) balance
+    const partyKey = (v.partyName || "").trim().toLowerCase();
+    const partyBal = _ledgerBalanceMap.has(partyKey) ? _ledgerBalanceMap.get(partyKey) : null;
+    v._tallyPartyBalance = partyBal !== null ? fmtTallyBalance(partyBal) : "";
+
+    // Sales Ledger balance
+    const salesLedgerKey = (v.salesLedgerName || "").trim().toLowerCase();
+    const salesLedgerBal = _ledgerBalanceMap.has(salesLedgerKey) ? _ledgerBalanceMap.get(salesLedgerKey) : null;
+    v._tallySalesLedgerBalance = salesLedgerBal !== null ? fmtTallyBalance(salesLedgerBal) : "";
+  }
+
+  // ── Pre-resolve per-voucher accounts before batchSync ─────────────────────────
+  // For each Sales voucher, resolve:
+  //   1. _resolvedSalesAccount  — the ERPNext income account matching Tally's sales ledger
+  //                               (e.g. "Sales" → "Sales - T"). Falls back to incomeAccount.
+  //   2. _resolvedDebitToAccount — the ERPNext Receivable account for the customer
+  //                               (e.g. "Debtors - T"). Falls back to "Debtors - <Abbr>".
+  //
+  // Resolved values are cached on the voucher object so salesMapper can read them
+  // synchronously (batchSync's mapper must be pure/sync).
+  const _salesAccountCache  = new Map(); // tallyLedgerName → erpAccountName
+  const _debitToCache       = new Map(); // customerName → debitToAccount
+
+  for (const v of salesVouchers) {
+    // 1. Sales ledger account — use ensureLeafAccount so we always get a LEAF
+    // (not a group like "Sales Accounts - C") for the income_account field.
+    if (v.salesLedgerName && !_salesAccountCache.has(v.salesLedgerName)) {
+      try {
+        const resolved = await ensureLeafAccount(v.salesLedgerName, "Income", "Sales Accounts");
+        _salesAccountCache.set(v.salesLedgerName, resolved || incomeAccount);
+      } catch (_) {
+        _salesAccountCache.set(v.salesLedgerName, incomeAccount);
+      }
+    }
+    v._resolvedSalesAccount = v.salesLedgerName
+      ? (_salesAccountCache.get(v.salesLedgerName) || incomeAccount)
+      : incomeAccount;
+
+    // 1b. Pre-resolve extra ledger-entry accounts (e.g. "Godsman") as Income leaf accounts.
+    // Without this, they get created as Payable type by the auto-create logic, causing
+    // "Supplier is required against Payable account Godsman - C" on Sales Invoice submit.
+    const partyKeyPre    = (v.partyName || "").trim().toLowerCase();
+    const salesKeyPre    = (v.salesLedgerName || "").trim().toLowerCase();
+    v._resolvedLedgerEntryAccounts = {};
+    for (const e of (v.entries || [])) {
+      const k = (e.ledger || "").trim().toLowerCase();
+      if (!k || k === partyKeyPre || k === salesKeyPre || Math.abs(e.amount || 0) <= 0.001) continue;
+      if (!_salesAccountCache.has(e.ledger)) {
+        try {
+          const resolved = await ensureLeafAccount(e.ledger, "Income", "Sales Accounts");
+          _salesAccountCache.set(e.ledger, resolved || (e.ledger + " - " + companyAbbr));
+        } catch (_) {
+          _salesAccountCache.set(e.ledger, e.ledger + " - " + companyAbbr);
+        }
+      }
+      v._resolvedLedgerEntryAccounts[e.ledger] = _salesAccountCache.get(e.ledger) || (e.ledger + " - " + companyAbbr);
+    }
+
+    // 2. Debit-to (receivable) account for this customer
+    const customerKey = (v.partyName || "Walk-in Customer").trim();
+    if (!_debitToCache.has(customerKey)) {
+      try {
+        // ERPNext stores the default receivable account on the Customer doctype.
+        const cRes = await client.get("/api/resource/Customer/" + encodeURIComponent(customerKey), {
+          params: { fields: '["name","accounts"]' },
+        });
+        const accts = cRes?.data?.data?.accounts || [];
+        const companyAcct = accts.find((a) => a.company === companyName);
+        _debitToCache.set(customerKey, companyAcct?.account || ("Debtors - " + companyAbbr));
+      } catch (_) {
+        _debitToCache.set(customerKey, "Debtors - " + companyAbbr);
+      }
+    }
+    v._resolvedDebitToAccount = _debitToCache.get(customerKey) || ("Debtors - " + companyAbbr);
+  }
+
+  // Same pre-resolution for Purchase vouchers: credit_to = Payable account, purchase ledger account
+  const _creditToCache          = new Map(); // supplierName → creditToAccount
+  const _purchaseAccountCache   = new Map(); // tallyLedgerName → erpAccountName
+  for (const v of purchaseVouchers) {
+    // 1. Purchase ledger account (e.g. "Purchase" → "Purchase - T")
+    if (v.salesLedgerName && !_purchaseAccountCache.has(v.salesLedgerName)) {
+      try {
+        const resolved = await ensureLeafAccount(v.salesLedgerName, "Expense", "Purchase Accounts");
+        _purchaseAccountCache.set(v.salesLedgerName, resolved || expenseAccount);
+      } catch (_) {
+        _purchaseAccountCache.set(v.salesLedgerName, expenseAccount);
+      }
+    }
+    v._resolvedPurchaseLedgerAccount = v.salesLedgerName
+      ? (_purchaseAccountCache.get(v.salesLedgerName) || expenseAccount)
+      : expenseAccount;
+
+    // 2. credit_to (payable) account for this supplier
+    // ── BUG FIX: Validate the resolved account is actually of type Payable ──
+    // Some ERPNext installs have accounts like "Godsman - C" typed as Payable even
+    // though they are expense/income accounts in Tally. ERPNext then rejects the
+    // Purchase Invoice with "Supplier is required against Payable account ...".
+    // We always use the global Creditors control account for credit_to — it is
+    // guaranteed to be Payable type. The party-level account (from Customer.accounts)
+    // is only used if it is explicitly set AND is actually a Payable account.
+    const supplierKey = (v.partyName || "Unknown Supplier").trim();
+    if (!_creditToCache.has(supplierKey)) {
+      let resolvedCreditTo = "Creditors - " + companyAbbr; // safe default
+      try {
+        const sRes = await client.get("/api/resource/Supplier/" + encodeURIComponent(supplierKey), {
+          params: { fields: '["name","accounts"]' },
+        });
+        const accts = sRes?.data?.data?.accounts || [];
+        const companyAcct = accts.find((a) => a.company === companyName);
+        if (companyAcct?.account) {
+          // Only trust this account if it is actually Payable type
+          try {
+            const acctRes = await client.get("/api/resource/Account/" + encodeURIComponent(companyAcct.account), {
+              params: { fields: '["account_type"]' },
+            });
+            if (acctRes?.data?.data?.account_type === "Payable") {
+              resolvedCreditTo = companyAcct.account;
+            } else {
+              logger.warn("[Invoice] Supplier " + supplierKey + " account " + companyAcct.account + " is not Payable type — using Creditors control account");
+            }
+          } catch (_) { /* keep safe default */ }
+        }
+      } catch (_) { /* keep safe default */ }
+      _creditToCache.set(supplierKey, resolvedCreditTo);
+    }
+    v._resolvedCreditToAccount = _creditToCache.get(supplierKey) || ("Creditors - " + companyAbbr);
+  }
+
   const salesResults    = await batchSync(client, "Sales Invoice",    salesVouchers,    salesMapper);
   const purchaseResults = await batchSync(client, "Purchase Invoice", purchaseVouchers, purchaseMapper);
 
@@ -3271,6 +3769,17 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
   for (const v of salesVouchers) {
     const vNum = v.voucherNumber;
     if (!vNum) { renameSkipped++; continue; } // no Tally number — skip
+
+    // ── BUG FIX: ERPNext rejects renaming to a plain integer (e.g. "11", "24") ──
+    // Frappe's naming system reserves pure-number names for its own series and
+    // returns HTTP 417 when you try to set them via rename_doc.
+    // Tally uses plain numbers (1, 2, 3...) as voucher numbers by default.
+    // These are already stored in custom_tally_voucher_no so they are fully
+    // searchable. We simply skip the rename for plain-number voucher numbers.
+    if (/^\d+$/.test(String(vNum).trim())) {
+      renameSkipped++;
+      continue;
+    }
 
     try {
       // Find the ERPNext doc by remarks (reliable idempotency key set on create)
@@ -3310,7 +3819,7 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
 
   // Submit all draft invoices using ERPNext's submit endpoint
   async function submitDraftInvoices(doctype, vouchers) {
-    let submitted = 0, failed = 0;
+    let submitted = 0, failed = 0, fiscalYearMissing = 0;
     for (const v of vouchers) {
       // Declare effectiveNum outside try so it is accessible in the catch block.
       // When voucherNumber is null the mapper uses a date+type+guid fallback — we
@@ -3337,12 +3846,29 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         await client.post("/api/method/frappe.client.submit", { doc: fullDoc });
         submitted++;
       } catch (e) {
-        failed++;
-        logger.warn("Could not submit " + doctype + " for voucher " + effectiveNum + ": " + parseErpError(e));
+        const errMsg = parseErpError(e);
+        // FIX: Detect fiscal year errors — invoices stay as Draft and will submit
+        // automatically on the next sync once the fiscal year is added in ERPNext.
+        if (errMsg.toLowerCase().includes("fiscal year") || errMsg.toLowerCase().includes("not in any active")) {
+          fiscalYearMissing++;
+          if (fiscalYearMissing === 1) {
+            logger.warn(
+              "[" + doctype + "] Fiscal Year missing for date " + (v.voucherDate || "unknown") + ". " +
+              "Go to ERPNext → Accounts → Fiscal Year → create the missing year, then re-run sync to auto-submit these " + fiscalYearMissing + " invoices."
+            );
+          }
+        } else {
+          failed++;
+          logger.warn("Could not submit " + doctype + " for voucher " + effectiveNum + ": " + errMsg);
+        }
       }
       await sleep(200);
     }
-    logger.info("Submit " + doctype + ": " + submitted + " submitted, " + failed + " failed");
+    if (fiscalYearMissing > 0) {
+      logger.warn("Submit " + doctype + ": " + submitted + " submitted, " + failed + " failed, " + fiscalYearMissing + " pending fiscal year setup in ERPNext");
+    } else {
+      logger.info("Submit " + doctype + ": " + submitted + " submitted, " + failed + " failed");
+    }
   }
 
   await submitDraftInvoices("Sales Invoice",    salesVouchers);
@@ -3399,6 +3925,13 @@ export async function runFullSync(companyName, tallyData, options, creds = {}) {
   resetCancel();
   // Clear stale caches from previous sync runs — prevents wrong data from being reused
   clearCaches();
+
+  // ── CRITICAL: Save the ORIGINAL Tally company name BEFORE resolving to ERPNext ──
+  // After resolveErpNextCompany(), companyName becomes the ERPNext name (e.g. "Company2").
+  // But fetchTallyLedgers() inside syncInvoicesToErpNext needs the actual Tally company
+  // name (e.g. "Tally"). We stash it in creds so it flows through automatically.
+  const tallyCompanyName = companyName.trim();
+  creds = { ...creds, _tallyCompanyName: tallyCompanyName };
 
   // Resolve Tally company name to ERPNext company name dynamically
   const client = createErpClient(creds);

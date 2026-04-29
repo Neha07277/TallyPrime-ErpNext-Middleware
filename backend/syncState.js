@@ -44,17 +44,44 @@ function ensureDir() {
 function loadState() {
   ensureDir();
   if (!fs.existsSync(STATE_FILE)) return {};
-  try {
-    return JSON.parse(fs.readFileSync(STATE_FILE, "utf8"));
-  } catch {
-    logger.warn("syncState: could not parse sync_state.json — starting fresh");
-    return {};
+
+  // Retry up to 3 times with a small delay — nodemon can briefly lock or
+  // partially overwrite the file when it detects a change and restarts the
+  // process.  A short wait is enough for the rename to complete.
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const raw = fs.readFileSync(STATE_FILE, "utf8");
+      if (!raw.trim()) return {};       // empty file → treat as no state
+      return JSON.parse(raw);
+    } catch (err) {
+      if (attempt < 3) {
+        // Synchronous 50 ms busy-wait — small enough to be invisible, big
+        // enough to let any in-flight rename/write finish.
+        const until = Date.now() + 50;
+        while (Date.now() < until) { /* spin */ }
+      } else {
+        logger.warn(
+          "syncState: could not parse sync_state.json after 3 attempts — starting fresh" +
+          " (" + err.message + ")"
+        );
+        // Back up the corrupt file so it can be inspected
+        try {
+          fs.copyFileSync(STATE_FILE, STATE_FILE + ".corrupt." + Date.now());
+        } catch (_) { /* best-effort */ }
+        return {};
+      }
+    }
   }
+  return {};
 }
 
 function saveState(state) {
   ensureDir();
-  const tmp = STATE_FILE + ".tmp";
+  // Write to a .bak extension so nodemon does NOT watch it (nodemon watches
+  // .js/.mjs/.cjs/.json by default — .bak is ignored).
+  // Then rename atomically to the real path.  This prevents nodemon from
+  // seeing a partial write and trying to read a half-written JSON file.
+  const tmp = STATE_FILE + ".bak";
   fs.writeFileSync(tmp, JSON.stringify(state, null, 2), "utf8");
   fs.renameSync(tmp, STATE_FILE);
 }

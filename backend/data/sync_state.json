@@ -1,7 +1,7 @@
 {
-  "Tally::https://erpnext-usq-xoo.m.frappe.cloud": {
-    "lastVoucherSyncDate": "2026-04-28",
-    "lastMasterSyncAt": "2026-04-28T08:33:47.957Z",
+  "Tally::https://erpnext-sud-vlk.m.frappe.cloud": {
+    "lastVoucherSyncDate": "2026-04-29",
+    "lastMasterSyncAt": "2026-04-29T09:51:37.467Z",
     "groupAlterIds": {
       "Bank Accounts": "23",
       "Bank OD A/c": "12",

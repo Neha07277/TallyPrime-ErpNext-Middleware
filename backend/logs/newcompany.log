@@ -1,5 +1,15 @@
 [
   {
+    "id": 1777367401753.3547,
+    "ts": "2026-04-28T09:10:01.753Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "NewCompany"
+    },
+    "company": "NewCompany"
+  },
+  {
     "id": 1777365227948.747,
     "ts": "2026-04-28T08:33:47.948Z",
     "level": "info",

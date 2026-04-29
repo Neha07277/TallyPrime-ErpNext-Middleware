@@ -94,10 +94,14 @@ function parseTallyAmount(raw) {
   return isNaN(n) ? 0 : Math.abs(n);
 }
 
-// FIX: Signed variant — preserves negative sign from Tally.
-// Tally exports opening/closing balances as negative for assets (debtors, bank, cash)
-// and positive for liabilities (creditors). The OB sync uses bal < 0 to decide
-// debit vs credit — so the sign MUST be preserved here.
+// FIX: Signed variant — preserves Dr/Cr sign from Tally balance fields.
+// Tally exports OPENINGBALANCE/CLOSINGBALANCE as XML nodes that can have two forms:
+//   Form A: plain string  "-4274515.00"  (negative = Dr/asset)
+//   Form B: object with _ = "4274515.00" and $ = { TYPE: "Dr" } or { TYPE: "Cr" }
+// parseTallyAmountSigned handles both forms:
+//   • Form A: parseFloat preserves the minus sign directly.
+//   • Form B: read the absolute value from _, then negate if TYPE="Dr" (Dr = asset = debit = negative in Tally).
+// The OB sync uses bal < 0 to decide debit vs credit — the sign MUST be correct.
 // Use ONLY for balance fields (openingBalance, closingBalance on ledgers).
 // Strip UoM suffixes from Tally quantity/rate fields.
 // Tally exports: "1 Nos", "79.00 /Nos" — parseFloat stops at the first non-numeric char.
@@ -115,6 +119,26 @@ function parseTallyRate(raw) {
 // All money/amount fields on vouchers remain unsigned (use parseTallyAmount).
 function parseTallyAmountSigned(raw) {
   if (!raw) return 0;
+  // Form B: Tally exports CLOSINGBALANCE as { _: "4274515.00", $: { TYPE: "Dr" } }
+  // The TYPE attribute tells us whether it is a Debit (asset) or Credit (liability).
+  // Debit (Dr) = asset/debtor → negative in our convention (bal < 0 = debit).
+  // Credit (Cr) = liability/creditor → positive in our convention (bal > 0 = credit).
+  if (typeof raw === "object" && raw !== null && raw._) {
+    const str = String(raw._).replace(/[, ]/g, "");
+    const n = parseFloat(str);
+    if (isNaN(n) || n === 0) return 0;
+    // Determine sign from $ attributes — try TYPE, then ISDEEMEDPOSITIVE, then DR flag
+    const attrs = raw.$ || {};
+    const type  = (attrs.TYPE || attrs.type || "").trim().toLowerCase();
+    const isDr  = type === "dr" || type === "debit" ||
+                  (attrs.ISDEEMEDPOSITIVE || "").toLowerCase() === "no";
+    // If no attribute found, fall back to the sign of n (Form A inside object)
+    if (type || attrs.ISDEEMEDPOSITIVE) {
+      return isDr ? -Math.abs(n) : Math.abs(n);
+    }
+    return n; // no attribute — trust the raw sign (should be already signed)
+  }
+  // Form A: plain string or number, possibly already signed ("-4274515.00" = Dr)
   const str = String(raw).replace(/[, ]/g, "");
   const n = parseFloat(str);
   return isNaN(n) ? 0 : n;
@@ -897,7 +921,7 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     <TDLMESSAGE>
      <COLLECTION NAME="VoucherCollection" ISMODIFY="No">
       <TYPE>Voucher</TYPE>
-      <FETCH>GUID,DATE,VOUCHERNUMBER,VOUCHERTYPENAME,PARTYLEDGERNAME,NARRATION,REFERENCE,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST,ALLINVENTORYENTRIES.LIST,INVENTORYENTRIES.LIST,BILLALLOCATIONS.LIST</FETCH>
+      <FETCH>GUID,DATE,VOUCHERNUMBER,VOUCHERTYPENAME,PARTYLEDGERNAME,NARRATION,REFERENCE,ISINVOICE,ISOPTIONAL,ISPOSTDATED,ALLLEDGERENTRIES.LIST,ALLLEDGERENTRIES.LIST.COSTCENTREDETAILS.LIST,ALLINVENTORYENTRIES.LIST,ALLINVENTORYENTRIES.LIST.BATCHALLOCATIONS.LIST,INVENTORYENTRIES.LIST,BILLALLOCATIONS.LIST</FETCH>
      </COLLECTION>
     </TDLMESSAGE>
    </TDL>
@@ -945,7 +969,20 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
       const isDeemedPositive = val(e.ISDEEMEDPOSITIVE) === "Yes";
       const amount           = parseTallyAmount(val(e.AMOUNT));
       if (isDeemedPositive) netAmount += amount;
-      if (ledgerName) entries.push({ ledger: ledgerName, amount, isDebit: isDeemedPositive });
+
+      // Cost centre: Tally stores it in COSTCENTREDETAILS.LIST on the ledger entry.
+      // Take the first cost centre name if present (most vouchers have only one).
+      const ccDetails  = e["COSTCENTREDETAILS.LIST"] || e["COSTCENTREDETAILS"] || [];
+      const ccArr      = Array.isArray(ccDetails) ? ccDetails : (ccDetails ? [ccDetails] : []);
+      const costCentre = val(ccArr[0]?.COSTCENTRENAME) || null;
+
+      if (ledgerName) entries.push({
+        ledger:      ledgerName,
+        amount,
+        isDebit:     isDeemedPositive,
+        costCentre,                        // ← Tally cost centre name (null if not set)
+        isDeemedPositive,                  // ← raw flag kept for downstream logic
+      });
     }
 
     // ── Parse inventory line items ───────────────────────────────────────────────
@@ -986,11 +1023,19 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
       const finalRate   = rate   || (qty ? amount / qty : 0);
       const finalAmount = amount || (rate * qty);
 
+      // Godown (warehouse) and batch from the first BATCHALLOCATIONS sub-entry
+      const batchAllocs  = ie["BATCHALLOCATIONS.LIST"] || ie["BATCHALLOCATIONS"] || [];
+      const batchArr     = Array.isArray(batchAllocs) ? batchAllocs : (batchAllocs ? [batchAllocs] : []);
+      const godownName   = val(batchArr[0]?.GODOWNNAME)  || val(ie.GODOWNNAME)  || null;
+      const batchName    = val(batchArr[0]?.BATCHNAME)   || val(ie.BATCHNAME)   || null;
+
       inventoryItems.push({
         itemName,
-        qty:    qty,
-        rate:   Math.abs(finalRate),
-        amount: Math.abs(finalAmount),
+        qty:        qty,
+        rate:       Math.abs(finalRate),
+        amount:     Math.abs(finalAmount),
+        godownName,   // ← Tally godown / warehouse name
+        batchName,    // ← Tally batch / lot name
       });
     }
 
@@ -999,19 +1044,36 @@ async function fetchTallyVouchersChunk(companyName, fromDate, toDate) {
     const billArr    = Array.isArray(billAllocs) ? billAllocs : (billAllocs ? [billAllocs] : []);
     const firstBill  = billArr.find((b) => b && val(b.BILLDATE));
     const dueDate    = firstBill ? tallyDateToISO(val(firstBill.BILLDATE)) : null;
+    // Bill reference name (used as supplier invoice number for Purchase vouchers)
+    const billRefName = firstBill ? (val(firstBill.NAME) || val(firstBill.BILLNAME)) : null;
+
+    // Identify the sales/purchase ledger entry — the entry that is NOT the party ledger.
+    // For a Sales voucher: party entry is credit (isDebit=false), sales entry is debit.
+    // For a Purchase voucher: party entry is debit (isDebit=true), purchase entry is credit.
+    const partyLedgerName = val(v.PARTYLEDGERNAME);
+    const salesLedgerEntry = entries.find(
+      (e) => e.ledger && e.ledger !== partyLedgerName
+    );
+    const salesLedgerName   = salesLedgerEntry?.ledger   || null;
+    const salesCostCentre   = salesLedgerEntry?.costCentre || null;
+    // First cost centre across all entries (fallback if salesLedgerEntry has none)
+    const firstCostCentre   = entries.find((e) => e.costCentre)?.costCentre || null;
 
     vouchers.push({
       guid: guid || `voucher-${vouchers.length}`,
       voucherDate:    tallyDateToISO(val(v.DATE)),
       voucherType:    val(v.VOUCHERTYPENAME) || val(v.VOUCHERTYPE),
       voucherNumber:  val(v.VOUCHERNUMBER),
-      referenceNo:    val(v.REFERENCE),
+      referenceNo:    val(v.REFERENCE) || billRefName,  // bill ref name as fallback
       partyName:      val(v.PARTYLEDGERNAME),
       narration:      val(v.NARRATION),
       dueDate,        // ← bill due date from Tally credit terms (null if not set)
       netAmount,
       entries,
       inventoryItems,                          // ← real item rows from Tally
+      salesLedgerName,                         // ← Tally sales/purchase ledger name
+      salesCostCentre,                         // ← cost centre on the sales ledger entry
+      firstCostCentre,                         // ← first cost centre found on any entry
       lineItemCount:  entries.length,
       isInvoice:    val(v.ISINVOICE)   === "Yes",
       isOptional:   val(v.ISOPTIONAL)  === "Yes",
