@@ -39,11 +39,11 @@ let _lastAutoSync = null;
 async function runAutoSync() {
   const companyName = config.tally.companyName;
   if (!companyName) {
-    logger.warn("Auto-sync skipped: TALLY_COMPANY_NAME not set in .env");
+    logger.human.headsUp("Auto-sync skipped — company name is not set. Please add TALLY_COMPANY_NAME to your .env file.");
     return;
   }
   if (!config.erpnext.url || !config.erpnext.apiKey) {
-    logger.warn("Auto-sync skipped: ERPNext credentials not set in .env");
+    logger.human.headsUp("Auto-sync skipped — ERPNext connection details are missing. Please add them to your .env file.");
     return;
   }
 
@@ -72,10 +72,7 @@ async function runAutoSync() {
   const state = getCompanyState(companyName, erpnextUrl);
   const isFirstSync = !state.lastVoucherSyncDate && !state.lastMasterSyncAt;
 
-  logger.info(
-    `Auto-sync started for "${companyName}" — ${isFirstSync ? "FULL (first run)" : "INCREMENTAL"}`,
-    opts
-  );
+  logger.human.syncStarted(companyName, config.erpnext.url);
   _lastAutoSync = { startedAt: now.toISOString(), status: "running", company: companyName };
 
   try {
@@ -90,7 +87,7 @@ async function runAutoSync() {
       const allGroups = await fetchTallyGroups(companyName);
       const { toSync: changedGroups, unchanged: unchangedGroups } =
         filterChangedMasters(allGroups, state.groupAlterIds);
-      logger.info(`Groups: ${changedGroups.length} to sync, ${unchangedGroups} unchanged`);
+      logger.human.masterSyncResult("Groups", changedGroups.length, unchangedGroups);
       groups = changedGroups;
       saveCompanyState(companyName, { groupAlterIds: buildAlterIdMap(allGroups) }, erpnextUrl);
     }
@@ -107,7 +104,7 @@ async function runAutoSync() {
       const allLedgers = await fetchTallyLedgers(companyName);
       const { toSync: changedLedgers, unchanged: unchangedLedgers } =
         filterChangedMasters(allLedgers, state.ledgerAlterIds);
-      logger.info(`Ledgers: ${changedLedgers.length} to sync, ${unchangedLedgers} unchanged`);
+      logger.human.masterSyncResult("Ledgers", changedLedgers.length, unchangedLedgers);
       ledgers = changedLedgers;
       saveCompanyState(companyName, { ledgerAlterIds: buildAlterIdMap(allLedgers) }, erpnextUrl);
     }
@@ -116,7 +113,7 @@ async function runAutoSync() {
       const allStock = await fetchTallyStockItems(companyName);
       const { toSync: changedStock, unchanged: unchangedStock } =
         filterChangedMasters(allStock, state.stockAlterIds);
-      logger.info(`Stock: ${changedStock.length} to sync, ${unchangedStock} unchanged`);
+      logger.human.masterSyncResult("Stock Items", changedStock.length, unchangedStock);
       stockItems = changedStock;
       saveCompanyState(companyName, { stockAlterIds: buildAlterIdMap(allStock) }, erpnextUrl);
     }
@@ -127,9 +124,7 @@ async function runAutoSync() {
       const { fromDate, toDate: vToDate, isIncremental } =
         getIncrementalVoucherDates(companyName, fallbackFromDate, toDate, erpnextUrl);
 
-      logger.info(
-        `Vouchers: fetching ${isIncremental ? "incremental" : "full"} range ${fromDate} → ${vToDate}`
-      );
+      logger.human.step(`Reading vouchers from ${fromDate} to ${vToDate}`);
       vouchers = await fetchTallyVouchers(companyName, fromDate, vToDate);
     }
 
@@ -162,9 +157,9 @@ async function runAutoSync() {
         lastVoucherSyncDate: toDate,
         lastMasterSyncAt:    now.toISOString(),
       }, erpnextUrl);
-      logger.info(`syncState: checkpoint saved → vouchers up to ${toDate}`);
+      logger.human.stateSaved(companyName);
     } else {
-      logger.warn(`syncState: checkpoint NOT saved — sync status was "${result.status}" (critical failure). Fix the underlying issue and re-run.`);
+      logger.human.headsUp(`Progress was not saved for "${companyName}" because something went wrong during the sync. Please fix the issue and run the sync again.`);
     }
 
     _lastAutoSync = {
@@ -174,22 +169,22 @@ async function runAutoSync() {
       toDate,
       isIncremental: !isFirstSync,
     };
-    logger.info(`Auto-sync complete: ${result.status}`);
+    logger.human.syncDone(companyName, state.lastVoucherSyncDate || fallbackFromDate, toDate, result.totalSynced ?? 0);
   } catch (err) {
     _lastAutoSync = { status: "failed", error: err.message, startedAt: now.toISOString() };
-    logger.error(`Auto-sync failed: ${err.message}`);
+    logger.human.syncFailed(companyName, err.message);
   }
 }
 
 if (AUTO_SYNC_ENABLED) {
   if (!cron.validate(AUTO_SYNC_CRON)) {
-    logger.warn(`Invalid AUTO_SYNC_CRON expression: "${AUTO_SYNC_CRON}" — auto-sync disabled`);
+    logger.human.headsUp(`The auto-sync schedule setting "${AUTO_SYNC_CRON}" is not valid. Auto-sync has been turned off. Please fix it in your .env file.`);
   } else {
     _autoSyncJob = cron.schedule(AUTO_SYNC_CRON, runAutoSync);
-    logger.info(`Auto-sync scheduled: "${AUTO_SYNC_CRON}" (options: ${AUTO_SYNC_OPTIONS.join(", ")})`);
+    logger.human.autoSyncScheduled(AUTO_SYNC_OPTIONS.join(", "));;
   }
 } else {
-  logger.info("Auto-sync disabled (set AUTO_SYNC_ENABLED=true in .env to enable)");
+  logger.human.headsUp("Auto-sync is turned off. To enable it, set AUTO_SYNC_ENABLED=true in your .env file.");
 }
 
 // ── Auto-sync status & control endpoints ──────────────────────────────────
@@ -228,7 +223,7 @@ app.get("/api/auto-sync/state", (req, res) => {
 // ──────────────────────────────────────────────────────────────────────────
 
 app.listen(config.port, () => {
-  logger.info(`Tally Middleware server running on http://localhost:${config.port}`);
-  logger.info(`Tally endpoint: ${config.tally.url}`);
-  logger.info(`Run POST /api/middleware/check to validate all Tally data`);
+  logger.human.serverReady(`http://localhost:${config.port}`);
+  logger.human.tallyConnected(config.tally.url);
+  logger.human.checkReady();
 });

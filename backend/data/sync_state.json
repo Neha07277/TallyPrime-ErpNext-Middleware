@@ -124,7 +124,7 @@
   },
   "Tally::https://erpnext-bvc-oae.m.frappe.cloud": {
     "lastVoucherSyncDate": "2026-04-30",
-    "lastMasterSyncAt": "2026-04-30T06:19:31.097Z",
+    "lastMasterSyncAt": "2026-04-30T07:25:34.841Z",
     "groupAlterIds": {
       "Bank Accounts": "23",
       "Bank OD A/c": "12",

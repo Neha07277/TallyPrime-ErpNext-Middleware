@@ -1,5 +1,1207 @@
 [
   {
+    "id": 1777533935396.3933,
+    "ts": "2026-04-30T07:25:35.396Z",
+    "level": "info",
+    "message": "System is ready. You can now run a check to make sure all Tally data is correct.",
+    "meta": {
+      "type": "check_ready"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533935394.0723,
+    "ts": "2026-04-30T07:25:35.394Z",
+    "level": "info",
+    "message": "Tally is connected and reachable at http://localhost:9000.",
+    "meta": {
+      "type": "tally_connected",
+      "url": "http://localhost:9000"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533935392.8157,
+    "ts": "2026-04-30T07:25:35.392Z",
+    "level": "info",
+    "message": "The system is up and ready. You can start using it now. (http://localhost:4000)",
+    "meta": {
+      "type": "server_ready",
+      "url": "http://localhost:4000"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533935385.6885,
+    "ts": "2026-04-30T07:25:35.385Z",
+    "level": "info",
+    "message": "Automatic data sync is set up. It will run on its own every night at 2:00 AM for: ledgers, stock, vouchers.",
+    "meta": {
+      "type": "auto_sync_scheduled",
+      "schedule": "ledgers, stock, vouchers"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533934843.5063,
+    "ts": "2026-04-30T07:25:34.843Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-bvc-oae.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-30",
+      "lastMasterSyncAt": "2026-04-30T07:25:34.841Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533934837.2063,
+    "ts": "2026-04-30T07:25:34.837Z",
+    "level": "info",
+    "message": "[Job full-1777533934583-vfhub] Nothing to sync — all masters unchanged, no new vouchers in window",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934833.8772,
+    "ts": "2026-04-30T07:25:34.833Z",
+    "level": "info",
+    "message": "Vouchers: skipping fetch — window 2025-01-01 → 2026-04-30 already covered by last sync (2026-04-30) and no masters changed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934829.6624,
+    "ts": "2026-04-30T07:25:34.829Z",
+    "level": "info",
+    "message": "syncState: incremental voucher window → 2025-01-01 to 2026-04-30 (last sync was 2026-04-30, overlap=3d)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934824.6047,
+    "ts": "2026-04-30T07:25:34.824Z",
+    "level": "info",
+    "message": "Stock: 0 to sync, 9 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934817.3347,
+    "ts": "2026-04-30T07:25:34.817Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934793.1694,
+    "ts": "2026-04-30T07:25:34.793Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934789.5852,
+    "ts": "2026-04-30T07:25:34.789Z",
+    "level": "info",
+    "message": "Ledgers: 0 to sync, 68 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934781.8455,
+    "ts": "2026-04-30T07:25:34.781Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934737.002,
+    "ts": "2026-04-30T07:25:34.737Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934733.3137,
+    "ts": "2026-04-30T07:25:34.733Z",
+    "level": "info",
+    "message": "Godowns: 0 to sync, 1 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934724.5193,
+    "ts": "2026-04-30T07:25:34.724Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934702.5122,
+    "ts": "2026-04-30T07:25:34.702Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934697.2283,
+    "ts": "2026-04-30T07:25:34.697Z",
+    "level": "info",
+    "message": "Cost Centres: 0 to sync, 3 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934689.2122,
+    "ts": "2026-04-30T07:25:34.689Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934671.9893,
+    "ts": "2026-04-30T07:25:34.671Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934666.0142,
+    "ts": "2026-04-30T07:25:34.666Z",
+    "level": "info",
+    "message": "Groups: 0 to sync, 28 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934656.4446,
+    "ts": "2026-04-30T07:25:34.656Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934615.4624,
+    "ts": "2026-04-30T07:25:34.615Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934611.974,
+    "ts": "2026-04-30T07:25:34.611Z",
+    "level": "info",
+    "message": "Sync mode: INCREMENTAL for \"Tally\" → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934605.732,
+    "ts": "2026-04-30T07:25:34.605Z",
+    "level": "info",
+    "message": "Tally ping OK (13ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934588.071,
+    "ts": "2026-04-30T07:25:34.588Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533934583.0793,
+    "ts": "2026-04-30T07:25:34.583Z",
+    "level": "info",
+    "message": "Full sync job full-1777533934583-vfhub started for: Tally → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777533918419.777,
+    "ts": "2026-04-30T07:25:18.419Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3563000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533635818.7554,
+    "ts": "2026-04-30T07:20:35.818Z",
+    "level": "info",
+    "message": "System is ready. You can now run a check to make sure all Tally data is correct.",
+    "meta": {
+      "type": "check_ready"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533635815.807,
+    "ts": "2026-04-30T07:20:35.815Z",
+    "level": "info",
+    "message": "Tally is connected and reachable at http://localhost:9000.",
+    "meta": {
+      "type": "tally_connected",
+      "url": "http://localhost:9000"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533635813.872,
+    "ts": "2026-04-30T07:20:35.813Z",
+    "level": "info",
+    "message": "The system is up and ready. You can start using it now. (http://localhost:4000)",
+    "meta": {
+      "type": "server_ready",
+      "url": "http://localhost:4000"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533635805.263,
+    "ts": "2026-04-30T07:20:35.805Z",
+    "level": "info",
+    "message": "Automatic data sync is set up. It will run on its own every night at 2:00 AM for: ledgers, stock, vouchers.",
+    "meta": {
+      "type": "auto_sync_scheduled",
+      "schedule": "ledgers, stock, vouchers"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533183080.3105,
+    "ts": "2026-04-30T07:13:03.080Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533183078.194,
+    "ts": "2026-04-30T07:13:03.078Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533183076.203,
+    "ts": "2026-04-30T07:13:03.076Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533183069.0122,
+    "ts": "2026-04-30T07:13:03.069Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182583.4192,
+    "ts": "2026-04-30T07:13:02.583Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-bvc-oae.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-30",
+      "lastMasterSyncAt": "2026-04-30T07:13:02.580Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777533182576.8982,
+    "ts": "2026-04-30T07:13:02.576Z",
+    "level": "info",
+    "message": "[Job full-1777533182244-pdlva] Nothing to sync — all masters unchanged, no new vouchers in window",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182572.5583,
+    "ts": "2026-04-30T07:13:02.572Z",
+    "level": "info",
+    "message": "Vouchers: skipping fetch — window 2025-01-01 → 2026-04-30 already covered by last sync (2026-04-30) and no masters changed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182568.5542,
+    "ts": "2026-04-30T07:13:02.568Z",
+    "level": "info",
+    "message": "syncState: incremental voucher window → 2025-01-01 to 2026-04-30 (last sync was 2026-04-30, overlap=3d)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182563.6167,
+    "ts": "2026-04-30T07:13:02.563Z",
+    "level": "info",
+    "message": "Stock: 0 to sync, 9 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182556.8582,
+    "ts": "2026-04-30T07:13:02.556Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182528.698,
+    "ts": "2026-04-30T07:13:02.528Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182525.9355,
+    "ts": "2026-04-30T07:13:02.525Z",
+    "level": "info",
+    "message": "Ledgers: 0 to sync, 68 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182517.148,
+    "ts": "2026-04-30T07:13:02.517Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182465.1555,
+    "ts": "2026-04-30T07:13:02.465Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182460.821,
+    "ts": "2026-04-30T07:13:02.460Z",
+    "level": "info",
+    "message": "Godowns: 0 to sync, 1 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182451.0408,
+    "ts": "2026-04-30T07:13:02.451Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182428.2124,
+    "ts": "2026-04-30T07:13:02.428Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182423.4187,
+    "ts": "2026-04-30T07:13:02.423Z",
+    "level": "info",
+    "message": "Cost Centres: 0 to sync, 3 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182412.258,
+    "ts": "2026-04-30T07:13:02.412Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182391.1921,
+    "ts": "2026-04-30T07:13:02.391Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182386.854,
+    "ts": "2026-04-30T07:13:02.386Z",
+    "level": "info",
+    "message": "Groups: 0 to sync, 28 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182375.9688,
+    "ts": "2026-04-30T07:13:02.375Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182327.0403,
+    "ts": "2026-04-30T07:13:02.327Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182322.8525,
+    "ts": "2026-04-30T07:13:02.322Z",
+    "level": "info",
+    "message": "Sync mode: INCREMENTAL for \"Tally\" → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182317.0413,
+    "ts": "2026-04-30T07:13:02.317Z",
+    "level": "info",
+    "message": "Tally ping OK (62ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182251.764,
+    "ts": "2026-04-30T07:13:02.251Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533182245.1409,
+    "ts": "2026-04-30T07:13:02.245Z",
+    "level": "info",
+    "message": "Full sync job full-1777533182244-pdlva started for: Tally → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777533163336.9565,
+    "ts": "2026-04-30T07:12:43.336Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533163333.005,
+    "ts": "2026-04-30T07:12:43.333Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533163331.853,
+    "ts": "2026-04-30T07:12:43.331Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533163324.848,
+    "ts": "2026-04-30T07:12:43.324Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533126470.3208,
+    "ts": "2026-04-30T07:12:06.470Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533126468.5776,
+    "ts": "2026-04-30T07:12:06.468Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533126466.6775,
+    "ts": "2026-04-30T07:12:06.466Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777533126459.775,
+    "ts": "2026-04-30T07:12:06.459Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956728.4973,
+    "ts": "2026-04-30T07:09:16.728Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956726.0552,
+    "ts": "2026-04-30T07:09:16.726Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956724.9036,
+    "ts": "2026-04-30T07:09:16.724Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956717.3079,
+    "ts": "2026-04-30T07:09:16.717Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956207.2993,
+    "ts": "2026-04-30T07:09:16.207Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-bvc-oae.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-30",
+      "lastMasterSyncAt": "2026-04-30T07:09:16.204Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777532956201.8948,
+    "ts": "2026-04-30T07:09:16.201Z",
+    "level": "info",
+    "message": "[Job full-1777532955912-bmse2] Nothing to sync — all masters unchanged, no new vouchers in window",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956198.71,
+    "ts": "2026-04-30T07:09:16.198Z",
+    "level": "info",
+    "message": "Vouchers: skipping fetch — window 2025-01-01 → 2026-04-30 already covered by last sync (2026-04-30) and no masters changed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956193.3616,
+    "ts": "2026-04-30T07:09:16.193Z",
+    "level": "info",
+    "message": "syncState: incremental voucher window → 2025-01-01 to 2026-04-30 (last sync was 2026-04-30, overlap=3d)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956187.7688,
+    "ts": "2026-04-30T07:09:16.187Z",
+    "level": "info",
+    "message": "Stock: 0 to sync, 9 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956181.5068,
+    "ts": "2026-04-30T07:09:16.181Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956155.961,
+    "ts": "2026-04-30T07:09:16.155Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956152.3606,
+    "ts": "2026-04-30T07:09:16.152Z",
+    "level": "info",
+    "message": "Ledgers: 0 to sync, 68 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956143.4053,
+    "ts": "2026-04-30T07:09:16.143Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956090.837,
+    "ts": "2026-04-30T07:09:16.090Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956086.3196,
+    "ts": "2026-04-30T07:09:16.086Z",
+    "level": "info",
+    "message": "Godowns: 0 to sync, 1 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956078.7212,
+    "ts": "2026-04-30T07:09:16.078Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956055.2397,
+    "ts": "2026-04-30T07:09:16.055Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956050.5273,
+    "ts": "2026-04-30T07:09:16.050Z",
+    "level": "info",
+    "message": "Cost Centres: 0 to sync, 3 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956039.54,
+    "ts": "2026-04-30T07:09:16.039Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956017.2979,
+    "ts": "2026-04-30T07:09:16.017Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956012.4656,
+    "ts": "2026-04-30T07:09:16.012Z",
+    "level": "info",
+    "message": "Groups: 0 to sync, 28 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532956001.041,
+    "ts": "2026-04-30T07:09:16.001Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532955951.2761,
+    "ts": "2026-04-30T07:09:15.951Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532955946.6052,
+    "ts": "2026-04-30T07:09:15.946Z",
+    "level": "info",
+    "message": "Sync mode: INCREMENTAL for \"Tally\" → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532955940.6428,
+    "ts": "2026-04-30T07:09:15.940Z",
+    "level": "info",
+    "message": "Tally ping OK (18ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532955918.6904,
+    "ts": "2026-04-30T07:09:15.918Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532955912.7493,
+    "ts": "2026-04-30T07:09:15.912Z",
+    "level": "info",
+    "message": "Full sync job full-1777532955912-bmse2 started for: Tally → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777532949685.1472,
+    "ts": "2026-04-30T07:09:09.685Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3563000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532925563.9336,
+    "ts": "2026-04-30T07:08:45.563Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532925561.1921,
+    "ts": "2026-04-30T07:08:45.561Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532925558.8389,
+    "ts": "2026-04-30T07:08:45.558Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532925550.1523,
+    "ts": "2026-04-30T07:08:45.550Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532692484.5251,
+    "ts": "2026-04-30T07:04:52.484Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532692482.5583,
+    "ts": "2026-04-30T07:04:52.482Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532692480.122,
+    "ts": "2026-04-30T07:04:52.480Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532692473.1575,
+    "ts": "2026-04-30T07:04:52.473Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691962.2341,
+    "ts": "2026-04-30T07:04:51.962Z",
+    "level": "info",
+    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-bvc-oae.m.frappe.cloud",
+    "meta": {
+      "lastVoucherSyncDate": "2026-04-30",
+      "lastMasterSyncAt": "2026-04-30T07:04:51.959Z"
+    },
+    "company": null
+  },
+  {
+    "id": 1777532691955.1692,
+    "ts": "2026-04-30T07:04:51.955Z",
+    "level": "info",
+    "message": "[Job full-1777532691625-5itqz] Nothing to sync — all masters unchanged, no new vouchers in window",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691951.1582,
+    "ts": "2026-04-30T07:04:51.951Z",
+    "level": "info",
+    "message": "Vouchers: skipping fetch — window 2025-01-01 → 2026-04-30 already covered by last sync (2026-04-30) and no masters changed",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691946.672,
+    "ts": "2026-04-30T07:04:51.946Z",
+    "level": "info",
+    "message": "syncState: incremental voucher window → 2025-01-01 to 2026-04-30 (last sync was 2026-04-30, overlap=3d)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691941.3916,
+    "ts": "2026-04-30T07:04:51.941Z",
+    "level": "info",
+    "message": "Stock: 0 to sync, 9 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691934.573,
+    "ts": "2026-04-30T07:04:51.934Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691906.341,
+    "ts": "2026-04-30T07:04:51.906Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691902.8394,
+    "ts": "2026-04-30T07:04:51.902Z",
+    "level": "info",
+    "message": "Ledgers: 0 to sync, 68 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691894.1875,
+    "ts": "2026-04-30T07:04:51.894Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691805.316,
+    "ts": "2026-04-30T07:04:51.805Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691800.4194,
+    "ts": "2026-04-30T07:04:51.800Z",
+    "level": "info",
+    "message": "Godowns: 0 to sync, 1 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691792.6213,
+    "ts": "2026-04-30T07:04:51.792Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691771.461,
+    "ts": "2026-04-30T07:04:51.771Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691766.4504,
+    "ts": "2026-04-30T07:04:51.766Z",
+    "level": "info",
+    "message": "Cost Centres: 0 to sync, 3 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691756.4375,
+    "ts": "2026-04-30T07:04:51.756Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691731.8447,
+    "ts": "2026-04-30T07:04:51.731Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691726.3057,
+    "ts": "2026-04-30T07:04:51.726Z",
+    "level": "info",
+    "message": "Groups: 0 to sync, 28 unchanged (skipped)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691718.8167,
+    "ts": "2026-04-30T07:04:51.718Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691665.5588,
+    "ts": "2026-04-30T07:04:51.665Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691660.2893,
+    "ts": "2026-04-30T07:04:51.660Z",
+    "level": "info",
+    "message": "Sync mode: INCREMENTAL for \"Tally\" → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691655.1553,
+    "ts": "2026-04-30T07:04:51.655Z",
+    "level": "info",
+    "message": "Tally ping OK (20ms)",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691629.631,
+    "ts": "2026-04-30T07:04:51.629Z",
+    "level": "info",
+    "message": "Full sync: fetching Tally data with incremental logic...",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532691625.8726,
+    "ts": "2026-04-30T07:04:51.625Z",
+    "level": "info",
+    "message": "Full sync job full-1777532691625-5itqz started for: Tally → https://erpnext-bvc-oae.m.frappe.cloud/",
+    "meta": {
+      "syncLedgers": true,
+      "syncStock": true,
+      "syncVouchers": true,
+      "syncGodowns": true,
+      "syncCostCentres": true,
+      "syncOpeningBalances": true,
+      "syncInvoices": true,
+      "syncTaxes": false,
+      "syncChartOfAccounts": true
+    },
+    "company": null
+  },
+  {
+    "id": 1777532650495.1108,
+    "ts": "2026-04-30T07:04:10.495Z",
+    "level": "info",
+    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3563000000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532636469.5488,
+    "ts": "2026-04-30T07:03:56.469Z",
+    "level": "info",
+    "message": "Run POST /api/middleware/check to validate all Tally data",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532636466.742,
+    "ts": "2026-04-30T07:03:56.466Z",
+    "level": "info",
+    "message": "Tally endpoint: http://localhost:9000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532636462.1306,
+    "ts": "2026-04-30T07:03:56.462Z",
+    "level": "info",
+    "message": "Tally Middleware server running on http://localhost:4000",
+    "meta": {},
+    "company": null
+  },
+  {
+    "id": 1777532636450.7166,
+    "ts": "2026-04-30T07:03:56.450Z",
+    "level": "info",
+    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
+    "meta": {},
+    "company": null
+  },
+  {
     "id": 1777531580784.5286,
     "ts": "2026-04-30T06:46:20.784Z",
     "level": "info",
@@ -7144,1089 +8346,6 @@
     "ts": "2026-04-30T05:11:36.996Z",
     "level": "info",
     "message": "Run POST /api/middleware/check to validate all Tally data",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525896992.933,
-    "ts": "2026-04-30T05:11:36.992Z",
-    "level": "info",
-    "message": "Tally endpoint: http://localhost:9000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525896986.3552,
-    "ts": "2026-04-30T05:11:36.986Z",
-    "level": "info",
-    "message": "Tally Middleware server running on http://localhost:4000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525896952.931,
-    "ts": "2026-04-30T05:11:36.952Z",
-    "level": "info",
-    "message": "Auto-sync scheduled: \"0 2 * * *\" (options: ledgers, stock, vouchers)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525896022.134,
-    "ts": "2026-04-30T05:11:36.022Z",
-    "level": "info",
-    "message": "syncState: checkpoint saved → vouchers up to 2026-04-30",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525896011.0457,
-    "ts": "2026-04-30T05:11:36.011Z",
-    "level": "info",
-    "message": "syncState: saved state for \"Tally\" → Tally::https://erpnext-sud-vlk.m.frappe.cloud",
-    "meta": {
-      "lastVoucherSyncDate": "2026-04-30",
-      "lastMasterSyncAt": "2026-04-30T05:11:36.004Z"
-    },
-    "company": null
-  },
-  {
-    "id": 1777525895995.0435,
-    "ts": "2026-04-30T05:11:35.995Z",
-    "level": "info",
-    "message": "Full sync job full-1777525520606-wekp8 done",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525895985.906,
-    "ts": "2026-04-30T05:11:35.985Z",
-    "level": "info",
-    "message": "Full sync complete: warning",
-    "meta": {
-      "company": "Company2"
-    },
-    "company": "Company2"
-  },
-  {
-    "id": 1777525895979.4482,
-    "ts": "2026-04-30T05:11:35.979Z",
-    "level": "success",
-    "message": "Invoice sync done - sales: +0 new/26 updated/0 failed | purchase: +0 new/17 updated/0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525895974.6897,
-    "ts": "2026-04-30T05:11:35.974Z",
-    "level": "info",
-    "message": "Submit Purchase Invoice: 0 submitted, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525895409.772,
-    "ts": "2026-04-30T05:11:35.409Z",
-    "level": "info",
-    "message": "Submit Sales Invoice: 0 submitted, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525894129.7588,
-    "ts": "2026-04-30T05:11:34.129Z",
-    "level": "info",
-    "message": "Sales Invoice rename complete: 0 renamed, 26 skipped, 0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525894123.9963,
-    "ts": "2026-04-30T05:11:34.123Z",
-    "level": "info",
-    "message": "Renaming Sales Invoices to Tally voucher numbers...",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525877077.662,
-    "ts": "2026-04-30T05:11:17.077Z",
-    "level": "info",
-    "message": "[Purchase Invoice] 10/17 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525844602.9868,
-    "ts": "2026-04-30T05:10:44.602Z",
-    "level": "info",
-    "message": "[Sales Invoice] 20/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525823173.0608,
-    "ts": "2026-04-30T05:10:23.173Z",
-    "level": "info",
-    "message": "[Sales Invoice] 10/26 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806455.193,
-    "ts": "2026-04-30T05:10:06.455Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Cash322 → Cash322 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806431.0466,
-    "ts": "2026-04-30T05:10:06.431Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Ram500 → Ram500 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806259.1545,
-    "ts": "2026-04-30T05:10:06.259Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Superman → Superman - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806197.3997,
-    "ts": "2026-04-30T05:10:06.197Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Office Expense2 → Office Expense2 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806155.2068,
-    "ts": "2026-04-30T05:10:06.155Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Godsman → Godsman - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525806089.7014,
-    "ts": "2026-04-30T05:10:06.089Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Purchase → Purchase - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805900.6284,
-    "ts": "2026-04-30T05:10:05.900Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Godsman → Godsman - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805839.8203,
-    "ts": "2026-04-30T05:10:05.839Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Cash322 → Cash322 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805532.4153,
-    "ts": "2026-04-30T05:10:05.532Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Sales → Sales - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805487.271,
-    "ts": "2026-04-30T05:10:05.487Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Sales2 → Sales2 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805404.3748,
-    "ts": "2026-04-30T05:10:05.404Z",
-    "level": "info",
-    "message": "[Invoice] Loaded 68 ledger balances for balance mapping",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525805392.2163,
-    "ts": "2026-04-30T05:10:05.392Z",
-    "level": "success",
-    "message": "Fetched 68 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525805322.7473,
-    "ts": "2026-04-30T05:10:05.322Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525805316.3513,
-    "ts": "2026-04-30T05:10:05.316Z",
-    "level": "info",
-    "message": "[Invoice] Fetching ledger balances from Tally company: Tally",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525804770.6506,
-    "ts": "2026-04-30T05:10:04.770Z",
-    "level": "info",
-    "message": "Pre-syncing 10 Tally stock items to ERPNext before invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525804514.5327,
-    "ts": "2026-04-30T05:10:04.514Z",
-    "level": "info",
-    "message": "Pre-syncing 12 customers before Sales Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525804220.033,
-    "ts": "2026-04-30T05:10:04.220Z",
-    "level": "info",
-    "message": "Pre-syncing 8 suppliers before Purchase Invoice batch",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525804211.8608,
-    "ts": "2026-04-30T05:10:04.211Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Purchase Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525804181.1958,
-    "ts": "2026-04-30T05:10:04.181Z",
-    "level": "info",
-    "message": "Placeholder item already exists: Sales Item",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803985.0012,
-    "ts": "2026-04-30T05:10:03.985Z",
-    "level": "info",
-    "message": "[Invoice] Global income account: Sales - C, expense account: Purchase - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803981.7686,
-    "ts": "2026-04-30T05:10:03.981Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Purchase → Purchase - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803853.8682,
-    "ts": "2026-04-30T05:10:03.853Z",
-    "level": "info",
-    "message": "[Invoice] income/expense account resolved: Sales → Sales - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803814.787,
-    "ts": "2026-04-30T05:10:03.814Z",
-    "level": "info",
-    "message": "Invoice breakdown - sales: 26, purchase: 17",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803666.547,
-    "ts": "2026-04-30T05:10:03.666Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803552.6802,
-    "ts": "2026-04-30T05:10:03.552Z",
-    "level": "info",
-    "message": "Syncing invoices to ERPNext for Company2 (abbr: C) | Tally company: Tally",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525803543.1877,
-    "ts": "2026-04-30T05:10:03.543Z",
-    "level": "success",
-    "message": "Voucher sync done — Payment Entry: +30/~0/=0/x0 | Journal Entry: +0/~16/=39/x0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525790333.1316,
-    "ts": "2026-04-30T05:09:50.333Z",
-    "level": "info",
-    "message": "[Journal Entry] 50/55 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525769272.4954,
-    "ts": "2026-04-30T05:09:29.272Z",
-    "level": "info",
-    "message": "[Journal Entry] 40/55 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525748624.699,
-    "ts": "2026-04-30T05:09:08.624Z",
-    "level": "info",
-    "message": "[Journal Entry] 30/55 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525727993.6926,
-    "ts": "2026-04-30T05:08:47.993Z",
-    "level": "info",
-    "message": "[Journal Entry] 20/55 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525706958.334,
-    "ts": "2026-04-30T05:08:26.959Z",
-    "level": "info",
-    "message": "[Journal Entry] 10/55 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525689938.3381,
-    "ts": "2026-04-30T05:08:09.938Z",
-    "level": "info",
-    "message": "[JE pre-sync] Ensuring parties exist — Customers: 0, Suppliers: 12",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525689932.4453,
-    "ts": "2026-04-30T05:08:09.932Z",
-    "level": "info",
-    "message": "Syncing 55/55 vouchers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525686437.0852,
-    "ts": "2026-04-30T05:08:06.437Z",
-    "level": "info",
-    "message": "Payment Entry sync done — created: 30, updated: 0, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525686430.9211,
-    "ts": "2026-04-30T05:08:06.430Z",
-    "level": "info",
-    "message": "6 payment vouchers without party rows falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666487.0156,
-    "ts": "2026-04-30T05:07:46.487Z",
-    "level": "warn",
-    "message": "Payment voucher 7 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666483.6829,
-    "ts": "2026-04-30T05:07:46.483Z",
-    "level": "warn",
-    "message": "Payment voucher 6 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666477.9302,
-    "ts": "2026-04-30T05:07:46.477Z",
-    "level": "warn",
-    "message": "Payment voucher 5 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666473.0762,
-    "ts": "2026-04-30T05:07:46.473Z",
-    "level": "warn",
-    "message": "Payment voucher 11 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666468.0183,
-    "ts": "2026-04-30T05:07:46.468Z",
-    "level": "warn",
-    "message": "Payment voucher 10 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666464.8176,
-    "ts": "2026-04-30T05:07:46.464Z",
-    "level": "warn",
-    "message": "Payment voucher 3 has no party row — falling back to Journal Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525666457.078,
-    "ts": "2026-04-30T05:07:46.457Z",
-    "level": "info",
-    "message": "[PE] Default bank/cash account: RAJLAXMI - C (Bank)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525665929.0967,
-    "ts": "2026-04-30T05:07:45.929Z",
-    "level": "info",
-    "message": "[PE pre-sync] Ensuring parties — Customers: 0, Suppliers: 20",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664405.2205,
-    "ts": "2026-04-30T05:07:44.405Z",
-    "level": "info",
-    "message": "Syncing 36 Payment/Receipt vouchers to Payment Entry",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664401.2993,
-    "ts": "2026-04-30T05:07:44.401Z",
-    "level": "info",
-    "message": "Voucher split — Payment Entry: 36, Journal Entry: 49, Sales (invoice sync): 26",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664397.9187,
-    "ts": "2026-04-30T05:07:44.397Z",
-    "level": "info",
-    "message": "Skipping 18 vouchers with non-JE types (Stock Journal, Opening Balance, etc.)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664292.434,
-    "ts": "2026-04-30T05:07:44.292Z",
-    "level": "info",
-    "message": "Resolving accounts with company abbreviation: C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664288.182,
-    "ts": "2026-04-30T05:07:44.288Z",
-    "level": "info",
-    "message": "Syncing 129 vouchers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525664281.9407,
-    "ts": "2026-04-30T05:07:44.281Z",
-    "level": "success",
-    "message": "Stock sync done - created: 0, updated: 9, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525647821.3276,
-    "ts": "2026-04-30T05:07:27.821Z",
-    "level": "info",
-    "message": "Pre-creating 1 Item Groups, 2 UoMs, 1 HSN codes (incl. fallback)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525647591.9521,
-    "ts": "2026-04-30T05:07:27.591Z",
-    "level": "info",
-    "message": "HSN/SAC field set as non-mandatory via Property Setter (PUT)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525647489.6165,
-    "ts": "2026-04-30T05:07:27.489Z",
-    "level": "info",
-    "message": "Syncing 9 stock items to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525647483.1885,
-    "ts": "2026-04-30T05:07:27.483Z",
-    "level": "success",
-    "message": "Cost centres sync done - created: 0, updated: 3, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525642530.3833,
-    "ts": "2026-04-30T05:07:22.530Z",
-    "level": "info",
-    "message": "Cost Centre sync: fetched 10 existing cost centers",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525642506.788,
-    "ts": "2026-04-30T05:07:22.506Z",
-    "level": "info",
-    "message": "Root cost centre resolved: Company2 - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525642471.3635,
-    "ts": "2026-04-30T05:07:22.471Z",
-    "level": "info",
-    "message": "Syncing 3 cost centres to ERPNext for Company2 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525642465.6885,
-    "ts": "2026-04-30T05:07:22.465Z",
-    "level": "success",
-    "message": "Godown sync done - created: 0, updated: 1, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525640893.3274,
-    "ts": "2026-04-30T05:07:20.893Z",
-    "level": "info",
-    "message": "Root warehouse resolved: All Warehouses - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525640865.13,
-    "ts": "2026-04-30T05:07:20.865Z",
-    "level": "info",
-    "message": "Syncing 1 godowns to ERPNext for Company2 (abbr: C)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525640858.059,
-    "ts": "2026-04-30T05:07:20.858Z",
-    "level": "info",
-    "message": "Fetched 133 accounts from ERPNext for Company2",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525640778.9478,
-    "ts": "2026-04-30T05:07:20.778Z",
-    "level": "info",
-    "message": "Found 14 ledgers with opening balances: Customers5=-777777, RAJLAXMI=-242, Sudhir26022026=26022026, SudhirMorchale=2122003, Suppliers5=7575, Suryavanshi=6666, Test18022026=18022026, Test500=-2, Test600=7, TestCustomer4=-67567575, Test GST Customer=-76767676767, Test Ledger 999=777, TEST-SUPPLIER2=1.11, UpdateLedgerTest=100",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525636688.6858,
-    "ts": "2026-04-30T05:07:16.688Z",
-    "level": "info",
-    "message": "Syncing opening balances for 68 ledgers in Company2",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525636673.609,
-    "ts": "2026-04-30T05:07:16.673Z",
-    "level": "success",
-    "message": "Ledger sync done - customers: +0 created, ~18 updated, x0 failed | suppliers: +0 created, ~11 updated, x0 failed",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525636668.1924,
-    "ts": "2026-04-30T05:07:16.668Z",
-    "level": "info",
-    "message": "Address/contact sync done",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525635835.1648,
-    "ts": "2026-04-30T05:07:15.835Z",
-    "level": "warn",
-    "message": "Address sync skipped for Neha: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525635332.8408,
-    "ts": "2026-04-30T05:07:15.332Z",
-    "level": "warn",
-    "message": "Address sync skipped for TestGstCustomer2: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525634819.6235,
-    "ts": "2026-04-30T05:07:14.819Z",
-    "level": "warn",
-    "message": "Address sync skipped for Test GST Customer: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525633417.974,
-    "ts": "2026-04-30T05:07:13.417Z",
-    "level": "warn",
-    "message": "Address sync skipped for Amey: State is a required field for Indian Address",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525633412.3115,
-    "ts": "2026-04-30T05:07:13.412Z",
-    "level": "info",
-    "message": "Syncing addresses/contacts for 7 parties from Tally",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525626666.4534,
-    "ts": "2026-04-30T05:07:06.666Z",
-    "level": "info",
-    "message": "[Supplier] 10/11 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525608367.1816,
-    "ts": "2026-04-30T05:06:48.367Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"TestGstCustomer2\" (will sync without PAN): 4444444444",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525606725.9749,
-    "ts": "2026-04-30T05:06:46.725Z",
-    "level": "info",
-    "message": "Invalid PAN ignored for customer \"Test GST Customer\" (will sync without PAN): 4654563565",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525583485.9202,
-    "ts": "2026-04-30T05:06:23.486Z",
-    "level": "info",
-    "message": "[Customer] 10/18 synced - pausing 5000ms",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566582.1716,
-    "ts": "2026-04-30T05:06:06.582Z",
-    "level": "info",
-    "message": "Ledger breakdown - customers: 18, suppliers: 11, skipped (GL-only groups): 40",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566575.7356,
-    "ts": "2026-04-30T05:06:06.575Z",
-    "level": "info",
-    "message": "Using default Territory: India",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566571.3547,
-    "ts": "2026-04-30T05:06:06.571Z",
-    "level": "info",
-    "message": "Using Supplier Group: Services",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566540.1318,
-    "ts": "2026-04-30T05:06:06.540Z",
-    "level": "info",
-    "message": "Using Customer Group: Commercial",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566496.552,
-    "ts": "2026-04-30T05:06:06.496Z",
-    "level": "info",
-    "message": "Syncing 68 ledgers to ERPNext",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525566487.2637,
-    "ts": "2026-04-30T05:06:06.487Z",
-    "level": "success",
-    "message": "Chart of Accounts sync done - created: 0, updated: 13, skipped: 15, failed: 0",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525564979.4197,
-    "ts": "2026-04-30T05:06:04.979Z",
-    "level": "info",
-    "message": "COA updated: Unsecured Loans - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525563354.0847,
-    "ts": "2026-04-30T05:06:03.354Z",
-    "level": "info",
-    "message": "COA updated: Secured Loans - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525561808.8806,
-    "ts": "2026-04-30T05:06:01.808Z",
-    "level": "info",
-    "message": "COA updated: Bank OD A/c - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525558978.5054,
-    "ts": "2026-04-30T05:05:58.978Z",
-    "level": "info",
-    "message": "COA updated: Sundry Creditors - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525557424.8906,
-    "ts": "2026-04-30T05:05:57.424Z",
-    "level": "info",
-    "message": "COA updated: Provisions - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525555865.7397,
-    "ts": "2026-04-30T05:05:55.865Z",
-    "level": "info",
-    "message": "COA updated: Duties & Taxes - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525554227.273,
-    "ts": "2026-04-30T05:05:54.227Z",
-    "level": "info",
-    "message": "COA updated: Sundry Debtors - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525552597.1353,
-    "ts": "2026-04-30T05:05:52.597Z",
-    "level": "info",
-    "message": "COA updated: Stock-in-Hand - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525551052.8083,
-    "ts": "2026-04-30T05:05:51.052Z",
-    "level": "info",
-    "message": "COA updated: Loans & Advances (Asset) - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525549413.8113,
-    "ts": "2026-04-30T05:05:49.413Z",
-    "level": "info",
-    "message": "COA updated: Deposits (Asset) - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525547777.235,
-    "ts": "2026-04-30T05:05:47.777Z",
-    "level": "info",
-    "message": "COA updated: Cash-in-Hand - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525546138.0447,
-    "ts": "2026-04-30T05:05:46.138Z",
-    "level": "info",
-    "message": "COA updated: Bank Accounts - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525544501.3643,
-    "ts": "2026-04-30T05:05:44.501Z",
-    "level": "info",
-    "message": "COA updated: Reserves & Surplus - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521627.0269,
-    "ts": "2026-04-30T05:05:21.627Z",
-    "level": "info",
-    "message": "COA root accounts — Asset: Application of Funds (Assets) - C, Liability: Source of Funds (Liabilities) - C, Equity(fallback): Source of Funds (Liabilities) - C, Income: Income - C, Expense: Expenses - C",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521623.712,
-    "ts": "2026-04-30T05:05:21.623Z",
-    "level": "info",
-    "message": "COA: fetched 133 existing ERPNext accounts for Company2",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521568.515,
-    "ts": "2026-04-30T05:05:21.568Z",
-    "level": "info",
-    "message": "Syncing 28 account groups to ERPNext for Company2",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521561.1,
-    "ts": "2026-04-30T05:05:21.561Z",
-    "level": "info",
-    "message": "Rate limit status — Limit: 3600000000, Used: undefined, Remaining: 3581000000",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521415.4531,
-    "ts": "2026-04-30T05:05:21.415Z",
-    "level": "info",
-    "message": "Using ERPNext company: \"Company2\" (from Sync UI)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521409.4417,
-    "ts": "2026-04-30T05:05:21.409Z",
-    "level": "info",
-    "message": "ERPNext client caches cleared for new sync run [erpnextClient v8]",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521393.7527,
-    "ts": "2026-04-30T05:05:21.393Z",
-    "level": "success",
-    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-30) from 129 total",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521380.3132,
-    "ts": "2026-04-30T05:05:21.380Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521364.5483,
-    "ts": "2026-04-30T05:05:21.364Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521067.825,
-    "ts": "2026-04-30T05:05:21.067Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2025-01-01",
-      "toDate": "2026-04-30"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521061.5325,
-    "ts": "2026-04-30T05:05:21.061Z",
-    "level": "info",
-    "message": "Vouchers: full window 2025-01-01 → 2026-04-30",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521054.7183,
-    "ts": "2026-04-30T05:05:21.054Z",
-    "level": "info",
-    "message": "Stock: 9 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525521043.5242,
-    "ts": "2026-04-30T05:05:21.043Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521010.8643,
-    "ts": "2026-04-30T05:05:21.010Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525521004.4424,
-    "ts": "2026-04-30T05:05:21.004Z",
-    "level": "info",
-    "message": "Ledgers: 68 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525520992.6865,
-    "ts": "2026-04-30T05:05:20.992Z",
-    "level": "success",
-    "message": "Fetched 68 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520928.441,
-    "ts": "2026-04-30T05:05:20.928Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520921.8386,
-    "ts": "2026-04-30T05:05:20.921Z",
-    "level": "info",
-    "message": "Godowns: 1 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525520909.2256,
-    "ts": "2026-04-30T05:05:20.909Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520878.8062,
-    "ts": "2026-04-30T05:05:20.878Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520872.7117,
-    "ts": "2026-04-30T05:05:20.872Z",
-    "level": "info",
-    "message": "Cost Centres: 3 to sync, 0 unchanged (skipped)",
-    "meta": {},
-    "company": null
-  },
-  {
-    "id": 1777525520858.2524,
-    "ts": "2026-04-30T05:05:20.858Z",
-    "level": "success",
-    "message": "Fetched 3 cost centres",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520828.9004,
-    "ts": "2026-04-30T05:05:20.828Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777525520821.1277,
-    "ts": "2026-04-30T05:05:20.821Z",
-    "level": "info",
-    "message": "Groups: 28 to sync, 0 unchanged (skipped)",
     "meta": {},
     "company": null
   }

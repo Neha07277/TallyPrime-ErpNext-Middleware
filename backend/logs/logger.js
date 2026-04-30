@@ -151,6 +151,146 @@ function pruneAllLogs() {
 pruneAllLogs();
 setInterval(pruneAllLogs, 6 * 60 * 60 * 1000);
 
+// ── Human-friendly log helpers ────────────────────────────────────────────────
+// Plain-English wrappers around addLog — no logic changes.
+// Every helper accepts a `meta` object as the last argument so multi-tenant
+// bucket routing (meta.company) keeps working exactly as before.
+//
+// Usage: logger.human.serverReady("http://localhost:4000", { company: "Rajlaxmi Solutions" })
+
+const human = {
+
+  // ── Startup messages ────────────────────────────────────────────────────────
+
+  /** Tally Middleware server running on http://localhost:4000 */
+  serverReady: (url, meta = {}) =>
+    addLog("info",
+      `The system is up and ready. You can start using it now. (${url})`,
+      { type: "server_ready", url, ...meta }),
+
+  /** Tally endpoint: http://localhost:9000 */
+  tallyConnected: (url, meta = {}) =>
+    addLog("info",
+      `Tally is connected and reachable at ${url}.`,
+      { type: "tally_connected", url, ...meta }),
+
+  /** Auto-sync scheduled: "0 2 * * *" */
+  autoSyncScheduled: (what, meta = {}) =>
+    addLog("info",
+      `Automatic data sync is set up. It will run on its own every night at 2:00 AM for: ${what}.`,
+      { type: "auto_sync_scheduled", schedule: what, ...meta }),
+
+  /** Run POST /api/middleware/check to validate all Tally data */
+  checkReady: (meta = {}) =>
+    addLog("info",
+      `System is ready. You can now run a check to make sure all Tally data is correct.`,
+      { type: "check_ready", ...meta }),
+
+  // ── Sync lifecycle ──────────────────────────────────────────────────────────
+
+  /** Full sync job started */
+  syncStarted: (companyName, targetUrl, meta = {}) =>
+    addLog("info",
+      `Starting a full data update for "${companyName}". This will fetch the latest information from Tally and send it to ${targetUrl}.`,
+      { type: "sync_started", ...meta }),
+
+  /** Tally ping OK (20ms) */
+  tallyReachable: (ms, meta = {}) =>
+    addLog("info",
+      `Tally responded quickly (in ${ms}ms). Connection is healthy.`,
+      { type: "tally_ping", ms, ...meta }),
+
+  /** Sync mode: INCREMENTAL — only new/changed records will be fetched */
+  syncModeIncremental: (companyName, meta = {}) =>
+    addLog("info",
+      `Only new or changed records will be fetched for "${companyName}" — unchanged data will be skipped to save time.`,
+      { type: "sync_mode", mode: "incremental", ...meta }),
+
+  /** Nothing to sync — all masters unchanged, no new vouchers */
+  nothingToSync: (meta = {}) =>
+    addLog("info",
+      `Everything is already up to date. There is nothing new to save right now.`,
+      { type: "sync_empty", ...meta }),
+
+  /** syncState saved */
+  stateSaved: (companyName, meta = {}) =>
+    addLog("info",
+      `Progress has been saved for "${companyName}". The next sync will continue from where this one left off.`,
+      { type: "state_saved", ...meta }),
+
+  /** Sync done */
+  syncDone: (companyName, dateFrom, dateTo, count, meta = {}) =>
+    addLog("success",
+      `Done! ${count} record${count === 1 ? "" : "s"} saved for "${companyName}" (${dateFrom} → ${dateTo}).`,
+      { type: "sync_done", count, ...meta }),
+
+  /** Sync failed */
+  syncFailed: (companyName, reason, meta = {}) =>
+    addLog("error",
+      `Could not complete the data update for "${companyName}". Reason: ${reason}`,
+      { type: "sync_failed", reason, ...meta }),
+
+  // ── Per-master fetching (ledgers, stock, vouchers, etc.) ───────────────────
+
+  /** Fetching ledgers from Tally */
+  fetchingMaster: (masterName, meta = {}) =>
+    addLog("info",
+      `Reading ${masterName} from Tally…`,
+      { type: "fetching_master", master: masterName, ...meta }),
+
+  /** Fetched 68 ledgers */
+  fetchedMaster: (masterName, count, meta = {}) =>
+    addLog("success",
+      `Found ${count} ${masterName} in Tally.`,
+      { type: "fetched_master", master: masterName, count, ...meta }),
+
+  /** Ledgers: 0 to sync, 68 unchanged (skipped) */
+  masterSyncResult: (masterName, toSync, skipped, meta = {}) =>
+    addLog("info",
+      toSync === 0
+        ? `${masterName}: All ${skipped} ${skipped === 1 ? "entry is" : "entries are"} already up to date. Nothing to change.`
+        : `${masterName}: ${toSync} ${toSync === 1 ? "entry" : "entries"} will be updated, ${skipped} already up to date.`,
+      { type: "master_sync_result", master: masterName, toSync, skipped, ...meta }),
+
+  /** Vouchers skipped — window already covered */
+  vouchersSkipped: (dateFrom, dateTo, meta = {}) =>
+    addLog("info",
+      `Vouchers from ${dateFrom} to ${dateTo} were already synced before. Skipping to avoid duplicates.`,
+      { type: "vouchers_skipped", dateFrom, dateTo, ...meta }),
+
+  // ── Individual record actions ───────────────────────────────────────────────
+
+  itemAdded: (itemLabel, meta = {}) =>
+    addLog("success", `Added: ${itemLabel}`, { type: "item_added", item: itemLabel, ...meta }),
+
+  itemUpdated: (itemLabel, meta = {}) =>
+    addLog("info", `Updated: ${itemLabel}`, { type: "item_updated", item: itemLabel, ...meta }),
+
+  itemRemoved: (itemLabel, meta = {}) =>
+    addLog("warn", `Removed: ${itemLabel}`, { type: "item_removed", item: itemLabel, ...meta }),
+
+  itemSkipped: (itemLabel, reason, meta = {}) =>
+    addLog("info", `Skipped "${itemLabel}" — ${reason}.`, { type: "item_skipped", item: itemLabel, reason, ...meta }),
+
+  // ── Warnings / soft issues ──────────────────────────────────────────────────
+
+  headsUp: (message, meta = {}) =>
+    addLog("warn", `Heads up: ${message}`, { type: "heads_up", ...meta }),
+
+  missingData: (itemLabel, fieldName, meta = {}) =>
+    addLog("warn",
+      `"${itemLabel}" is missing "${fieldName}". It was saved anyway but may be incomplete.`,
+      { type: "missing_data", item: itemLabel, field: fieldName, ...meta }),
+
+  // ── General progress ────────────────────────────────────────────────────────
+
+  step: (stepName, meta = {}) =>
+    addLog("info", `Now working on: ${stepName}`, { type: "step", step: stepName, ...meta }),
+
+  stepDone: (stepName, meta = {}) =>
+    addLog("success", `Finished: ${stepName}`, { type: "step_done", step: stepName, ...meta }),
+};
+
 // ── Public API ────────────────────────────────────────────────────────────────
 export const logger = {
   info:    (msg, meta) => addLog("info",    msg, meta),
@@ -177,4 +317,7 @@ export const logger = {
     cache.set(bucket, []);
     saveBucket(bucket, []);
   },
+
+  // Plain-English helpers — see section above for full list
+  human,
 };

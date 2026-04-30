@@ -1,5 +1,405 @@
 [
   {
+    "id": 1777533934817.3347,
+    "ts": "2026-04-30T07:25:34.817Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934793.1694,
+    "ts": "2026-04-30T07:25:34.793Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934781.8455,
+    "ts": "2026-04-30T07:25:34.781Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934737.002,
+    "ts": "2026-04-30T07:25:34.737Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934724.5193,
+    "ts": "2026-04-30T07:25:34.724Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934702.5122,
+    "ts": "2026-04-30T07:25:34.702Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934689.2122,
+    "ts": "2026-04-30T07:25:34.689Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934671.9893,
+    "ts": "2026-04-30T07:25:34.671Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934656.4446,
+    "ts": "2026-04-30T07:25:34.656Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533934615.4624,
+    "ts": "2026-04-30T07:25:34.615Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182556.8582,
+    "ts": "2026-04-30T07:13:02.556Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182528.698,
+    "ts": "2026-04-30T07:13:02.528Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182517.148,
+    "ts": "2026-04-30T07:13:02.517Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182465.1555,
+    "ts": "2026-04-30T07:13:02.465Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182451.0408,
+    "ts": "2026-04-30T07:13:02.451Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182428.2124,
+    "ts": "2026-04-30T07:13:02.428Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182412.258,
+    "ts": "2026-04-30T07:13:02.412Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182391.1921,
+    "ts": "2026-04-30T07:13:02.391Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182375.9688,
+    "ts": "2026-04-30T07:13:02.375Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777533182327.0403,
+    "ts": "2026-04-30T07:13:02.327Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956181.5068,
+    "ts": "2026-04-30T07:09:16.181Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956155.961,
+    "ts": "2026-04-30T07:09:16.155Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956143.4053,
+    "ts": "2026-04-30T07:09:16.143Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956090.837,
+    "ts": "2026-04-30T07:09:16.090Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956078.7212,
+    "ts": "2026-04-30T07:09:16.078Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956055.2397,
+    "ts": "2026-04-30T07:09:16.055Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956039.54,
+    "ts": "2026-04-30T07:09:16.039Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956017.2979,
+    "ts": "2026-04-30T07:09:16.017Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532956001.041,
+    "ts": "2026-04-30T07:09:16.001Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532955951.2761,
+    "ts": "2026-04-30T07:09:15.951Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691934.573,
+    "ts": "2026-04-30T07:04:51.934Z",
+    "level": "success",
+    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691906.341,
+    "ts": "2026-04-30T07:04:51.906Z",
+    "level": "info",
+    "message": "Fetching stock items from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691894.1875,
+    "ts": "2026-04-30T07:04:51.894Z",
+    "level": "success",
+    "message": "Fetched 68 ledgers",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691805.316,
+    "ts": "2026-04-30T07:04:51.805Z",
+    "level": "info",
+    "message": "Fetching ledgers from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691792.6213,
+    "ts": "2026-04-30T07:04:51.792Z",
+    "level": "success",
+    "message": "Fetched 1 godowns",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691771.461,
+    "ts": "2026-04-30T07:04:51.771Z",
+    "level": "info",
+    "message": "Fetching godowns from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691756.4375,
+    "ts": "2026-04-30T07:04:51.756Z",
+    "level": "success",
+    "message": "Fetched 3 cost centres",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691731.8447,
+    "ts": "2026-04-30T07:04:51.731Z",
+    "level": "info",
+    "message": "Fetching cost centres from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691718.8167,
+    "ts": "2026-04-30T07:04:51.718Z",
+    "level": "success",
+    "message": "Fetched 28 groups",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
+    "id": 1777532691665.5588,
+    "ts": "2026-04-30T07:04:51.665Z",
+    "level": "info",
+    "message": "Fetching groups from Tally",
+    "meta": {
+      "company": "Tally"
+    },
+    "company": "Tally"
+  },
+  {
     "id": 1777529846709.1035,
     "ts": "2026-04-30T06:17:26.709Z",
     "level": "success",
@@ -9704,410 +10104,6 @@
     "ts": "2026-04-24T09:23:28.879Z",
     "level": "info",
     "message": "Fetching budgets from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608871.0872,
-    "ts": "2026-04-24T09:23:28.871Z",
-    "level": "success",
-    "message": "Fetched 1 currencies",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608857.6455,
-    "ts": "2026-04-24T09:23:28.857Z",
-    "level": "info",
-    "message": "Fetching currencies from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608849.448,
-    "ts": "2026-04-24T09:23:28.849Z",
-    "level": "success",
-    "message": "Fetched 1 cost centres",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608833.0334,
-    "ts": "2026-04-24T09:23:28.833Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608824.479,
-    "ts": "2026-04-24T09:23:28.824Z",
-    "level": "success",
-    "message": "Fetched 1 cost categories",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608810.2275,
-    "ts": "2026-04-24T09:23:28.810Z",
-    "level": "info",
-    "message": "Fetching cost categories from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608803.2122,
-    "ts": "2026-04-24T09:23:28.803Z",
-    "level": "success",
-    "message": "Fetched 29 voucher types",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608778.4375,
-    "ts": "2026-04-24T09:23:28.778Z",
-    "level": "info",
-    "message": "Fetching voucher types from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608770.2905,
-    "ts": "2026-04-24T09:23:28.770Z",
-    "level": "success",
-    "message": "Fetched 67 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608695.6692,
-    "ts": "2026-04-24T09:23:28.695Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608686.5757,
-    "ts": "2026-04-24T09:23:28.686Z",
-    "level": "success",
-    "message": "Fetched 28 groups",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777022608621.4243,
-    "ts": "2026-04-24T09:23:28.621Z",
-    "level": "info",
-    "message": "Fetching groups from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210481.2222,
-    "ts": "2026-04-24T04:50:10.481Z",
-    "level": "success",
-    "message": "Fetched 129 vouchers (filtered: 2025-01-01 → 2026-04-24) from 129 total",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210473.6838,
-    "ts": "2026-04-24T04:50:10.473Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210462.8596,
-    "ts": "2026-04-24T04:50:10.462Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210217.3396,
-    "ts": "2026-04-24T04:50:10.217Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": "2025-01-01",
-      "toDate": "2026-04-24"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210191.8457,
-    "ts": "2026-04-24T04:50:10.191Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210161.8728,
-    "ts": "2026-04-24T04:50:10.161Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210148.0022,
-    "ts": "2026-04-24T04:50:10.148Z",
-    "level": "success",
-    "message": "Fetched 67 ledgers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210093.2722,
-    "ts": "2026-04-24T04:50:10.093Z",
-    "level": "info",
-    "message": "Fetching ledgers from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210076.7173,
-    "ts": "2026-04-24T04:50:10.076Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210054.2231,
-    "ts": "2026-04-24T04:50:10.054Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210037.7996,
-    "ts": "2026-04-24T04:50:10.037Z",
-    "level": "success",
-    "message": "Fetched 1 cost centres",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006210014.5032,
-    "ts": "2026-04-24T04:50:10.014Z",
-    "level": "info",
-    "message": "Fetching cost centres from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006209989.788,
-    "ts": "2026-04-24T04:50:09.989Z",
-    "level": "success",
-    "message": "Fetched 28 groups",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006209953.1775,
-    "ts": "2026-04-24T04:50:09.953Z",
-    "level": "info",
-    "message": "Fetching groups from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073587.6755,
-    "ts": "2026-04-24T04:47:53.587Z",
-    "level": "success",
-    "message": "Fetched 129 total vouchers (all dates)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073580.1082,
-    "ts": "2026-04-24T04:47:53.580Z",
-    "level": "info",
-    "message": "Vouchers parsed successfully: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073569.0137,
-    "ts": "2026-04-24T04:47:53.569Z",
-    "level": "info",
-    "message": "Raw vouchers received from Tally: 129",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073348.2622,
-    "ts": "2026-04-24T04:47:53.348Z",
-    "level": "info",
-    "message": "Fetching ALL vouchers from Tally",
-    "meta": {
-      "company": "Tally",
-      "fromDate": null,
-      "toDate": null
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073338.909,
-    "ts": "2026-04-24T04:47:53.338Z",
-    "level": "info",
-    "message": "Voucher check: fetching ALL vouchers",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073330.6296,
-    "ts": "2026-04-24T04:47:53.330Z",
-    "level": "success",
-    "message": "Fetched 1 godowns",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073311.9827,
-    "ts": "2026-04-24T04:47:53.311Z",
-    "level": "info",
-    "message": "Fetching godowns from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073302.3267,
-    "ts": "2026-04-24T04:47:53.302Z",
-    "level": "success",
-    "message": "Fetched 1 units",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073285.6187,
-    "ts": "2026-04-24T04:47:53.285Z",
-    "level": "info",
-    "message": "Fetching units from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073276.465,
-    "ts": "2026-04-24T04:47:53.276Z",
-    "level": "success",
-    "message": "Fetched 0 stock categories",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073259.492,
-    "ts": "2026-04-24T04:47:53.259Z",
-    "level": "info",
-    "message": "Fetching stock categories from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073249.3337,
-    "ts": "2026-04-24T04:47:53.249Z",
-    "level": "success",
-    "message": "Fetched 9 stock items (0 with HSN/SAC, 0 with GST rate)",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073225.5596,
-    "ts": "2026-04-24T04:47:53.225Z",
-    "level": "info",
-    "message": "Fetching stock items from Tally",
-    "meta": {
-      "company": "Tally"
-    },
-    "company": "Tally"
-  },
-  {
-    "id": 1777006073213.5938,
-    "ts": "2026-04-24T04:47:53.213Z",
-    "level": "success",
-    "message": "Fetched 1 stock groups",
     "meta": {
       "company": "Tally"
     },
