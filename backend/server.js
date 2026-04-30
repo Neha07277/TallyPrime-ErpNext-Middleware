@@ -92,7 +92,6 @@ async function runAutoSync() {
         filterChangedMasters(allGroups, state.groupAlterIds);
       logger.info(`Groups: ${changedGroups.length} to sync, ${unchangedGroups} unchanged`);
       groups = changedGroups;
-      // Save updated alterId map regardless so new records are tracked
       saveCompanyState(companyName, { groupAlterIds: buildAlterIdMap(allGroups) }, erpnextUrl);
     }
 
@@ -141,13 +140,31 @@ async function runAutoSync() {
       opts
     );
 
-    // ── 4. Save state only on success ─────────────────────────────────────
-    if (result.status !== "failed") {
+    // ── 4. Save state ──────────────────────────────────────────────────────
+    // FIX: Previously we only saved state when result.status !== "failed".
+    // But result.status was "failed" even when only a single non-critical item
+    // failed (e.g. 1 purchase invoice with a bad batch number). This meant
+    // sync_state.json was NEVER written and every run was treated as a full sync.
+    //
+    // New rule: Save state unless a truly CRITICAL step failed completely
+    // (ERPNext unreachable, company not found). Partial item-level failures
+    // in invoices/ledgers are non-critical — we save state and move the window
+    // forward so those 1-2 bad records don't drag the entire history back.
+    //
+    // result.status values after the Erpnextclient.js fix:
+    //   "ok"       → all steps clean
+    //   "warning"  → some items failed (non-critical) — SAVE STATE
+    //   "failed"   → critical step completely failed    — DO NOT SAVE
+    //   "cancelled"→ user stopped sync                  — DO NOT SAVE
+    const shouldSaveState = result.status === "ok" || result.status === "warning";
+    if (shouldSaveState) {
       saveCompanyState(companyName, {
         lastVoucherSyncDate: toDate,
         lastMasterSyncAt:    now.toISOString(),
       }, erpnextUrl);
       logger.info(`syncState: checkpoint saved → vouchers up to ${toDate}`);
+    } else {
+      logger.warn(`syncState: checkpoint NOT saved — sync status was "${result.status}" (critical failure). Fix the underlying issue and re-run.`);
     }
 
     _lastAutoSync = {

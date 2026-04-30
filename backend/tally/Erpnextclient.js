@@ -6,6 +6,7 @@
  */
 
 import axios from "axios";
+import { createHash } from "crypto";
 import { config } from "../config/config.js";
 import { logger } from "../logs/logger.js";
 
@@ -705,6 +706,18 @@ async function withRetry(fn, label) {
   throw lastErr;
 }
 
+// Simple deterministic hash — djb2 on a stable JSON string.
+// Used to detect "nothing changed" so we skip re-PUT on already-synced docs.
+function _docHash(doc) {
+  const stable = JSON.stringify(doc, Object.keys(doc).sort());
+  let h = 5381;
+  for (let i = 0; i < stable.length; i++) {
+    h = ((h << 5) + h) ^ stable.charCodeAt(i);
+    h >>>= 0; // keep 32-bit unsigned
+  }
+  return h.toString(16);
+}
+
 async function upsert(client, doctype, filters, doc) {
   const searchKey = Object.keys(filters)[0];
   const searchVal = Object.values(filters)[0];
@@ -795,6 +808,32 @@ async function upsert(client, doctype, filters, doc) {
         }
         return { action: "updated", name: existing.name };
       }
+
+      // ── DIRTY CHECK: skip PUT if doc content is unchanged ────────────────────
+      // For Journal Entry (and other non-party doctypes), we store a lightweight
+      // content hash in user_remark as a suffix: " |h:<hex>".
+      // On subsequent runs we recompute the hash and compare — if identical we
+      // return "skipped" so the sync counter reflects reality (not inflated
+      // "updated" counts) and we save one API call per unchanged voucher.
+      if (doctype === "Journal Entry") {
+        const newHash = _docHash(doc);
+        // Check if existing user_remark already ends with this hash
+        try {
+          const remarkRes = await client.get(
+            "/api/resource/" + encodeURIComponent(doctype) + "/" + encodeURIComponent(existing.name),
+            { params: { fields: '["user_remark"]' } }
+          );
+          const existingRemark = remarkRes?.data?.data?.user_remark || "";
+          const hashSuffix = " |h:" + newHash;
+          if (existingRemark.includes(hashSuffix)) {
+            // Content is identical — skip the PUT entirely
+            return { action: "skipped", name: existing.name };
+          }
+          // Hash mismatch → update, and stamp the new hash into user_remark
+          doc = Object.assign({}, doc, { user_remark: (doc.user_remark || "") + hashSuffix });
+        } catch (_) { /* hash check failed — fall through to normal PUT */ }
+      }
+
       // Always include doctype + name in PUT body — ERPNext requires them to validate mandatory fields
       await client.put(
         "/api/resource/" + encodeURIComponent(doctype) + "/" + encodeURIComponent(existing.name),
@@ -803,12 +842,17 @@ async function upsert(client, doctype, filters, doc) {
       return { action: "updated", name: existing.name };
     }
   } catch (_) {}
+  // On first create, stamp the content hash into user_remark for Journal Entries
+  if (doctype === "Journal Entry" && doc.user_remark !== undefined) {
+    const newHash = _docHash(doc);
+    doc = Object.assign({}, doc, { user_remark: (doc.user_remark || "") + " |h:" + newHash });
+  }
   const res = await client.post("/api/resource/" + encodeURIComponent(doctype), Object.assign({}, doc, { doctype }));
   return { action: "created", name: res.data && res.data.data && res.data.data.name };
 }
 
 async function batchSync(client, doctype, items, mapper, progressCb) {
-  let created = 0, updated = 0, failed = 0;
+  let created = 0, updated = 0, failed = 0, skipped = 0;
   const errors = [];
   const failedItems = []; // transient failures queued for final pass
 
@@ -825,7 +869,9 @@ async function batchSync(client, doctype, items, mapper, progressCb) {
       const item = chunk[j];
       const r    = results[j];
       if (r.status === "fulfilled") {
-        if (r.value.action === "created") created++; else updated++;
+        if      (r.value.action === "created") created++;
+        else if (r.value.action === "skipped") skipped++;
+        else                                   updated++;
       } else {
         const err         = r.reason;
         const status      = err.response && err.response.status;
@@ -860,7 +906,9 @@ async function batchSync(client, doctype, items, mapper, progressCb) {
       const { filters, doc } = mapper(item);
       try {
         const result = await withRetry(() => upsert(client, doctype, filters, doc), doctype + ":" + item.name + " [final]");
-        if (result.action === "created") created++; else updated++;
+        if      (result.action === "created") created++;
+        else if (result.action === "skipped") skipped++;
+        else                                  updated++;
       } catch (err) {
         failed++;
         const isDuplicate = err.response?.data?.exc_type === "DuplicateEntryError";
@@ -872,7 +920,7 @@ async function batchSync(client, doctype, items, mapper, progressCb) {
     }
   }
 
-  return { created, updated, failed, errors: errors.slice(0, 20) };
+  return { created, updated, skipped, failed, errors: errors.slice(0, 20) };
 }
 
 // -- Ledgers -> Customers / Suppliers -----------------------------------------
@@ -1678,7 +1726,18 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
       }
 
       if (!partyRow) {
-        logger.warn("Payment voucher " + (v.voucherNumber || v.guid) + " has no party row — falling back to Journal Entry");
+        // Log with full row details so the user can diagnose why party detection failed.
+        // Common causes:
+        //   - All rows are Bank/Cash/Income/Expense accounts (contra/transfer, no customer/supplier leg)
+        //   - account_type is blank on all rows AND debit/credit direction inference also failed
+        const rowSummary = rows.map((r) =>
+          (r.ledger || "?") + "[" + (r.accountType || "no-type") + "," + (r.isDebit ? "Dr" : "Cr") + "]"
+        ).join(" | ");
+        logger.warn(
+          "Payment voucher " + (v.voucherNumber || v.guid) +
+          " (" + v.voucherType + ") falling back to Journal Entry — no party row detected." +
+          " Rows: " + rowSummary
+        );
         return null;
       }
 
@@ -1955,8 +2014,8 @@ export async function syncVouchersToErpNext(vouchers, companyName, creds = {}) {
 
   logger.success(
     "Voucher sync done — " +
-    "Payment Entry: +" + peResults.created + "/~" + peResults.updated + "/x" + peResults.failed + " | " +
-    "Journal Entry: +" + jeResults.created + "/~" + jeResults.updated + "/x" + jeResults.failed
+    "Payment Entry: +" + peResults.created + "/~" + peResults.updated + "/=" + (peResults.skipped||0) + "/x" + peResults.failed + " | " +
+    "Journal Entry: +" + jeResults.created + "/~" + jeResults.updated + "/=" + (jeResults.skipped||0) + "/x" + jeResults.failed
   );
   return { paymentEntries: peResults, journalEntries: jeResults, salesInvoices: { created: 0, updated: 0, failed: salesVouchers.length } };
 }
@@ -2315,16 +2374,71 @@ export async function syncGodownsToErpNext(godowns, companyName, creds = {}) {
 }
 
 // -- Opening Balances ---------------------------------------------------------
-// IMPORTANT: Ledgers (Customers/Suppliers/Accounts) MUST be synced before
-// running this. Each Journal Entry account line must reference a real ERPNext
-// account name — if ledgers aren't synced, every POST returns 429/error.
-
-const OB_CHUNK_SIZE = 40; // max accounts per Journal Entry — keeps payload small
+// Uses ERPNext's native Account-level opening balance fields
+// (opening_balance_debit / opening_balance_credit) — exactly what the
+// Accounts > Opening Balance tool does in the ERPNext UI.
+// This keeps opening balances OUT of the Journal Entry list entirely.
+// For party ledgers (Customers/Suppliers) we also post a standard
+// "Opening Entry" Journal Entry because ERPNext requires party+account
+// rows to track receivable/payable balances correctly from day one.
 
 export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds = {}) {
   const client = createErpClient(creds);
-  companyName = await resolveErpNextCompany(client, companyName, creds);
+  companyName  = await resolveErpNextCompany(client, companyName, creds);
   logger.info("Syncing opening balances for " + ledgers.length + " ledgers in " + companyName);
+
+  // ── One-time cleanup: delete ALL cancelled + old-format OB Journal Entries ──
+  // Previous sync runs left behind many Cancelled JEs (from the old
+  // cancel→delete→recreate pattern) and old-format "Tally OB - Debtors/Creditors/GL"
+  // JEs. We delete them all once so the Journal Entry list stays clean.
+  // Cancelled JEs have no accounting effect but clutter the list.
+  try {
+    let page = 0;
+    const PAGE = 100;
+    let totalDeleted = 0;
+    while (true) {
+      const res = await client.get("/api/resource/Journal Entry", {
+        params: {
+          filters: JSON.stringify([
+            ["Journal Entry", "company",      "=",    companyName],
+            ["Journal Entry", "user_remark",  "like", "Tally Opening Balance%"],
+          ]),
+          fields:  '["name","docstatus","title"]',
+          limit:   PAGE,
+          limit_start: page * PAGE,
+        },
+      });
+      const rows = (res.data && res.data.data) || [];
+      if (rows.length === 0) break;
+
+      for (const row of rows) {
+        // Delete: (a) any Cancelled JE, OR (b) old-format non-Parties JEs that
+        // use the old Debtors/Creditors/GL split titles (replaced by single Parties JE)
+        const isOldFormat = row.title && (
+          row.title.includes("Tally OB - Debtors") ||
+          row.title.includes("Tally OB - Creditors") ||
+          row.title.includes("Tally OB - GL")
+        );
+        const isCancelled = row.docstatus === 2;
+
+        if (isCancelled || isOldFormat) {
+          try {
+            // Cancelled docs can be deleted directly; submitted ones need cancel first
+            if (row.docstatus === 1) {
+              const cRes = await client.get("/api/resource/Journal Entry/" + encodeURIComponent(row.name));
+              const cDoc = cRes?.data?.data;
+              if (cDoc) await client.post("/api/method/frappe.client.cancel", { doc: cDoc });
+            }
+            await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(row.name));
+            totalDeleted++;
+          } catch (_) {} // non-fatal — skip if delete fails
+        }
+      }
+      if (rows.length < PAGE) break;
+      page++;
+    }
+    if (totalDeleted > 0) logger.info("[OB] Cleaned up " + totalDeleted + " cancelled/old-format OB Journal Entries");
+  } catch (_) {}
 
   const companyAbbr = await getCompanyAbbr(client, companyName);
   const withBalance = ledgers.filter((l) => l.openingBalance && Math.abs(l.openingBalance) > 0);
@@ -2333,45 +2447,41 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
     logger.info("No ledgers with non-zero opening balances found");
     return { created: 0, updated: 0, failed: 0, skipped: ledgers.length };
   }
-  logger.info("Found " + withBalance.length + " ledgers with opening balances: " + withBalance.map((l) => l.name + "=" + l.openingBalance).join(", "));
+  logger.info("Found " + withBalance.length + " ledgers with opening balances: " +
+    withBalance.map((l) => l.name + "=" + l.openingBalance).join(", "));
 
-  // -- Fetch all accounts for this company once --------------------------------
+  // ── Fetch all ERPNext accounts ────────────────────────────────────────────────────────────────────
   let erpAccounts = [];
   try {
-    let page = 0;
-    const pageSize = 500;
+    let pg = 0;
     while (true) {
       const res = await client.get("/api/resource/Account", {
         params: {
           filters: JSON.stringify([["Account", "company", "=", companyName]]),
-          fields: '["name","account_name","account_type","is_group"]',
-          limit: pageSize,
-          limit_start: page * pageSize,
+          fields: '["name","account_name","account_type","is_group","root_type","parent_account"]',
+          limit: 500, limit_start: pg * 500,
         },
       });
-      const allRows = (res.data && res.data.data) || [];
-      erpAccounts = erpAccounts.concat(allRows);
-      if (allRows.length < pageSize) break;
-      page++;
+      const rows = (res.data && res.data.data) || [];
+      erpAccounts = erpAccounts.concat(rows);
+      if (rows.length < 500) break; pg++;
     }
-  } catch (e) {
-    const errDetail = e.response
-      ? ("HTTP " + e.response.status + ": " + JSON.stringify(e.response.data).slice(0, 300))
-      : e.message;
-    logger.error("Could not bulk-fetch ERPNext accounts: " + errDetail);
-  }
-
+  } catch (e) { logger.error("Could not fetch ERPNext accounts: " + e.message); }
   logger.info("Fetched " + erpAccounts.length + " accounts from ERPNext for " + companyName);
 
-  // Build lookup maps (leaf accounts only for GL resolution)
-  const leafAccounts = erpAccounts.filter((a) => !a.is_group);
+  const leafAccounts  = erpAccounts.filter((a) => !a.is_group);
+  const groupAccounts = erpAccounts.filter((a) => a.is_group);
   const byAccountName = new Map();
   const byFullName    = new Map();
+  const byGroupName   = new Map(); // group accounts — used for parent lookup when auto-creating GL accounts
   for (const a of leafAccounts) {
     if (a.account_name) byAccountName.set(a.account_name.trim().toLowerCase(), a);
     if (a.name)         byFullName.set(a.name.trim().toLowerCase(), a);
   }
-
+  for (const a of groupAccounts) {
+    if (a.account_name) byGroupName.set(a.account_name.trim().toLowerCase(), a);
+    if (a.name)         byGroupName.set(a.name.trim().toLowerCase(), a);
+  }
   function findErpAccount(ledgerName) {
     const key = ledgerName.trim().toLowerCase();
     if (byAccountName.has(key)) return byAccountName.get(key);
@@ -2382,531 +2492,364 @@ export async function syncOpeningBalancesToErpNext(ledgers, companyName, creds =
     return null;
   }
 
-  // Find Receivable and Payable control accounts
-  const receivableAcct = leafAccounts.find((a) => a.account_type === "Receivable");
-  const payableAcct    = leafAccounts.find((a) => a.account_type === "Payable");
-  logger.info("Control accounts - Receivable: " + (receivableAcct ? receivableAcct.name : "NOT FOUND") + ", Payable: " + (payableAcct ? payableAcct.name : "NOT FOUND"));
-
-  // -- Classify ledgers and resolve to JE account rows ------------------------
-  // ERPNext Opening Entry for party ledgers must use the Receivable/Payable
-  // control account + party_type + party. Direct per-party accounts are NOT
-  // created automatically by ERPNext for new Customers/Suppliers.
-  const DEBTOR_KEYS   = ["sundry debtor", "debtor", "receivable", "accounts receivable"];
-  const CREDITOR_KEYS = ["sundry creditor", "creditor", "payable", "accounts payable"];
-  const isDebtor   = (l) => DEBTOR_KEYS.some((k)   => (l.parentGroup || "").toLowerCase().includes(k));
-  const isCreditor = (l) => CREDITOR_KEYS.some((k)  => (l.parentGroup || "").toLowerCase().includes(k));
-
-  // Groups that map to GL accounts directly — we try findErpAccount first, then
-  // auto-create the missing account under the correct parent group, so nothing is skipped.
-  const GL_GROUP_KEYS = [
-    "bank account", "bank accounts", "cash-in-hand", "cash in hand",
-    "fixed assets", "current assets", "investments", "deposits (asset)",
-    "loans & advances (asset)", "stock-in-hand", "misc. expenses (asset)",
-    "current liabilities", "loans (liability)", "bank od",
-    "capital account", "reserves", "profit & loss", "profit and loss",
-    "duties & taxes", "duties and taxes", "provisions",
-    "gst", "igst", "cgst", "sgst", "input gst", "output gst",
-    "tds", "tcs", "income tax",
-    "indirect income", "direct income", "indirect expenses", "direct expenses",
-    "purchase accounts", "sales accounts", "sales account",
-    "unsecured loans", "secured loans", "share capital", "share application",
-    "branch / divisions", "suspense",
-  ];
-  const isGlGroup = (l) => GL_GROUP_KEYS.some((k) => (l.parentGroup || "").toLowerCase().includes(k));
-
-  // Build lookup of ALL ERPNext group accounts (is_group=1) by name, for parent resolution
-  const groupAccounts = erpAccounts.filter((a) => a.is_group);
-  const byGroupName   = new Map();
-  for (const g of groupAccounts) {
-    if (g.account_name) byGroupName.set(g.account_name.trim().toLowerCase(), g);
-    if (g.name)         byGroupName.set(g.name.trim().toLowerCase(), g);
+  // ── Find CONTROL accounts (Receivable / Payable) ────────────────────────────
+  // ERPNext may have multiple accounts typed "Receivable" or "Payable" — e.g.
+  // a party like "ABC Traders - C" can accidentally be set to Payable type.
+  // We must pick the CONTROL account (Debtors / Creditors), not a party account.
+  // Priority: prefer an account whose name contains "debtor"/"creditor"/"receivable"/"payable"
+  // as these are the standard ERPNext control accounts. Fall back to first match.
+  function findControlAccount(type) {
+    const PREFER_KEYWORDS = type === "Receivable"
+      ? ["debtor", "receivable", "accounts receivable"]
+      : ["creditor", "payable", "accounts payable"];
+    const candidates = leafAccounts.filter((a) => a.account_type === type);
+    // First try: find one whose name matches a control-account keyword
+    const preferred = candidates.find((a) =>
+      PREFER_KEYWORDS.some((k) => (a.name || "").toLowerCase().includes(k))
+    );
+    if (preferred) return preferred;
+    // Second try: avoid party-named accounts (those that match a known customer/supplier name)
+    const nonParty = candidates.find((a) => {
+      const lower = (a.account_name || a.name || "").toLowerCase();
+      return !_existingCustomers.has(lower) && !_existingSuppliers.has(lower);
+    });
+    return nonParty || candidates[0] || null;
   }
 
-  // Map Tally parent group name → ERPNext account_type for auto-creation
-  const TALLY_GROUP_ACCT_TYPE = {
-    "bank accounts":              "Bank",
-    "bank account":               "Bank",
-    "cash-in-hand":               "Cash",
-    "cash in hand":               "Cash",
-    "sundry debtors":             "Receivable",
-    "sundry creditors":           "Payable",
-    "duties & taxes":             "Tax",
-    "duties and taxes":           "Tax",
-    "gst":                        "Tax",
-    "igst":                       "Tax",
-    "cgst":                       "Tax",
-    "sgst":                       "Tax",
-    "tds":                        "Tax",
-    "tcs":                        "Tax",
-  };
-
-  // Find the correct ERPNext parent group account for a Tally group name
-  function findParentGroup(tallyGroupName) {
-    if (!tallyGroupName) return null;
-    const lower = tallyGroupName.trim().toLowerCase();
-    // Try exact match with suffix first (e.g. "Bank Accounts - T")
-    const withSuffix = (tallyGroupName.trim() + " - " + companyAbbr).toLowerCase();
-    if (byGroupName.has(withSuffix)) return byGroupName.get(withSuffix).name;
-    if (byGroupName.has(lower))      return byGroupName.get(lower).name;
-    // Partial match: find any group whose name contains the key
-    for (const [key, grp] of byGroupName) {
-      if (key.includes(lower) || lower.includes(key.replace(" - " + companyAbbr.toLowerCase(), ""))) {
-        return grp.name;
-      }
-    }
-    return null;
-  }
-
-  // Auto-create a missing GL account in ERPNext under its correct parent group.
-  // This handles ledgers like "RAJLAXMI" (Bank Accounts), "Sudhir26022026" (Capital Account)
-  // that exist in Tally but have no matching account in ERPNext yet.
-  async function ensureGlAccount(ledgerName, tallyGroupName) {
-    const suffixed = ledgerName + " - " + companyAbbr;
-    // Already cached from initial fetch?
-    const cached = findErpAccount(ledgerName);
-    if (cached) return cached.name;
-
-    const parentGroupName = tallyGroupName || "";
-    const parentAcct      = findParentGroup(parentGroupName);
-    const lower           = parentGroupName.toLowerCase();
-
-    // Determine account_type from Tally group
-    let accountType = "Payable"; // safe default
-    for (const [key, atype] of Object.entries(TALLY_GROUP_ACCT_TYPE)) {
-      if (lower.includes(key)) { accountType = atype; break; }
-    }
-    // Capital / equity accounts — ERPNext India puts these under Liabilities
-    if (lower.includes("capital") || lower.includes("reserves") || lower.includes("equity")) {
-      accountType = "Equity";
-    }
-    if (lower.includes("fixed assets") || lower.includes("investments") || lower.includes("deposits")) {
-      accountType = "Fixed Asset";
-    }
-    if (lower.includes("loans & advances") || lower.includes("current assets") || lower.includes("stock-in-hand")) {
-      accountType = "Current Asset";
-    }
-    if (lower.includes("current liab") || lower.includes("provisions") || lower.includes("loans (liab") || lower.includes("unsecured") || lower.includes("secured loans")) {
-      accountType = "Current Liability";
-    }
-    if (lower.includes("income") || lower.includes("sales accounts") || lower.includes("sales account")) {
-      accountType = "Income Account";
-    }
-    if (lower.includes("expense") || lower.includes("purchase accounts") || lower.includes("manufacturing")) {
-      accountType = "Expense Account";
-    }
-
-    try {
-      const doc = {
-        doctype:        "Account",
-        account_name:   ledgerName,
-        company:        companyName,
-        is_group:       0,
-        account_type:   accountType,
-      };
-      if (parentAcct) doc.parent_account = parentAcct;
-
-      await client.post("/api/resource/Account", doc);
-      logger.info("  [OB] Auto-created missing account: \"" + suffixed + "\" (type: " + accountType + ", parent: " + (parentAcct || "none") + ")");
-
-      // Add to lookup so subsequent ledgers in the same run can find it
-      const newEntry = { name: suffixed, account_name: ledgerName, account_type: accountType, is_group: 0 };
-      byAccountName.set(ledgerName.trim().toLowerCase(), newEntry);
-      byFullName.set(suffixed.trim().toLowerCase(), newEntry);
-      leafAccounts.push(newEntry);
-
-      return suffixed;
-    } catch (err) {
-      const msg = parseErpError(err);
-      // If already exists (race or duplicate), try to find it
-      if (msg.toLowerCase().includes("duplicate") || msg.toLowerCase().includes("already exists")) {
-        logger.info("  [OB] Account already exists: " + suffixed);
-        return suffixed;
-      }
-      logger.warn("  [OB] Could not auto-create account \"" + suffixed + "\": " + msg + " — skipping this ledger");
-      return null;
-    }
-  }
-
-  // Pre-fetch the set of existing Customers and Suppliers so we can validate
-  // party rows before posting and avoid whole-chunk failures.
+  // ── Pre-fetch Customers and Suppliers FIRST ───────────────────────────────
+  // Must happen before findControlAccount() which references these sets.
   const _existingCustomers = new Set();
   const _existingSuppliers = new Set();
   try {
     let pg = 0;
     while (true) {
-      const r = await client.get("/api/resource/Customer", {
-        params: { fields: '["customer_name"]', limit: 500, limit_start: pg * 500 },
-      });
+      const r = await client.get("/api/resource/Customer", { params: { fields: '["customer_name"]', limit: 500, limit_start: pg * 500 } });
       const rows = (r.data && r.data.data) || [];
       rows.forEach((c) => _existingCustomers.add((c.customer_name || "").trim().toLowerCase()));
-      if (rows.length < 500) break;
-      pg++;
+      if (rows.length < 500) break; pg++;
     }
-  } catch (_) { logger.warn("[OB] Could not pre-fetch customers — party validation skipped"); }
+  } catch (_) {}
   try {
     let pg = 0;
     while (true) {
-      const r = await client.get("/api/resource/Supplier", {
-        params: { fields: '["supplier_name"]', limit: 500, limit_start: pg * 500 },
-      });
+      const r = await client.get("/api/resource/Supplier", { params: { fields: '["supplier_name"]', limit: 500, limit_start: pg * 500 } });
       const rows = (r.data && r.data.data) || [];
       rows.forEach((s) => _existingSuppliers.add((s.supplier_name || "").trim().toLowerCase()));
-      if (rows.length < 500) break;
-      pg++;
+      if (rows.length < 500) break; pg++;
     }
-  } catch (_) { logger.warn("[OB] Could not pre-fetch suppliers — party validation skipped"); }
-
+  } catch (_) {}
   logger.info("[OB] Known customers: " + _existingCustomers.size + ", suppliers: " + _existingSuppliers.size);
 
-  const accounts = [];
-  let fallbackCount = 0;
+  const receivableAcct = findControlAccount("Receivable");
+  const payableAcct    = findControlAccount("Payable");
+
+  // ── Auto-fix: party accounts incorrectly typed as Receivable/Payable ─────────
+  for (const a of leafAccounts) {
+    const lowerName    = (a.account_name || "").trim().toLowerCase();
+    const isPartyTyped = a.account_type === "Receivable" || a.account_type === "Payable";
+    const isPartyAcct  = _existingCustomers.has(lowerName) || _existingSuppliers.has(lowerName);
+    const isRealCtrl   = (a.account_type === "Receivable" && a === receivableAcct) ||
+                         (a.account_type === "Payable"    && a === payableAcct);
+    if (isPartyTyped && isPartyAcct && !isRealCtrl) {
+      try {
+        await client.put("/api/resource/Account/" + encodeURIComponent(a.name), { account_type: "" });
+        logger.info("[OB] Fixed mistyped account_type on party account: " + a.name + " (" + a.account_type + " → blank)");
+      } catch (_) {}
+    }
+  }
+
+  logger.info("Control accounts - Receivable: " + (receivableAcct ? receivableAcct.name : "NOT FOUND") +
+              ", Payable: " + (payableAcct ? payableAcct.name : "NOT FOUND"));
+
+  // ── Build ALL JE rows — every Tally ledger in ONE single Opening Entry JE ────────────────
+  // ALL opening balances go into ONE JE so they are visible in a single place:
+  //   Journal Entry list → filter Entry Type = Opening Entry
+  //   Accounting → General Ledger → filter Voucher Type = Opening Entry
+  //
+  // Tally sign: openingBalance < 0 → Debit (assets), > 0 → Credit (liabilities)
+  // Party rows MUST include party_type + party for AR/AP reports to work.
+
+  const allJERows  = [];
+  let skippedCount = 0;
 
   for (const l of withBalance) {
-    // ── CRITICAL: trim whitespace/newlines from Tally ledger names ──
-    // Tally sometimes exports names with trailing \n or spaces.
-    // ERPNext party lookup is exact — a name with \n won't match.
     l.name = (l.name || "").trim();
+    const bal       = l.openingBalance || 0;
+    const debitAmt  = bal < 0 ? Math.abs(bal) : 0;
+    const creditAmt = bal > 0 ? Math.abs(bal) : 0;
+    const pg        = (l.parentGroup || "").toLowerCase();
 
-    const bal    = l.openingBalance || 0;
-    const glAcct = findErpAccount(l.name);
-    const pg     = (l.parentGroup || "").toLowerCase();
+    // FIX: classify by BOTH parentGroup AND whether the ledger exists in ERPNext
+    // as a Customer/Supplier. This catches ledgers like "Test GST Customer" which
+    // may not have a "Sundry Debtor" parentGroup but ARE synced as Customers.
+    const pgIsCustomer = ["sundry debtor","debtor","receivable","accounts receivable"].some((k) => pg.includes(k));
+    const pgIsSupplier = ["sundry creditor","creditor","payable","accounts payable"].some((k) => pg.includes(k));
+    const erpIsCustomer = _existingCustomers.has(l.name.toLowerCase());
+    const erpIsSupplier = _existingSuppliers.has(l.name.toLowerCase());
 
-    if (glAcct) {
-      // Direct GL account found in ERPNext (bank, cash, stock etc.)
-      // FIX: If the account_type is Receivable or Payable, ERPNext requires
-      // party_type + party on every JE row — even for Opening Entry.
-      // This happens when a ledger like "RAJLAXMI" sits under Bank Accounts in
-      // Tally but its ERPNext account was auto-created as Receivable/Payable.
-      const row = {
-        account:                    glAcct.name,
-        // Tally sign convention: negative = debit (asset/debtor), positive = credit (liability/creditor)
-        debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-        credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
-        is_advance:                 "No",
-      };
-      if (glAcct.account_type === "Receivable") {
-        row.party_type = "Customer";
-        row.party      = l.name.trim();
-        logger.info("  " + l.name + " -> GL (Receivable — adding party): " + glAcct.name);
-      } else if (glAcct.account_type === "Payable") {
-        row.party_type = "Supplier";
-        row.party      = l.name.trim();
-        logger.info("  " + l.name + " -> GL (Payable — adding party): " + glAcct.name);
-      } else {
-        logger.info("  " + l.name + " -> GL: " + glAcct.name);
+    const isCustomer = pgIsCustomer || erpIsCustomer;
+    const isSupplier = !isCustomer && (pgIsSupplier || erpIsSupplier);
+
+    if (isCustomer || isSupplier) {
+      const controlAcct = isCustomer ? receivableAcct : payableAcct;
+      if (!controlAcct) {
+        logger.warn("  " + l.name + " skipped — no " + (isCustomer ? "Receivable" : "Payable") + " control account");
+        skippedCount++; continue;
       }
-      accounts.push(row);
-
-    } else if (isDebtor(l) && receivableAcct) {
-      // Customer -> Receivable control account + party
-      if (_existingCustomers.size > 0 && !_existingCustomers.has(l.name.trim().toLowerCase())) {
-        logger.warn("  " + l.name + " skipped for OB — Customer not yet in ERPNext (run Ledger sync first)");
-        fallbackCount++;
-        continue;
+      // Skip only if we know the party does NOT exist yet (size > 0 means we fetched successfully)
+      const partySet = isCustomer ? _existingCustomers : _existingSuppliers;
+      if (partySet.size > 0 && !partySet.has(l.name.toLowerCase())) {
+        logger.warn("  " + l.name + " skipped — " + (isCustomer ? "Customer" : "Supplier") + " not in ERPNext yet");
+        skippedCount++; continue;
       }
-      accounts.push({
-        account:                    receivableAcct.name,
-        party_type:                 "Customer",
+      allJERows.push({
+        account:                    controlAcct.name,
+        party_type:                 isCustomer ? "Customer" : "Supplier",
         party:                      l.name,
-        // Tally sign convention: negative = debit (asset/debtor), positive = credit (liability/creditor)
-        debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-        credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
+        debit_in_account_currency:  debitAmt,
+        credit_in_account_currency: creditAmt,
         is_advance:                 "No",
+        user_remark:                l.name + " opening balance",
       });
-      logger.info("  " + l.name + " -> Receivable: " + receivableAcct.name + " (Customer)");
-
-    } else if (isCreditor(l) && payableAcct) {
-      // Supplier -> Payable control account + party
-      if (_existingSuppliers.size > 0 && !_existingSuppliers.has(l.name.trim().toLowerCase())) {
-        logger.warn("  " + l.name + " skipped for OB — Supplier not yet in ERPNext (run Ledger sync first)");
-        fallbackCount++;
-        continue;
-      }
-      accounts.push({
-        account:                    payableAcct.name,
-        party_type:                 "Supplier",
-        party:                      l.name,
-        // Tally sign convention: negative = debit (asset/debtor), positive = credit (liability/creditor)
-        debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-        credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
-        is_advance:                 "No",
-      });
-      logger.info("  " + l.name + " -> Payable: " + payableAcct.name + " (Supplier)");
-
-    } else if (looksLikeAsset(l.name)) {
-      logger.warn("  " + l.name + " skipped for OB — looks like a fixed asset model number (not a party)");
-      fallbackCount++;
-
-    } else if (isGlGroup(l)) {
-      // GL-type ledger — auto-create the account in ERPNext under its correct parent,
-      // then use it. No more skipping due to "no GL match".
-      const acctName = await ensureGlAccount(l.name, l.parentGroup);
-      if (acctName) {
-        accounts.push({
-          account:                    acctName,
-          // Tally sign: negative=debit(asset), positive=credit(liability)
-          debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-          credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
-          is_advance:                 "No",
-        });
-        logger.info("  " + l.name + " -> GL (auto-created): " + acctName + " (parentGroup: " + (l.parentGroup || "") + ")");
-      } else {
-        fallbackCount++;
-      }
-
+      logger.info("  " + l.name + " → " + (isCustomer ? "Customer" : "Supplier") +
+                  ": " + (debitAmt > 0 ? debitAmt + " Dr" : creditAmt + " Cr"));
     } else {
-      // Unknown Tally group — classify by GSTIN then try to auto-create the account.
-      // This handles custom Tally groups (Masma, Andheri, location-based etc.).
-      const isUnknown = !isGlGroup(l) && !isDebtor(l) && !isCreditor(l);
-      if (isUnknown && payableAcct && l.gstin) {
-        if (_existingSuppliers.size === 0 || _existingSuppliers.has(l.name.trim().toLowerCase())) {
-          accounts.push({
-            account:                    payableAcct.name,
-            party_type:                 "Supplier",
-            party:                      l.name,
-            // Tally sign: negative=debit(asset), positive=credit(liability)
-            debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-            credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
-            is_advance:                 "No",
-          });
-          logger.info("  " + l.name + " -> Payable (unknown group, has GSTIN): " + payableAcct.name);
-        } else {
-          logger.warn("  " + l.name + " skipped for OB — Supplier not yet in ERPNext");
-          fallbackCount++;
+      // GL account — find or auto-create in ERPNext
+      let acct = findErpAccount(l.name);
+      if (!acct) {
+        // The ledger exists in Tally but has no ERPNext account yet.
+        // Auto-create it so opening balance is not silently lost.
+        // Determine root_type from Tally parentGroup:
+        const rootType = ["bank account","cash-in-hand","deposit","loan","asset","stock","debtor","receivable"]
+          .some((k) => pg.includes(k)) ? "Asset"
+          : ["capital","reserve","loan (liability)","unsecured","secured"].some((k) => pg.includes(k)) ? "Equity"
+          : ["income","sales","revenue"].some((k) => pg.includes(k)) ? "Income"
+          : ["expense","purchase","indirect","direct expense"].some((k) => pg.includes(k)) ? "Expense"
+          : "Liability"; // safe default for unknown groups
+
+        // Find parent GROUP account in ERPNext using the Tally parentGroup name.
+        // IMPORTANT: byFullName only has LEAF accounts — must use byGroupName for parents.
+        const parentGroupName = l.parentGroup || "";
+        let parentAccount = null;
+        if (parentGroupName) {
+          const parentKey = parentGroupName.trim().toLowerCase();
+          const withAbbr  = parentKey + " - " + companyAbbr.toLowerCase();
+          if      (byGroupName.has(withAbbr))   parentAccount = byGroupName.get(withAbbr).name;
+          else if (byGroupName.has(parentKey))  parentAccount = byGroupName.get(parentKey).name;
+          else {
+            // Partial match on group name
+            for (const [gk, ga] of byGroupName) {
+              if (gk.startsWith(parentKey)) { parentAccount = ga.name; break; }
+            }
+          }
         }
-      } else if (isUnknown && receivableAcct) {
-        if (_existingCustomers.size === 0 || _existingCustomers.has(l.name.trim().toLowerCase())) {
-          accounts.push({
-            account:                    receivableAcct.name,
-            party_type:                 "Customer",
-            party:                      l.name,
-            // Tally sign: negative=debit(asset), positive=credit(liability)
-            debit_in_account_currency:  bal < 0 ? Math.abs(bal) : 0,
-            credit_in_account_currency: bal > 0 ? Math.abs(bal) : 0,
-            is_advance:                 "No",
-          });
-          logger.info("  " + l.name + " -> Receivable (unknown group): " + receivableAcct.name);
-        } else {
-          logger.warn("  " + l.name + " skipped for OB — Customer not yet in ERPNext");
-          fallbackCount++;
+        // Fall back to a non-root group of the correct root_type (has a parent itself)
+        if (!parentAccount) {
+          const fallback = groupAccounts.find((a) => a.root_type === rootType && a.parent_account);
+          if (fallback) parentAccount = fallback.name;
         }
-      } else {
-        logger.warn("  " + l.name + " skipped (parentGroup: \"" + (l.parentGroup || "") + "\", unknown group type — no control account found)");
-        fallbackCount++;
+        // Last resort: absolute root group of correct type
+        if (!parentAccount) {
+          const rootAcct = groupAccounts.find((a) => a.root_type === rootType);
+          if (rootAcct) parentAccount = rootAcct.name;
+        }
+
+        try {
+          await client.post("/api/resource/Account", {
+            doctype:        "Account",
+            account_name:   l.name,
+            company:        companyName,
+            is_group:       0,
+            root_type:      rootType,
+            parent_account: parentAccount,
+          });
+          const newName = l.name + " - " + companyAbbr;
+          // Add to lookup maps so subsequent ledgers can reference it as parent
+          const newAcctObj = { name: newName, account_name: l.name, is_group: 0, root_type: rootType, account_type: "" };
+          byAccountName.set(l.name.toLowerCase(), newAcctObj);
+          byFullName.set(newName.toLowerCase(), newAcctObj);
+          acct = newAcctObj;
+          logger.info("  [OB] Auto-created missing account: " + newName + " (rootType: " + rootType + ")");
+        } catch (createErr) {
+          const msg = parseErpError(createErr);
+          if (msg.toLowerCase().includes("duplicate") || msg.toLowerCase().includes("already")) {
+            // Account was just created — fetch it
+            acct = findErpAccount(l.name);
+            if (!acct) {
+              const fallbackName = l.name + " - " + companyAbbr;
+              acct = { name: fallbackName, account_name: l.name };
+            }
+            logger.info("  [OB] Account already exists: " + l.name);
+          } else {
+            logger.warn("  " + l.name + " skipped — could not auto-create account: " + msg);
+            skippedCount++; continue;
+          }
+        }
       }
+      allJERows.push({
+        account:                    acct.name,
+        debit_in_account_currency:  debitAmt,
+        credit_in_account_currency: creditAmt,
+        is_advance:                 "No",
+        user_remark:                l.name + " opening balance",
+      });
+      logger.info("  " + l.name + " → GL '" + acct.name + "': " +
+                  (debitAmt > 0 ? debitAmt + " Dr" : creditAmt + " Cr"));
     }
-    await sleep(30);
   }
 
-  if (fallbackCount > 0) logger.warn(fallbackCount + " ledgers skipped - no matching account in ERPNext");
-
-  if (accounts.length === 0) {
-    const msg = "No accounts resolved for any ledger. Receivable: " + (receivableAcct ? receivableAcct.name : "missing") + ", Payable: " + (payableAcct ? payableAcct.name : "missing") + ". Check ERPNext chart of accounts for company " + companyName + ".";
-    logger.error(msg);
-    return { created: 0, updated: 0, failed: 0, skipped: withBalance.length, error: msg };
+  if (allJERows.length === 0) {
+    logger.warn("[OB] No rows resolved — all " + skippedCount + " ledgers skipped");
+    return { created: 0, updated: 0, failed: skippedCount };
   }
 
-  logger.info("Resolved " + accounts.length + " / " + withBalance.length + " ledgers to JE account rows");
+  // Balance with Temporary Opening if debit != credit
+  const totalDr = allJERows.reduce((s, r) => s + r.debit_in_account_currency,  0);
+  const totalCr = allJERows.reduce((s, r) => s + r.credit_in_account_currency, 0);
+  const diff    = Math.round((totalDr - totalCr) * 100) / 100;
+  if (Math.abs(diff) > 0.01) {
+    try {
+      const tmpRes = await client.get("/api/resource/Account", {
+        params: {
+          filters: JSON.stringify([["Account","account_name","=","Temporary Opening"],["Account","company","=",companyName]]),
+          fields: '["name"]', limit: 1,
+        },
+      });
+      const tmpAcct = tmpRes.data?.data?.[0]?.name;
+      if (tmpAcct) {
+        allJERows.push({
+          account:                    tmpAcct,
+          debit_in_account_currency:  diff < 0 ? Math.abs(diff) : 0,
+          credit_in_account_currency: diff > 0 ? diff : 0,
+          is_advance:                 "No",
+          user_remark:                "Balancing entry",
+        });
+        logger.info("[OB] Balancing row added: " + Math.abs(diff) + (diff > 0 ? " Cr" : " Dr") + " via Temporary Opening");
+      } else {
+        logger.warn("[OB] JE unbalanced by " + Math.abs(diff) + " — Temporary Opening account not found");
+      }
+    } catch (_) {}
+  }
 
-  // -- Resolve Temporary Opening account once ----------------------------------
-  let temporaryAccount = null;
-  try {
-    const res = await client.get("/api/resource/Account", {
-      params: {
-        filters: JSON.stringify([["Account", "account_name", "=", "Temporary Opening"], ["Account", "company", "=", companyName]]),
-        fields: '["name"]', limit: 1,
-      },
-    });
-    temporaryAccount = res.data && res.data.data && res.data.data[0] && res.data.data[0].name;
-  } catch (_) {}
-  if (!temporaryAccount) logger.warn("Could not find \"Temporary Opening\" account - JE may be unbalanced");
+  // ── Idempotency: skip if unchanged, replace only if balances changed ─────────────────────
+  const jeTitle  = "Tally OB - " + companyName;
+  const jeRemark = "Tally Opening Balance [" + companyName + "]";
+  // Include control account names in the fingerprint so that if the Payable/Receivable
+  // control account was wrong in a previous run (e.g. "ABC Traders - C" instead of
+  // "Creditors - C"), the fingerprint changes and the JE gets replaced with correct data.
+  const fpContent = allJERows
+    .map((r) => (r.party || r.account) + ":" + r.debit_in_account_currency + ":" + r.credit_in_account_currency)
+    .sort().join("|")
+    + "|receivable:" + (receivableAcct ? receivableAcct.name : "")
+    + "|payable:"    + (payableAcct    ? payableAcct.name    : "");
+  const newFp = createHash("md5").update(fpContent).digest("hex").slice(0, 8);
 
-  // -- Clean up duplicate Opening Balance JEs on every sync -------------------
-  // Search by TITLE (stable across syncs) to find all existing Tally OB entries.
-  // Keep only the NEWEST one per label (Debtors/Creditors/GL), delete the rest.
-  // This fixes the duplicate accumulation bug: user_remark is overwritten by
-  // Frappe on submitted Opening Entry docs, but title is stable.
-  // We also build a map of label -> existingName so postChunk can UPDATE
-  // the surviving JE instead of always creating a new one.
-  const _existingOBJEs = new Map(); // label -> { name, docstatus }
+  // Find any existing OB JE by title (Draft OR Submitted)
+  let existingJE = null;
   try {
-    const staleRes = await client.get("/api/resource/Journal Entry", {
+    const res = await client.get("/api/resource/Journal Entry", {
       params: {
         filters: JSON.stringify([
-          ["Journal Entry", "company",      "=",    companyName],
-          ["Journal Entry", "title",        "like", "Tally OB - %"],
-          ["Journal Entry", "voucher_type", "=",    "Opening Entry"],
+          ["Journal Entry", "title",        "=",  jeTitle],
+          ["Journal Entry", "voucher_type", "=",  "Opening Entry"],
+          ["Journal Entry", "company",      "=",  companyName],
         ]),
-        fields: '["name","title","docstatus","creation"]',
-        limit:  500,
-        order_by: "creation desc",
+        fields: '["name","docstatus","user_remark"]', limit: 1,
       },
     });
-    const allOB = (staleRes.data && staleRes.data.data) || [];
-
-    // Group by title — keep newest, delete extras
-    const byTitle = new Map();
-    for (const je of allOB) {
-      const t = je.title || "";
-      if (!byTitle.has(t)) byTitle.set(t, []);
-      byTitle.get(t).push(je);
-    }
-
-    let deletedCount = 0;
-    for (const [title, entries] of byTitle) {
-      // entries[0] = newest (order_by creation desc) — keep it
-      const keeper = entries[0];
-      // Extract label from title: "Tally OB - Debtors - Company2" -> "Debtors"
-      const labelMatch = title.match(/^Tally OB - (.+?) - /);
-      const label = labelMatch ? labelMatch[1] : title;
-      _existingOBJEs.set(label, { name: keeper.name, docstatus: keeper.docstatus });
-
-      // Delete older duplicates
-      const toDelete = entries.slice(1);
-      for (const s of toDelete) {
-        try {
-          if (s.docstatus === 1) {
-            await client.post("/api/method/frappe.client.cancel", { doctype: "Journal Entry", name: s.name });
-          }
-          await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(s.name));
-          deletedCount++;
-        } catch (_) {}
-      }
-    }
-    if (deletedCount > 0) logger.info("[OB] Cleaned up " + deletedCount + " duplicate Opening Balance JEs");
-    if (_existingOBJEs.size > 0) {
-      logger.info("[OB] Found " + _existingOBJEs.size + " existing OB JE(s): " + [..._existingOBJEs.keys()].join(", ") + " — will update in place");
-    }
+    existingJE = res.data?.data?.[0] || null;
   } catch (_) {}
 
-  // -- Split by account type, then further chunk by OB_CHUNK_SIZE ---------------
-  // This creates separate, clearly-labelled Journal Entries for:
-  //   • Debtors (Receivable)  — party_type=Customer rows
-  //   • Creditors (Payable)   — party_type=Supplier rows
-  //   • GL Accounts           — all other rows (Bank, Cash, Capital, etc.)
-  // Each group is then chunked to OB_CHUNK_SIZE if it has many rows.
-  function groupAccountsByType(accts) {
-    const debtors   = accts.filter((a) => a.party_type === "Customer");
-    const creditors = accts.filter((a) => a.party_type === "Supplier");
-    const gl        = accts.filter((a) => !a.party_type);
-    const groups = [];
-    function addGroup(label, rows) {
-      if (rows.length === 0) return;
-      for (let i = 0; i < rows.length; i += OB_CHUNK_SIZE) {
-        const slice = rows.slice(i, i + OB_CHUNK_SIZE);
-        const part  = Math.floor(i / OB_CHUNK_SIZE) + 1;
-        const parts = Math.ceil(rows.length / OB_CHUNK_SIZE);
-        groups.push({ label: label + (parts > 1 ? " (part " + part + ")" : ""), rows: slice });
-      }
+  if (existingJE) {
+    const storedFp = ((existingJE.user_remark || "").match(/\|fp:([^\s]+)/) || [])[1] || "";
+    if (storedFp === newFp && existingJE.docstatus === 1) {
+      // Only skip if fingerprint matches AND it's already submitted
+      // If it's a draft (previous submit failed), always retry the submit
+      logger.info("[OB] Opening balance JE unchanged and submitted — skipping: " + existingJE.name);
+      return { created: 0, updated: 0, failed: 0, skipped: withBalance.length };
     }
-    addGroup("Debtors",   debtors);
-    addGroup("Creditors", creditors);
-    addGroup("GL",        gl);
-    return groups;
-  }
-
-  const jeGroups   = groupAccountsByType(accounts);
-  const totalChunks = jeGroups.length;
-  logger.info("Splitting " + accounts.length + " accounts into " + totalChunks + " Journal Entries (Debtors / Creditors / GL)");
-
-  let created = 0, updated = 0, failed = 0;
-  const failedGroups = [];
-
-  async function postChunk(ci, label, chunkAccounts) {
-    const remark      = "Tally Opening Balance - " + label + " [" + companyName + "]";
-    const chunkDebit  = chunkAccounts.reduce((s, a) => s + a.debit_in_account_currency,  0);
-    const chunkCredit = chunkAccounts.reduce((s, a) => s + a.credit_in_account_currency, 0);
-    const diff        = Math.abs(chunkDebit - chunkCredit);
-
-    const chunkRows = [...chunkAccounts];
-    if (diff > 0.01 && temporaryAccount) {
-      chunkRows.push({
-        account:                    temporaryAccount,
-        debit_in_account_currency:  chunkCredit > chunkDebit ? diff : 0,
-        credit_in_account_currency: chunkDebit > chunkCredit ? diff : 0,
-        is_advance:                 "No",
-      });
-    }
-
-    // -- IDEMPOTENT: use _existingOBJEs map built by the cleanup pass above -------
-    // user_remark is overwritten by Frappe on submitted Opening Entry docs.
-    // We look up existing JEs by TITLE (stable) via _existingOBJEs built above.
-    const existingEntry = _existingOBJEs.get(label) || null;
-
-    try {
-      // Cancel+delete the existing JE so we can post a fresh one with updated data.
-      // This is the only way to update accounts on a submitted Opening Entry in ERPNext.
-      // Because _existingOBJEs only contains ONE entry per label (deduplicated above),
-      // each sync is always a clean 1-delete-1-create — no accumulation.
-      if (existingEntry) {
-        try {
-          if (existingEntry.docstatus === 1) {
-            await client.post("/api/method/frappe.client.cancel", { doctype: "Journal Entry", name: existingEntry.name });
-            logger.info("[OB] Cancelled existing OB JE for update: " + existingEntry.name);
-          }
-          await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(existingEntry.name));
-          logger.info("[OB] Deleted existing OB JE for update: " + existingEntry.name);
-        } catch (delErr) {
-          logger.warn("[OB] Could not remove old OB JE " + existingEntry.name + " — " + parseErpError(delErr) + "; will create alongside");
-        }
-      }
-
-      const res = await client.post("/api/resource/Journal Entry", {
-        doctype:      "Journal Entry",
-        voucher_type: "Opening Entry",
-        title:        "Tally OB - " + label + " - " + companyName,
-        company:      companyName,
-        posting_date: new Date().toISOString().slice(0, 10),
-        user_remark:  remark,
-        accounts:     chunkRows,
-        docstatus:    1,
-      });
-      const newName = res.data && res.data.data && res.data.data.name;
-      // Frappe overrides the title for Opening Entry docs — fix it immediately.
-      if (newName) {
-        try {
-          await client.put("/api/resource/Journal Entry/" + encodeURIComponent(newName), {
-            title: "Tally OB - " + label + " - " + companyName,
-          });
-        } catch (_) {}
-      }
-      logger.success((existingEntry ? "Updated" : "Created") + " & submitted Opening Entry JE [" + label + "]: " + newName);
-      return existingEntry ? "updated" : "created";
-    } catch (err) {
-      logger.error("Failed to post Opening Entry [" + label + "]: " + parseErpError(err));
-      return "failed";
-    }
-  }
-
-  for (let ci = 0; ci < jeGroups.length; ci++) {
-    const { label, rows } = jeGroups[ci];
-    try {
-      const action = await postChunk(ci, label, rows);
-      if (action === "created") created++;
-      else if (action === "updated") updated++;
-      else { failed++; failedGroups.push(ci); }
-    } catch (e) {
-      failed++; failedGroups.push(ci);
-      logger.error("Unexpected error on group " + label + ": " + e.message);
-    }
-    if (ci < jeGroups.length - 1) await sleep(800);
-  }
-
-  if (failedGroups.length > 0) {
-    logger.info("[OB] Retrying " + failedGroups.length + " failed groups after 10s");
-    await sleep(10000);
-    for (const ci of failedGroups) {
-      const { label, rows } = jeGroups[ci];
+    if (storedFp === newFp && existingJE.docstatus === 0) {
+      // Draft exists with same data — just retry submission
+      // FIX: frappe.client.submit requires { doc: fullDoc } not bare { doctype, name }
+      logger.info("[OB] Retrying submit on existing draft JE: " + existingJE.name);
       try {
-        const action = await postChunk(ci, label, rows);
-        if (action === "created") { created++; failed--; }
-        else if (action === "updated") { updated++; failed--; }
-      } catch (e) { logger.error("Retry failed for group " + label + ": " + e.message); }
+        const retryRes = await client.get("/api/resource/Journal Entry/" + encodeURIComponent(existingJE.name));
+        const retryDoc = retryRes?.data?.data;
+        if (!retryDoc) throw new Error("Could not fetch full JE doc for retry submit: " + existingJE.name);
+        await client.post("/api/method/frappe.client.submit", { doc: retryDoc });
+        logger.success("[OB] Opening Entry JE submitted (retry): " + existingJE.name);
+        return { created: 1, updated: 0, failed: 0 };
+      } catch (submitErr) {
+        logger.error("[OB] Draft submit retry failed: " + existingJE.name + " — " + parseErpError(submitErr));
+        logger.error("[OB] Go to ERPNext → Journal Entry → " + existingJE.name + " to review and submit manually");
+        return { created: 1, updated: 0, failed: 0 };
+      }
     }
+    // Data changed — delete the old JE and recreate
+    try {
+      if (existingJE.docstatus === 1) {
+        const cancelRes = await client.get("/api/resource/Journal Entry/" + encodeURIComponent(existingJE.name));
+        const cancelDoc = cancelRes?.data?.data;
+        if (cancelDoc) await client.post("/api/method/frappe.client.cancel", { doc: cancelDoc });
+      }
+      await client.delete("/api/resource/Journal Entry/" + encodeURIComponent(existingJE.name));
+      logger.info("[OB] Opening balances changed — replacing JE: " + existingJE.name);
+    } catch (_) {}
   }
 
-  logger.info("Opening balance sync complete - " + created + " created, " + updated + " updated, " + failed + " failed");
-  return { created, updated, failed, chunks: totalChunks, accounts: accounts.length };
+  // ── POST the single Opening Entry JE ───────────────────────────────────────────────────────────────────
+  // Post as Draft first (docstatus:0), then submit separately.
+  // This is safer than posting submitted directly — ERPNext rejects
+  // submission if any row has a validation issue, but accepts the draft
+  // so the data is saved and the actual error is visible in the response.
+  let jeName = null;
+  try {
+    const res = await client.post("/api/resource/Journal Entry", {
+      doctype:      "Journal Entry",
+      voucher_type: "Opening Entry",
+      title:        jeTitle,
+      company:      companyName,
+      posting_date: new Date().toISOString().slice(0, 10),
+      user_remark:  jeRemark + " |fp:" + newFp,
+      accounts:     allJERows,
+      docstatus:    0,                         // Draft first
+    });
+    jeName = res.data?.data?.name;
+    logger.info("[OB] Draft Opening Entry JE created: " + jeName +
+                " (" + allJERows.length + " rows, " + skippedCount + " skipped)");
+  } catch (err) {
+    logger.error("[OB] Failed to create Opening Entry JE (draft): " + parseErpError(err));
+    return { created: 0, updated: 0, failed: 1 };
+  }
+
+  // Fix title (Frappe overrides it for Opening Entry docs)
+  if (jeName) {
+    try { await client.put("/api/resource/Journal Entry/" + encodeURIComponent(jeName), { title: jeTitle }); } catch (_) {}
+  }
+
+  // Submit the draft
+  if (jeName) {
+    try {
+      // FIX: frappe.client.submit requires { doc: { doctype, name } } — not bare fields.
+      // Previously passed { doctype, name } directly which caused:
+      //   TypeError: submit() missing 1 required positional argument: 'doc'
+      const fullRes = await client.get("/api/resource/Journal Entry/" + encodeURIComponent(jeName));
+      const fullDoc = fullRes?.data?.data;
+      if (!fullDoc) throw new Error("Could not fetch full JE doc for submit: " + jeName);
+      await client.post("/api/method/frappe.client.submit", { doc: fullDoc });
+      logger.success("[OB] Opening Entry JE submitted: " + jeName +
+                     " (" + allJERows.length + " rows from " + withBalance.length + " ledgers, " + skippedCount + " skipped)");
+      return { created: 1, updated: 0, failed: skippedCount };
+    } catch (submitErr) {
+      // Submit failed but draft exists — log as error so it surfaces in error filters
+      const errMsg = parseErpError(submitErr);
+      logger.error("[OB] Opening Entry JE saved as Draft (submit failed): " + jeName + " — " + errMsg);
+      logger.error("[OB] Go to ERPNext → Journal Entry → " + jeName + " to review and submit manually");
+      // Return as created so the draft is not lost on next sync (fingerprint stored in remark)
+      return { created: 1, updated: 0, failed: 0 };
+    }
+  }
+  return { created: 0, updated: 0, failed: 1 };
 }
 
 // -- Cost Centres -------------------------------------------------------------
@@ -3059,10 +3002,14 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
         });
         const acctData = chk && chk.data && chk.data.data;
         if (acctData && !acctData.is_group) {
-          // Fix wrong account_type — e.g. "Godsman - C" created as Payable but used as Income
+          // Only fix account_type if it's Payable or Receivable — these cause ERPNext to
+          // require a party on invoice rows which breaks submission.
+          // Do NOT flip between Income Account <-> Expense Account: some ledgers (e.g.
+          // "Godsman", "Cash322") appear in both sales AND purchase vouchers, and flipping
+          // back and forth on every sync causes "Fixed ... Income → Expense → Income" loops.
+          const badTypes = ["Payable", "Receivable"];
           const expectedType = rootType === "Income" ? "Income Account" : "Expense Account";
-          if (acctData.account_type && acctData.account_type !== expectedType &&
-              acctData.account_type !== "" && acctData.account_type !== "null") {
+          if (acctData.account_type && badTypes.includes(acctData.account_type)) {
             try {
               await client.put("/api/resource/Account/" + encodeURIComponent(resolved), {
                 account_type: expectedType,
@@ -3294,27 +3241,59 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
     const tallyCC       = v.salesCostCentre || v.firstCostCentre || null;
     const costCenterERP = tallyCC ? (tallyCC + " - " + companyAbbr) : null;
 
-    const items = (v.inventoryItems && v.inventoryItems.length > 0)
-      ? v.inventoryItems.map((i) => {
-          const qty    = i.qty    || 1;
-          const amount = i.amount || 0;
-          const rate   = i.rate   || (amount / qty) || 0;
-          const row = {
-            item_code:       i.itemName,
-            item_name:       i.itemName,
-            qty,
-            rate:            Math.abs(rate),
-            amount:          Math.abs(amount) || Math.abs(rate * qty),
-            expense_account: resolvedExpenseAccount, // Tally purchase ledger → ERPNext expense account
-          };
-          if (i.godownName)  row.warehouse  = i.godownName + " - " + companyAbbr;
-          // FIX: Skip "Primary Batch" — Tally's internal placeholder for non-batch items.
-          // Sending it to ERPNext causes "Could not find Batch No: Primary Batch" errors.
-          if (i.batchName && i.batchName.trim().toLowerCase() !== "primary batch")
-            row.batch_no = i.batchName;
-          if (costCenterERP) row.cost_center = costCenterERP;
-          return row;
-        })
+    const inventoryRowsP = (v.inventoryItems || []).map((i) => {
+      const qty    = i.qty    || 1;
+      const amount = i.amount || 0;
+      const rate   = i.rate   || (amount / qty) || 0;
+      const row = {
+        item_code:       i.itemName,
+        item_name:       i.itemName,
+        qty,
+        rate:            Math.abs(rate),
+        amount:          Math.abs(amount) || Math.abs(rate * qty),
+        expense_account: resolvedExpenseAccount,
+      };
+      if (i.godownName)  row.warehouse  = i.godownName + " - " + companyAbbr;
+      // FIX: Strip batch_no if it is a pure integer string (e.g. "2", "10").
+      // Tally sometimes exports internal sequence numbers as batch names.
+      // These don't exist as Batch records in ERPNext and cause:
+      //   "Could not find Row #1: Batch No: 2"
+      // Also skip Tally's "Primary Batch" placeholder for non-batch items.
+      const rawBatchP = (i.batchName || "").trim();
+      if (rawBatchP
+          && rawBatchP.toLowerCase() !== "primary batch"
+          && !/^\d+$/.test(rawBatchP))
+        row.batch_no = rawBatchP;
+      if (costCenterERP) row.cost_center = costCenterERP;
+      return row;
+    });
+
+    // Extra ledger-line items on purchase invoices (same logic as salesMapper)
+    const partyKeyPI   = (v.partyName || "").trim().toLowerCase();
+    const ledgerKeyPI  = (v.salesLedgerName || "").trim().toLowerCase();
+    const ledgerRowsP  = (v.entries || [])
+      .filter((e) => {
+        const k = (e.ledger || "").trim().toLowerCase();
+        return k && k !== partyKeyPI && k !== ledgerKeyPI && Math.abs(e.amount || 0) > 0.001;
+      })
+      .map((e) => {
+        const ledgerAccount = (v._resolvedLedgerEntryAccounts && v._resolvedLedgerEntryAccounts[e.ledger])
+          || (e.ledger + " - " + companyAbbr);
+        const amt = Math.abs(e.amount || 0);
+        const row = {
+          item_code:       e.ledger,
+          item_name:       e.ledger,
+          qty:             1,
+          rate:            amt,
+          amount:          amt,
+          expense_account: ledgerAccount,
+        };
+        if (costCenterERP) row.cost_center = costCenterERP;
+        return row;
+      });
+
+    const items = inventoryRowsP.length > 0 || ledgerRowsP.length > 0
+      ? [...inventoryRowsP, ...ledgerRowsP]
       : [{ item_code: "Purchase Item", item_name: "Purchase Item", qty: 1, rate: v.netAmount || 0,
            expense_account: resolvedExpenseAccount,
            ...(costCenterERP ? { cost_center: costCenterERP } : {}) }];
@@ -3718,6 +3697,25 @@ export async function syncInvoicesToErpNext(vouchers, companyName, creds = {}) {
       ? (_purchaseAccountCache.get(v.salesLedgerName) || expenseAccount)
       : expenseAccount;
 
+    // 1b. Pre-resolve extra ledger-entry accounts for purchase invoices (e.g. "Godsman", "Ram500")
+    // These are expense-side entries; resolve as Expense to avoid Payable/Receivable type issues.
+    const partyKeyP   = (v.partyName || "").trim().toLowerCase();
+    const ledgerKeyP  = (v.salesLedgerName || "").trim().toLowerCase();
+    v._resolvedLedgerEntryAccounts = v._resolvedLedgerEntryAccounts || {};
+    for (const e of (v.entries || [])) {
+      const k = (e.ledger || "").trim().toLowerCase();
+      if (!k || k === partyKeyP || k === ledgerKeyP || Math.abs(e.amount || 0) <= 0.001) continue;
+      if (!_purchaseAccountCache.has(e.ledger)) {
+        try {
+          const resolved = await ensureLeafAccount(e.ledger, "Expense", "Purchase Accounts");
+          _purchaseAccountCache.set(e.ledger, resolved || (e.ledger + " - " + companyAbbr));
+        } catch (_) {
+          _purchaseAccountCache.set(e.ledger, e.ledger + " - " + companyAbbr);
+        }
+      }
+      v._resolvedLedgerEntryAccounts[e.ledger] = _purchaseAccountCache.get(e.ledger) || (e.ledger + " - " + companyAbbr);
+    }
+
     // 2. credit_to (payable) account for this supplier
     // ── BUG FIX: Validate the resolved account is actually of type Payable ──
     // Some ERPNext installs have accounts like "Godsman - C" typed as Payable even
@@ -4061,9 +4059,28 @@ export async function runFullSync(companyName, tallyData, options, creds = {}) {
     throw e; // unexpected error — let it propagate
   }
 
-  const hasFail = Object.values(result.steps).some((s) => s.status === "fail");
-  const hasWarn = Object.values(result.steps).some((s) => s.status === "warn");
-  result.status     = hasFail ? "failed" : hasWarn ? "warning" : "ok";
+  // ── STATUS LOGIC ─────────────────────────────────────────────────────────────
+  // A step gets status "fail" when it threw an exception (complete failure).
+  // A step gets status "warn" when some items failed (e.g. 1 purchase invoice failed).
+  //
+  // FIX: Previously ANY "fail" step caused result.status = "failed", which blocked
+  // saveCompanyState in server.js — so one bad purchase invoice reset the entire
+  // incremental state and forced a full re-sync every time.
+  //
+  // New rule:
+  //   "failed"  → a CRITICAL step threw completely (COA, vouchers, ERPNext unreachable)
+  //   "warning" → only non-critical steps had partial item failures (invoices, ledgers)
+  //   "ok"      → everything clean
+  //
+  // Critical steps: erpnextPing, chartOfAccounts, vouchers
+  // Non-critical (partial ok): ledgers, openingBalances, godowns, costCentres, stockItems, invoices, taxes
+  const CRITICAL_STEPS = new Set(["erpnextPing", "chartOfAccounts", "vouchers"]);
+  const hasCriticalFail = Object.entries(result.steps).some(
+    ([key, s]) => s.status === "fail" && CRITICAL_STEPS.has(key)
+  );
+  const hasAnyFail = Object.values(result.steps).some((s) => s.status === "fail");
+  const hasWarn    = Object.values(result.steps).some((s) => s.status === "warn");
+  result.status     = hasCriticalFail ? "failed" : (hasAnyFail || hasWarn) ? "warning" : "ok";
   result.finishedAt = new Date().toISOString();
 
   logger.info("Full sync complete: " + result.status, { company: companyName });

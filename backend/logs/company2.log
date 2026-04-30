@@ -1,5 +1,95 @@
 [
   {
+    "id": 1777528952368.882,
+    "ts": "2026-04-30T06:02:32.368Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777528236983.0193,
+    "ts": "2026-04-30T05:50:36.983Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777526622233.196,
+    "ts": "2026-04-30T05:23:42.233Z",
+    "level": "info",
+    "message": "Full sync complete: ok",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777525895985.906,
+    "ts": "2026-04-30T05:11:35.985Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777525365948.4421,
+    "ts": "2026-04-30T05:02:45.948Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777465336571.0515,
+    "ts": "2026-04-29T12:22:16.571Z",
+    "level": "info",
+    "message": "Full sync complete: failed",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777464389394.6995,
+    "ts": "2026-04-29T12:06:29.394Z",
+    "level": "info",
+    "message": "Full sync complete: failed",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777461246831.034,
+    "ts": "2026-04-29T11:14:06.831Z",
+    "level": "info",
+    "message": "Full sync complete: failed",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
+    "id": 1777458064194.0786,
+    "ts": "2026-04-29T10:21:04.194Z",
+    "level": "info",
+    "message": "Full sync complete: warning",
+    "meta": {
+      "company": "Company2"
+    },
+    "company": "Company2"
+  },
+  {
     "id": 1777456297459.237,
     "ts": "2026-04-29T09:51:37.459Z",
     "level": "info",
