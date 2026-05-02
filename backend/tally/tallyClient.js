@@ -327,6 +327,32 @@ export async function fetchTallyLedgers(companyName) {
     const rawPhone = val(l.LEDGERMOBILE) || val(l.LEDGERPHONE) || null;
     const rawEmail = val(l.EMAIL) || null;
 
+    // ── Capture any extra fields Tally sends that we don't explicitly map ──────
+    // If a client's Tally has custom fields (e.g. CREDITLIMIT, TRANSPORTERNAME),
+    // they arrive as extra XML keys. We collect them here so they are not silently
+    // lost — Erpnextclient.js will map them to custom_* fields in ERPNext.
+    const KNOWN_LEDGER_KEYS = new Set([
+      "$", "GUID", "NAME", "PARENT", "ALTERID", "ADDRESS", "MAILINGNAME",
+      "MAILINGDETAILS.LIST", "MAILINGDETAILS", "OPENINGBALANCE", "CLOSINGBALANCE",
+      "ISBILLWISEON", "LEDGERPHONE", "LEDGERMOBILE", "EMAIL", "INCOMETAXNUMBER",
+      "GSTIN.LIST", "COUNTRYNAME", "STATENAME", "PINCODE", "BANKACCNO",
+      "IFSCODE", "SWIFTCODE", "BANKNAME",
+    ]);
+    const customFields = {};
+    for (const key of Object.keys(l)) {
+      if (!KNOWN_LEDGER_KEYS.has(key)) {
+        const v2 = val(l[key]);
+        if (v2 !== null && v2 !== undefined && v2 !== "") {
+          customFields[key] = v2;
+        }
+      }
+    }
+    if (Object.keys(customFields).length > 0) {
+      logger.human
+        ? logger.human.headsUp(`Ledger "${name}" has ${Object.keys(customFields).length} extra field(s) from Tally: ${Object.keys(customFields).join(", ")}. These will be synced as custom fields in ERPNext.`)
+        : logger.info(`Ledger "${name}" has extra Tally fields: ${Object.keys(customFields).join(", ")}`);
+    }
+
     ledgers.push({
       guid,
       name,
@@ -377,6 +403,7 @@ export async function fetchTallyLedgers(companyName) {
         }
         return extractAddress(l.ADDRESS) || null;
       })(),
+      customFields: Object.keys(customFields).length > 0 ? customFields : undefined,
     });
   }
 
@@ -705,11 +732,35 @@ export async function fetchTallyStockItems(companyName) {
     return { hsnCode, gstRate };
   }
 
+  const KNOWN_STOCK_KEYS = new Set([
+    "$", "GUID", "NAME", "PARENT", "ALTERID", "CATEGORY", "BASEUNITS",
+    "HSNDETAILS.LIST", "HSNDETAILS", "HSNDETAILS.LIST.HSNCODE", "HSNDETAILS.LIST.GSTRATE",
+    "GSTAPPLICABLE", "GSTTYPEOFSUPPLY", "TAXABILITY",
+    "OPENINGBALANCE", "CLOSINGBALANCE", "OPENINGVALUE", "CLOSINGVALUE",
+  ]);
+
   const items = itemsArr
     .map((s) => {
       const name = s.$?.NAME || val(s.NAME) || null;
       if (!name) return null;
       const { hsnCode, gstRate } = extractHsnDetails(s);
+
+      // Capture any extra fields Tally sends beyond what we explicitly map
+      const customFields = {};
+      for (const key of Object.keys(s)) {
+        if (!KNOWN_STOCK_KEYS.has(key)) {
+          const v2 = val(s[key]);
+          if (v2 !== null && v2 !== undefined && v2 !== "") {
+            customFields[key] = v2;
+          }
+        }
+      }
+      if (Object.keys(customFields).length > 0) {
+        logger.human
+          ? logger.human.headsUp(`Stock item "${name}" has ${Object.keys(customFields).length} extra field(s) from Tally: ${Object.keys(customFields).join(", ")}. These will be synced as custom fields in ERPNext.`)
+          : logger.info(`Stock item "${name}" has extra Tally fields: ${Object.keys(customFields).join(", ")}`);
+      }
+
       return {
         guid:            val(s.GUID),
         name,
@@ -726,6 +777,7 @@ export async function fetchTallyStockItems(companyName) {
         closingQty:      parseTallyAmount(s.CLOSINGBALANCE?._ || s.CLOSINGBALANCE),
         openingValue:    parseTallyAmount(s.OPENINGVALUE?._ || s.OPENINGVALUE),
         closingValue:    parseTallyAmount(s.CLOSINGVALUE?._ || s.CLOSINGVALUE),
+        customFields:    Object.keys(customFields).length > 0 ? customFields : undefined,
       };
     })
     .filter(Boolean);

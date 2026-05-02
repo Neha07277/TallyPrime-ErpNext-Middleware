@@ -237,8 +237,8 @@ function SyncCheckboxGrid({opts,onToggle,onIndividualSync,busy,co,loadingItem,mo
 
 export function SyncToErpNext({companies}){
   const [company,setCompany]=useState(()=>{const last=localStorage.getItem("last_tally_company");const found=companies?.find(c=>c.name===last);return found?found.name:(companies?.[0]?.name||"");});
-  const [fromDate,setFromDate]=useState(YEAR_START);
-  const [toDate,setToDate]=useState(TODAY);
+  const [fromDate,setFromDate]=useState(()=>localStorage.getItem("sync_from_date")||YEAR_START);
+  const [toDate,setToDate]=useState(()=>localStorage.getItem("sync_to_date")||TODAY);
   const [erpPing,setErpPing]=useState(null);
   const [pinging,setPinging]=useState(false);
   const [erpCompany,setErpCompany]=useState(()=>{const initCo=companies?.[0]?.name||"";const allMappings=JSON.parse(localStorage.getItem("erp_company_map")||"{}");return allMappings[initCo]||"";});
@@ -265,6 +265,11 @@ export function SyncToErpNext({companies}){
     setAutoSyncOpts(o=>{
       const next={...o,[key]:forceTo!==undefined?forceTo:!o[key]};
       localStorage.setItem(AUTO_SYNC_OPTS_KEY,JSON.stringify(next));
+      // Push updated options to backend so next scheduled run uses them
+      fetch(`${BASE_URL}/auto-sync/configure`,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({options:next})
+      }).catch(()=>{});
       return next;
     });
   };
@@ -274,6 +279,7 @@ export function SyncToErpNext({companies}){
 
   const [autoMode,setAutoMode]=useState(false);
   const [autoInterval,setAutoInterval]=useState(INTERVALS[2].value);
+  const [autoIntervalLabel,setAutoIntervalLabel]=useState(INTERVALS[2].label);
   const [autoRunning,setAutoRunning]=useState(false);
   const [autoNextRun,setAutoNextRun]=useState(null);
   const [autoRemainingMs,setAutoRemainingMs]=useState(0);
@@ -282,7 +288,7 @@ export function SyncToErpNext({companies}){
   const [autoSyncing,setAutoSyncing]=useState(false);
   // Last auto-sync result for "up to date" display in auto panel
   const [lastAutoResult,setLastAutoResult]=useState(null);
-  const timerRef=useRef(null);const countdownRef=useRef(null);
+  const countdownRef=useRef(null);
   const [companyCreds,setCompanyCreds]=useState({});
 
   useEffect(()=>{if(!company)return;const saved=loadAllCreds()[company]||{};setCompanyCreds(saved);const allMappings=JSON.parse(localStorage.getItem("erp_company_map")||"{}");setErpCompany(allMappings[company]||"");},[company]);
@@ -443,13 +449,86 @@ export function SyncToErpNext({companies}){
     finally{setAutoSyncing(false);}
   },[company,autoSyncOpts,autoSyncing,companyCreds,erpCompany,lastSyncDates]); // eslint-disable-line
 
+  // ── On mount: restore auto-sync state from backend ───────────────────────
+  // Also re-injects creds into backend — apiKey/apiSecret are never saved to disk
+  // for security, so after any server restart the scheduler loses them. This fixes
+  // the "ERPNext connection details are missing" error on auto-resume.
   useEffect(()=>{
-    if(!autoRunning){clearInterval(timerRef.current);clearInterval(countdownRef.current);setAutoNextRun(null);setAutoRemainingMs(0);return;}
-    const scheduleNext=()=>{setAutoNextRun(new Date(Date.now()+autoInterval));setAutoRemainingMs(autoInterval);};
-    runAutoSync();scheduleNext();
-    timerRef.current=setInterval(()=>{runAutoSync();scheduleNext();},autoInterval);
+    fetch(`${BASE_URL}/auto-sync/status`)
+      .then(r=>r.json())
+      .then(data=>{
+        const cfg=data.config||{};
+        const match=INTERVALS.find(i=>i.label.toLowerCase()===String(cfg.interval).toLowerCase());
+        if(match){setAutoInterval(match.value);setAutoIntervalLabel(match.label);}
+        if(data.lastSync){
+          const ls=data.lastSync;
+          setLastAutoResult(ls.status==="running"?null:{upToDate:ls.status==="uptodate",error:ls.status==="failed"?ls.error:null,result:ls});
+        }
+        if(cfg.enabled){
+          setAutoRunning(true);
+          // Restore real remaining time from backend nextRunAt — prevents countdown
+          // resetting to full every time the user navigates back to this page
+          if(data.nextRunAt){
+            const remaining=Math.max(0,new Date(data.nextRunAt).getTime()-Date.now());
+            setAutoRemainingMs(remaining);
+            setAutoNextRun(new Date(data.nextRunAt));
+          }
+          // Re-send creds so backend scheduler can actually connect to ERPNext
+          // (apiKey/apiSecret are never saved to disk for security)
+          const co2=cfg.companyName||"";
+          const freshCreds=loadAllCreds()[co2]||{};
+          if(freshCreds.apiKey&&freshCreds.apiSecret){
+            fetch(`${BASE_URL}/auto-sync/configure`,{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({
+                creds:{
+                  url:freshCreds.url||"",
+                  apiKey:freshCreds.apiKey||"",
+                  apiSecret:freshCreds.apiSecret||"",
+                  erpnextCompany:cfg.erpnextCompany||"",
+                }
+              })
+            }).catch(()=>{});
+          }
+        }
+      }).catch(()=>{});
+  },[]); // eslint-disable-line
+
+  // ── Poll backend every 5s for live status (display only) ─────────────────
+  // The actual timer runs in server.js. This only updates the UI.
+  useEffect(()=>{
+    if(!autoRunning){clearInterval(countdownRef.current);setAutoNextRun(null);setAutoRemainingMs(0);return;}
+    // Do NOT reset autoRemainingMs here — on-mount already set it to the real remaining time.
+    // Only start the countdown tick; the value was already correctly initialised.
     countdownRef.current=setInterval(()=>setAutoRemainingMs(p=>Math.max(0,p-1000)),1000);
-    return()=>{clearInterval(timerRef.current);clearInterval(countdownRef.current);};
+    const poll=setInterval(async()=>{
+      try{
+        const res=await fetch(`${BASE_URL}/auto-sync/status`);
+        const data=await res.json();
+        if(!data.config?.enabled){setAutoRunning(false);clearInterval(countdownRef.current);return;}
+        setAutoSyncing(!!data.running);
+        // Always sync countdown from backend's authoritative nextRunAt
+        if(data.nextRunAt){
+          const remaining=Math.max(0,new Date(data.nextRunAt).getTime()-Date.now());
+          setAutoRemainingMs(remaining);
+          setAutoNextRun(new Date(data.nextRunAt));
+        }
+        if(data.lastSync&&data.lastSync.status!=="running"){
+          const ls=data.lastSync;
+          const isUpToDate=ls.status==="uptodate";
+          // Preserve steps so the StepResult breakdown renders in the auto panel
+          setLastAutoResult({upToDate:isUpToDate,error:ls.status==="failed"?ls.error:null,result:{...ls,steps:ls.steps||undefined}});
+          setAutoHistory(h=>{
+            const newAt=ls.startedAt?new Date(ls.startedAt):null;
+            if(!newAt||(h[0]&&h[0].at.getTime()===newAt.getTime())) return h;
+            setAutoRunCount(c=>c+1);
+            return [{at:newAt,status:isUpToDate?"uptodate":ls.status||"ok",from:ls.fromDate,to:ls.toDate,upToDate:isUpToDate,error:ls.status==="failed"?ls.error:null},...h].slice(0,8);
+          });
+        }
+      }catch(_){}
+    },5000);
+    return()=>{clearInterval(poll);clearInterval(countdownRef.current);};
   },[autoRunning,autoInterval]); // eslint-disable-line
 
   const busy=!!loading,co=company.trim(),noSync=!Object.values(syncOpts).some(Boolean);
@@ -528,7 +607,7 @@ export function SyncToErpNext({companies}){
           ):<input value={company} onChange={e=>setCompany(e.target.value)} placeholder="Company name" style={inp()} onFocus={onFocus} onBlur={onBlur}/>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          {[["From Date",fromDate,setFromDate],["To Date",toDate,setToDate]].map(([lbl,v,setter])=>(
+          {[["From Date",fromDate,(v)=>{setFromDate(v);localStorage.setItem("sync_from_date",v);}],["To Date",toDate,(v)=>{setToDate(v);localStorage.setItem("sync_to_date",v);}]].map(([lbl,v,setter])=>(
             <div key={lbl}>
               <label style={{display:"block",fontFamily:C.mono,fontSize:9,color:C.muted,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:6,fontWeight:700}}>{lbl}</label>
               <input type="date" value={v} onChange={e=>setter(e.target.value)} style={{...inp(),fontFamily:C.mono,fontSize:12}} onFocus={onFocus} onBlur={onBlur}/>
@@ -557,7 +636,7 @@ export function SyncToErpNext({companies}){
         <SectionHead step="3" title="Sync Mode" done={false}/>
         <div style={{display:"flex",gap:9,marginBottom:20}}>
           {[{id:false,icon:"🖱",label:"Manual",desc:"Sync on demand"},{id:true,icon:"⏱",label:"Auto Sync",desc:"Runs on schedule"}].map(m=>(
-            <button key={String(m.id)} onClick={()=>{setAutoMode(m.id);if(!m.id)setAutoRunning(false);}}
+            <button key={String(m.id)} onClick={()=>{setAutoMode(m.id);if(!m.id&&autoRunning){fetch(`${BASE_URL}/auto-sync/disable`,{method:"POST"}).catch(()=>{});setAutoRunning(false);}}}
               style={{flex:1,padding:"12px 14px",borderRadius:10,border:`1.5px solid ${autoMode===m.id?C.accentD:C.border}`,background:autoMode===m.id?`linear-gradient(135deg,${C.accent},${C.accentD})`:C.surface,cursor:"pointer",transition:"all .15s",display:"flex",flexDirection:"column",alignItems:"center",gap:4,boxShadow:autoMode===m.id?`0 4px 14px ${C.accent}33`:"none"}}>
               <span style={{fontSize:20}}>{m.icon}</span>
               <span style={{fontFamily:C.title,fontSize:12.5,fontWeight:700,color:autoMode===m.id?"#fff":C.ink}}>{m.label}</span>
@@ -629,7 +708,7 @@ export function SyncToErpNext({companies}){
             <label style={{display:"block",fontFamily:C.mono,fontSize:9,color:C.muted,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:7,fontWeight:700}}>Sync Interval</label>
             <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:14}}>
               {INTERVALS.map(iv=>(
-                <button key={iv.value} onClick={()=>setAutoInterval(iv.value)} disabled={autoRunning}
+                <button key={iv.value} onClick={()=>{setAutoInterval(iv.value);setAutoIntervalLabel(iv.label);}} disabled={autoRunning}
                   style={{padding:"5px 12px",borderRadius:20,background:autoInterval===iv.value?C.accentD:C.surface,border:`1.5px solid ${autoInterval===iv.value?C.accentD:C.border}`,color:autoInterval===iv.value?"#fff":C.muted,fontFamily:C.mono,fontSize:10,fontWeight:600,cursor:autoRunning?"not-allowed":"pointer",opacity:autoRunning&&autoInterval!==iv.value?0.4:1,transition:"all .15s"}}>
                   {iv.label}
                 </button>
@@ -638,7 +717,38 @@ export function SyncToErpNext({companies}){
 
             {/* Start/Stop button */}
             <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <button onClick={()=>setAutoRunning(r=>!r)} disabled={!co||noAutoSync||!erpCompany}
+              <button onClick={async()=>{
+                if(autoRunning){
+                  // STOP — tell backend to disable the scheduler
+                  await fetch(`${BASE_URL}/auto-sync/disable`,{method:"POST"}).catch(()=>{});
+                  setAutoRunning(false);
+                }else{
+                  // START — read creds fresh from localStorage (same source manual sync uses)
+                  // Do NOT rely on companyCreds state — it may be stale if creds were just saved
+                  const freshCreds=loadAllCreds()[co]||{};
+                  const intervalLabel=INTERVALS.find(i=>i.value===autoInterval)?.label||"1 hour";
+                  await fetch(`${BASE_URL}/auto-sync/configure`,{
+                    method:"POST",
+                    headers:{"Content-Type":"application/json"},
+                    body:JSON.stringify({
+                      enabled:true,
+                      interval:intervalLabel,
+                      companyName:co,
+                      fromDays:30,
+                      options:autoSyncOpts,
+                      creds:{
+                        url:freshCreds.url||"",
+                        apiKey:freshCreds.apiKey||"",
+                        apiSecret:freshCreds.apiSecret||"",
+                        erpnextCompany:erpCompany||"",
+                      }
+                    })
+                  }).catch(()=>{});
+                  setAutoRunning(true);
+                  setAutoRemainingMs(autoInterval);
+                  setAutoNextRun(new Date(Date.now()+autoInterval));
+                }
+              }} disabled={!co||noAutoSync||!erpCompany}
                 style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"11px 16px",borderRadius:9,border:"none",background:autoRunning?C.red:C.green,color:"#fff",fontFamily:C.title,fontSize:13,fontWeight:700,cursor:!co||noAutoSync||!erpCompany?"not-allowed":"pointer",opacity:!co||noAutoSync||!erpCompany?0.5:1,transition:"all .15s",boxShadow:autoRunning?"0 4px 14px rgba(220,38,38,.28)":"0 4px 14px rgba(22,163,74,.28)"}}>
                 {autoRunning?<><span>■</span> Stop Auto-Sync</>:<><span>▶</span> Start Auto-Sync</>}
               </button>
@@ -670,6 +780,30 @@ export function SyncToErpNext({companies}){
                   <div style={{padding:"11px 14px",borderRadius:9,background:C.redL,border:`1.5px solid ${C.redB}`}}>
                     <p style={{fontFamily:C.mono,fontSize:10,color:C.red,margin:0,fontWeight:700}}>✗ Auto-sync failed</p>
                     <p style={{fontFamily:C.mono,fontSize:10,color:C.red,margin:"4px 0 0"}}>{lastAutoResult.error}</p>
+                  </div>
+                ):lastAutoResult.result?.steps?(
+                  /* Full step breakdown — same as manual sync result panel */
+                  <div style={{background:C.card,border:`1.5px solid ${C.greenB}`,borderRadius:14,padding:18,display:"flex",flexDirection:"column",gap:11,boxShadow:`0 4px 18px ${C.green}14`}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:13,borderBottom:`1px solid ${C.border}`}}>
+                      <div style={{display:"flex",alignItems:"center",gap:9}}>
+                        <div style={{width:30,height:30,borderRadius:8,background:C.greenL,border:`1.5px solid ${C.greenB}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>✓</div>
+                        <span style={{fontFamily:C.title,fontSize:13.5,fontWeight:800,color:C.ink,letterSpacing:"-0.3px"}}>Auto-Sync Complete</span>
+                      </div>
+                      <StatusBadge status={lastAutoResult.result?.status||"ok"}/>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:7}}>
+                      <StepResult title="ERPNext Ping"       data={lastAutoResult.result.steps.erpnextPing}/>
+                      <StepResult title="Chart of Accounts"  data={lastAutoResult.result.steps.chartOfAccounts}/>
+                      <StepResult title="Ledgers"            data={lastAutoResult.result.steps.ledgers}/>
+                      <StepResult title="Smart Ledgers"      data={lastAutoResult.result.steps.smartLedgers}/>
+                      <StepResult title="Opening Balances"   data={lastAutoResult.result.steps.openingBalances}/>
+                      <StepResult title="Godowns/Warehouses" data={lastAutoResult.result.steps.godowns}/>
+                      <StepResult title="Cost Centres"       data={lastAutoResult.result.steps.costCentres}/>
+                      <StepResult title="Stock Items"        data={lastAutoResult.result.steps.stockItems}/>
+                      <StepResult title="Vouchers"           data={lastAutoResult.result.steps.vouchers}/>
+                      <StepResult title="Invoices"           data={lastAutoResult.result.steps.invoices}/>
+                    </div>
+                    {lastAutoResult.result?.finishedAt&&<p style={{fontFamily:C.mono,fontSize:10,color:C.muted,margin:0}}>Completed at {new Date(lastAutoResult.result.finishedAt).toLocaleTimeString("en-IN")}</p>}
                   </div>
                 ):(
                   <div style={{padding:"11px 14px",borderRadius:9,background:C.greenL,border:`1.5px solid ${C.greenB}`,display:"flex",alignItems:"center",gap:9}}>

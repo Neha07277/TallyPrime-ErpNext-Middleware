@@ -122,6 +122,7 @@ export function clearCaches() {
   _accountTypeMap.clear();
   _companyAbbrCache.clear();
   _companyNameCache.clear();
+  _knownCustomFields.clear();
   _customerGroup = null;
   _supplierGroup = null;
   _territory     = null;
@@ -924,6 +925,43 @@ async function batchSync(client, doctype, items, mapper, progressCb) {
 }
 
 // -- Ledgers -> Customers / Suppliers -----------------------------------------
+// ── Auto-create a custom field on an ERPNext doctype if it doesn't exist ──────
+// Called when Tally sends an extra field we haven't explicitly mapped.
+// Field name format: custom_tally_<tally_key_lowercase>
+// Safe to call multiple times — skips silently if the field already exists.
+const _knownCustomFields = new Set(); // avoid repeated API checks per sync run
+
+async function ensureCustomFieldOnDoctype(client, doctype, fieldname, label) {
+  const cacheKey = doctype + "::" + fieldname;
+  if (_knownCustomFields.has(cacheKey)) return;
+  try {
+    const existing = await client.get("/api/resource/Custom Field", {
+      params: {
+        filters: JSON.stringify([["Custom Field","dt","=",doctype],["Custom Field","fieldname","=",fieldname]]),
+        fields: '["name"]', limit: 1,
+      },
+    });
+    if ((existing?.data?.data || []).length > 0) {
+      _knownCustomFields.add(cacheKey);
+      return;
+    }
+    await client.post("/api/resource/Custom Field", {
+      doctype:   "Custom Field",
+      dt:        doctype,
+      fieldname,
+      label,
+      fieldtype: "Data",
+      read_only: 1,
+    });
+    _knownCustomFields.add(cacheKey);
+    logger.human
+      ? logger.human.headsUp(`A new field "${label}" was found in Tally and has been created in ERPNext under ${doctype}.`)
+      : logger.info(`Auto-created custom field: ${doctype}.${fieldname}`);
+  } catch (_) {
+    _knownCustomFields.add(cacheKey); // don't retry on this run even if it failed
+  }
+}
+
 export async function syncLedgersToErpNext(ledgers, creds = {}) {
   const client = createErpClient(creds);
   logger.info("Syncing " + ledgers.length + " ledgers to ERPNext");
@@ -1022,6 +1060,19 @@ export async function syncLedgersToErpNext(ledgers, creds = {}) {
     // Bank
     if (l.bankAccount) doc.bank_account_no = l.bankAccount.trim();
     if (l.ifsc)        doc.bank_ifsc_code  = l.ifsc.trim();
+
+    // ── Extra fields from Tally (custom fields passthrough) ──────────────────
+    // If Tally sent fields we don't explicitly map (e.g. CREDITLIMIT, TRANSPORTERNAME),
+    // they arrive in l.customFields. We write them as custom_tally_<fieldname> on the
+    // ERPNext Customer so no data is silently lost. The ensureCustomFieldOnDoctype()
+    // call in syncLedgersToErpNext ensures the Custom Field exists before we write it.
+    if (l.customFields) {
+      for (const [key, value] of Object.entries(l.customFields)) {
+        const erpField = "custom_tally_" + key.toLowerCase().replace(/[^a-z0-9]/g, "_");
+        doc[erpField] = String(value).slice(0, 255);
+      }
+    }
+
     return { filters: { customer_name: l.name }, doc, _ledger: l };
   };
 
@@ -1055,8 +1106,33 @@ export async function syncLedgersToErpNext(ledgers, creds = {}) {
     // Bank
     if (l.bankAccount) doc.bank_account_no = l.bankAccount.trim();
     if (l.ifsc)        doc.bank_ifsc_code  = l.ifsc.trim();
+
+    // ── Extra fields from Tally (custom fields passthrough) ──────────────────
+    if (l.customFields) {
+      for (const [key, value] of Object.entries(l.customFields)) {
+        const erpField = "custom_tally_" + key.toLowerCase().replace(/[^a-z0-9]/g, "_");
+        doc[erpField] = String(value).slice(0, 255);
+      }
+    }
+
     return { filters: { supplier_name: l.name }, doc, _ledger: l };
   };
+
+  // ── Auto-create ERPNext custom fields for any extra Tally fields ────────────
+  // Collect every unique customField key across all ledgers, then ensure the
+  // corresponding custom_tally_* field exists on Customer and Supplier before
+  // batchSync tries to write to it.
+  const allCustomKeys = new Set();
+  for (const l of [...customers, ...suppliers]) {
+    if (l.customFields) Object.keys(l.customFields).forEach((k) => allCustomKeys.add(k));
+  }
+  for (const key of allCustomKeys) {
+    const fieldname = "custom_tally_" + key.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const label     = "Tally " + key.charAt(0) + key.slice(1).toLowerCase().replace(/_/g, " ");
+    await ensureCustomFieldOnDoctype(client, "Customer", fieldname, label);
+    await ensureCustomFieldOnDoctype(client, "Supplier", fieldname, label);
+    await sleep(200);
+  }
 
   const customerResults = await batchSync(client, "Customer", customers, customerMapper);
   const supplierResults = await batchSync(client, "Supplier", suppliers, supplierMapper);
@@ -1286,6 +1362,18 @@ export async function syncStockToErpNext(stockItems, creds = {}) {
   for (const u of uniqueUoMs)             { await ensureUoM(client, u);       await sleep(100); }
   for (const h of uniqueHsnsWithFallback) { await ensureHsnCode(client, h);   await sleep(100); }
 
+  // ── Auto-create ERPNext custom fields for any extra Tally stock fields ───────
+  const allStockCustomKeys = new Set();
+  for (const item of stockItems) {
+    if (item.customFields) Object.keys(item.customFields).forEach((k) => allStockCustomKeys.add(k));
+  }
+  for (const key of allStockCustomKeys) {
+    const fieldname = "custom_tally_" + key.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const label     = "Tally " + key.charAt(0) + key.slice(1).toLowerCase().replace(/_/g, " ");
+    await ensureCustomFieldOnDoctype(client, "Item", fieldname, label);
+    await sleep(200);
+  }
+
   const results = await batchSync(client, "Item", stockItems, (item) => {
     const uom       = normaliseUoM(item.baseUnit);
 
@@ -1356,6 +1444,14 @@ export async function syncStockToErpNext(stockItems, creds = {}) {
     // Standard selling rate from closing value / qty
     if (item.closingQty > 0 && item.closingValue > 0) {
       doc.standard_rate = parseFloat((item.closingValue / item.closingQty).toFixed(4));
+    }
+
+    // ── Extra fields from Tally (custom fields passthrough) ──────────────────
+    if (item.customFields) {
+      for (const [key, value] of Object.entries(item.customFields)) {
+        const erpField = "custom_tally_" + key.toLowerCase().replace(/[^a-z0-9]/g, "_");
+        doc[erpField] = String(value).slice(0, 255);
+      }
     }
 
     return { filters: { item_code: doc.item_code }, doc };
@@ -4027,6 +4123,11 @@ export async function runFullSync(companyName, tallyData, options, creds = {}) {
 
     if (options.syncLedgers          && tallyData.ledgers   && tallyData.ledgers.length   > 0)
       await runStep("ledgers",         () => syncLedgersToErpNext(tallyData.ledgers, creds));
+
+    // syncSmartLedgers: filter tallyData.ledgers to only those used in vouchers
+    if (options.syncSmartLedgers     && tallyData.ledgers   && tallyData.ledgers.length   > 0
+                                     && tallyData.vouchers  && tallyData.vouchers.length  > 0)
+      await runStep("smartLedgers",   () => smartSyncLedgersToErpNext(tallyData.vouchers, tallyData.ledgers, creds));
 
     if (options.syncOpeningBalances  && tallyData.ledgers   && tallyData.ledgers.length   > 0)
       await runStep("openingBalances", () => syncOpeningBalancesToErpNext(tallyData.ledgers, companyName, creds));

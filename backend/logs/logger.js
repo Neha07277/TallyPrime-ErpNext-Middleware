@@ -91,11 +91,34 @@ function addLog(level, message, meta = {}) {
 }
 
 // ── Query ─────────────────────────────────────────────────────────────────────
+
+// Normalise any date string to YYYY-MM-DD so new Date() parses it reliably
+// in all Node.js environments regardless of locale or UI format.
+// Handles:
+//   MM/DD/YYYY  (e.g. "04/28/2026" — sent by date inputs in US locale)
+//   DD-MM-YYYY  (e.g. "28-04-2026" — common in Indian UIs)
+//   YYYY-MM-DD  (ISO — already correct, returned as-is)
+//   ISO string  (e.g. "2026-04-28T00:00:00Z" — trimmed to date part)
+function normaliseDate(d) {
+  if (!d) return null;
+  const s = String(d).trim();
+  // MM/DD/YYYY
+  const mdy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (mdy) return `${mdy[3]}-${mdy[1].padStart(2, "0")}-${mdy[2].padStart(2, "0")}`;
+  // DD-MM-YYYY
+  const dmy = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;
+  // ISO string with time — keep only date part
+  if (s.length > 10 && s.includes("T")) return s.slice(0, 10);
+  // Already YYYY-MM-DD or unknown — return as-is
+  return s;
+}
+
 /**
  * getLogs(options)
  *   company  — filter to one company (null = all)
- *   fromDate — "YYYY-MM-DD" inclusive
- *   toDate   — "YYYY-MM-DD" inclusive
+ *   fromDate — "YYYY-MM-DD" or "MM/DD/YYYY" or "DD-MM-YYYY" inclusive
+ *   toDate   — same formats, inclusive
  *   level    — "info"|"success"|"warn"|"error" (null = all)
  *   limit    — default 200
  */
@@ -103,16 +126,24 @@ function getLogs({ company = null, fromDate = null, toDate = null, level = null,
   // Legacy compat: if called as getLogs(100) (plain number), treat as limit
   if (typeof arguments[0] === "number") return getLogs({ limit: arguments[0] });
 
+  // Normalise dates to YYYY-MM-DD so new Date() always parses correctly
+  fromDate = normaliseDate(fromDate);
+  toDate   = normaliseDate(toDate);
+
   const bucket = company || "_global";
   let entries = loadBucket(bucket);
 
   if (fromDate) {
     const from = new Date(fromDate).getTime();
-    entries = entries.filter(e => new Date(e.ts).getTime() >= from);
+    if (!isNaN(from)) {
+      entries = entries.filter(e => new Date(e.ts).getTime() >= from);
+    }
   }
   if (toDate) {
     const to = new Date(toDate).getTime() + 86_400_000; // include full day
-    entries = entries.filter(e => new Date(e.ts).getTime() < to);
+    if (!isNaN(to)) {
+      entries = entries.filter(e => new Date(e.ts).getTime() < to);
+    }
   }
   if (level) {
     entries = entries.filter(e => e.level === level);
@@ -162,11 +193,23 @@ const human = {
 
   // ── Startup messages ────────────────────────────────────────────────────────
 
-  /** Tally Middleware server running on http://localhost:4000 */
-  serverReady: (url, meta = {}) =>
-    addLog("info",
-      `The system is up and ready. You can start using it now. (${url})`,
-      { type: "server_ready", url, ...meta }),
+  /**
+   * Server is ready.
+   * @param {string} url            - local server URL
+   * @param {object} autoSyncState  - optional { enabled, interval, options[] }
+   */
+  serverReady: (url, autoSyncState, meta = {}) => {
+    // Handle old call signature: serverReady(url, meta)
+    if (autoSyncState && typeof autoSyncState === "object" && !autoSyncState.enabled && !autoSyncState.interval) {
+      meta = autoSyncState; autoSyncState = null;
+    }
+    const syncLine = autoSyncState && autoSyncState.enabled
+      ? ` Auto-sync is ON — runs every ${autoSyncState.interval}.`
+      : " Auto-sync is off — you can enable it from the Sync settings.";
+    return addLog("info",
+      `The system is up and ready. You can start using it now. (${url})${syncLine}`,
+      { type: "server_ready", url, ...meta });
+  },
 
   /** Tally endpoint: http://localhost:9000 */
   tallyConnected: (url, meta = {}) =>
@@ -174,11 +217,20 @@ const human = {
       `Tally is connected and reachable at ${url}.`,
       { type: "tally_connected", url, ...meta }),
 
-  /** Auto-sync scheduled: "0 2 * * *" */
-  autoSyncScheduled: (what, meta = {}) =>
-    addLog("info",
-      `Automatic data sync is set up. It will run on its own every night at 2:00 AM for: ${what}.`,
-      { type: "auto_sync_scheduled", schedule: what, ...meta }),
+  /**
+   * Auto-sync scheduled.
+   * @param {string} what     - comma-separated list of what is being synced (e.g. "ledgers, stock, vouchers")
+   * @param {string} interval - human label of the interval (e.g. "15 min", "1 hour", "daily")
+   */
+  autoSyncScheduled: (what, interval, meta = {}) => {
+    // Handle old call signature: autoSyncScheduled(what, meta)
+    // If interval is an object (old meta), shift arguments
+    if (interval && typeof interval === "object") { meta = interval; interval = null; }
+    const intervalText = interval ? `every ${interval}` : "on a schedule";
+    return addLog("info",
+      `Auto-sync is now active. It will automatically sync (${what}) ${intervalText}.`,
+      { type: "auto_sync_scheduled", schedule: what, interval, ...meta });
+  },
 
   /** Run POST /api/middleware/check to validate all Tally data */
   checkReady: (meta = {}) =>
@@ -187,6 +239,30 @@ const human = {
       { type: "check_ready", ...meta }),
 
   // ── Sync lifecycle ──────────────────────────────────────────────────────────
+
+  /** Auto-sync was just enabled by the user */
+  autoSyncEnabled: (interval, what, meta = {}) =>
+    addLog("info",
+      `Auto-sync turned on — will sync (${what}) every ${interval}.`,
+      { type: "auto_sync_enabled", interval, schedule: what, ...meta }),
+
+  /** Auto-sync was turned off */
+  autoSyncDisabled: (meta = {}) =>
+    addLog("info",
+      `Auto-sync has been turned off. Data will only sync when you trigger it manually.`,
+      { type: "auto_sync_disabled", ...meta }),
+
+  /** Auto-sync skipped because already running */
+  autoSyncSkipped: (reason, meta = {}) =>
+    addLog("warn",
+      `Auto-sync was skipped this time — ${reason}.`,
+      { type: "auto_sync_skipped", reason, ...meta }),
+
+  /** Auto-sync next run time */
+  autoSyncNextRun: (when, meta = {}) =>
+    addLog("info",
+      `Next automatic sync is scheduled at ${when}.`,
+      { type: "auto_sync_next_run", when, ...meta }),
 
   /** Full sync job started */
   syncStarted: (companyName, targetUrl, meta = {}) =>
@@ -201,16 +277,22 @@ const human = {
       { type: "tally_ping", ms, ...meta }),
 
   /** Sync mode: INCREMENTAL — only new/changed records will be fetched */
-  syncModeIncremental: (companyName, meta = {}) =>
-    addLog("info",
-      `Only new or changed records will be fetched for "${companyName}" — unchanged data will be skipped to save time.`,
-      { type: "sync_mode", mode: "incremental", ...meta }),
+  syncModeIncremental: (companyName, fromDate, meta = {}) => {
+    if (fromDate && typeof fromDate === "object") { meta = fromDate; fromDate = null; }
+    const since = fromDate ? ` since ${fromDate}` : "";
+    return addLog("info",
+      `Incremental sync for "${companyName}"${since} — only new or changed records will be fetched. Unchanged data is skipped.`,
+      { type: "sync_mode", mode: "incremental", ...meta });
+  },
 
   /** Nothing to sync — all masters unchanged, no new vouchers */
-  nothingToSync: (meta = {}) =>
-    addLog("info",
-      `Everything is already up to date. There is nothing new to save right now.`,
-      { type: "sync_empty", ...meta }),
+  nothingToSync: (companyName, meta = {}) => {
+    if (companyName && typeof companyName === "object") { meta = companyName; companyName = null; }
+    const who = companyName ? `"${companyName}"` : "your data";
+    return addLog("info",
+      `${who} is already up to date. No new records found — nothing to sync this time.`,
+      { type: "sync_empty", ...meta });
+  },
 
   /** syncState saved */
   stateSaved: (companyName, meta = {}) =>
@@ -219,10 +301,12 @@ const human = {
       { type: "state_saved", ...meta }),
 
   /** Sync done */
-  syncDone: (companyName, dateFrom, dateTo, count, meta = {}) =>
-    addLog("success",
-      `Done! ${count} record${count === 1 ? "" : "s"} saved for "${companyName}" (${dateFrom} → ${dateTo}).`,
-      { type: "sync_done", count, ...meta }),
+  syncDone: (companyName, dateFrom, dateTo, count, meta = {}) => {
+    const msg = count === 0
+      ? `Sync complete for "${companyName}" (${dateFrom} → ${dateTo}). Everything was already up to date — no changes needed.`
+      : `Sync complete! ${count} record${count === 1 ? "" : "s"} saved for "${companyName}" (${dateFrom} → ${dateTo}).`;
+    return addLog("success", msg, { type: "sync_done", count, ...meta });
+  },
 
   /** Sync failed */
   syncFailed: (companyName, reason, meta = {}) =>
@@ -245,12 +329,12 @@ const human = {
       { type: "fetched_master", master: masterName, count, ...meta }),
 
   /** Ledgers: 0 to sync, 68 unchanged (skipped) */
-  masterSyncResult: (masterName, toSync, skipped, meta = {}) =>
-    addLog("info",
-      toSync === 0
-        ? `${masterName}: All ${skipped} ${skipped === 1 ? "entry is" : "entries are"} already up to date. Nothing to change.`
-        : `${masterName}: ${toSync} ${toSync === 1 ? "entry" : "entries"} will be updated, ${skipped} already up to date.`,
-      { type: "master_sync_result", master: masterName, toSync, skipped, ...meta }),
+  masterSyncResult: (masterName, toSync, skipped, meta = {}) => {
+    const msg = toSync === 0
+      ? `${masterName}: No changes — all ${skipped} ${skipped === 1 ? "record is" : "records are"} already up to date.`
+      : `${masterName}: ${toSync} ${toSync === 1 ? "record" : "records"} to sync${skipped > 0 ? `, ${skipped} unchanged` : ""}.`;
+    return addLog("info", msg, { type: "master_sync_result", master: masterName, toSync, skipped, ...meta });
+  },
 
   /** Vouchers skipped — window already covered */
   vouchersSkipped: (dateFrom, dateTo, meta = {}) =>
@@ -275,7 +359,7 @@ const human = {
   // ── Warnings / soft issues ──────────────────────────────────────────────────
 
   headsUp: (message, meta = {}) =>
-    addLog("warn", `Heads up: ${message}`, { type: "heads_up", ...meta }),
+    addLog("warn", message, { type: "heads_up", ...meta }),
 
   missingData: (itemLabel, fieldName, meta = {}) =>
     addLog("warn",
@@ -285,10 +369,59 @@ const human = {
   // ── General progress ────────────────────────────────────────────────────────
 
   step: (stepName, meta = {}) =>
-    addLog("info", `Now working on: ${stepName}`, { type: "step", step: stepName, ...meta }),
+    addLog("info", stepName, { type: "step", step: stepName, ...meta }),
 
   stepDone: (stepName, meta = {}) =>
     addLog("success", `Finished: ${stepName}`, { type: "step_done", step: stepName, ...meta }),
+
+  // ── Auto-sync timer events ─────────────────────────────────────────────
+
+  /** Auto-sync interval fired — run is about to start */
+  autoSyncTriggered: (companyName, interval, runNumber, meta = {}) =>
+    addLog("info",
+      `⏱ Auto-sync timer fired (run #${runNumber}) for "${companyName}" — every ${interval}. Starting sync now…`,
+      { type: "auto_sync_triggered", company: companyName, interval, runNumber, ...meta }),
+
+  /** Next run scheduled at a specific time */
+  autoSyncNextScheduled: (nextAt, interval, meta = {}) =>
+    addLog("info",
+      `✓ Auto-sync run finished. Next run scheduled at ${nextAt} (every ${interval}).`,
+      { type: "auto_sync_next_scheduled", nextAt, interval, ...meta }),
+
+  /** A named sync step is starting */
+  syncStepStarting: (stepLabel, meta = {}) =>
+    addLog("info",
+      `  → ${stepLabel}…`,
+      { type: "sync_step_starting", step: stepLabel, ...meta }),
+
+  /** A named sync step finished with a count */
+  syncStepDone: (stepLabel, created, updated, failed, meta = {}) => {
+    const parts = [];
+    if (created > 0) parts.push(`${created} created`);
+    if (updated > 0) parts.push(`${updated} updated`);
+    if (failed  > 0) parts.push(`${failed} failed`);
+    const summary = parts.length ? parts.join(", ") : "nothing new";
+    const lvl = failed > 0 ? "warn" : created + updated > 0 ? "success" : "info";
+    return addLog(lvl,
+      `  ✓ ${stepLabel} done — ${summary}.`,
+      { type: "sync_step_done", step: stepLabel, created, updated, failed, ...meta });
+  },
+
+  /** A sync step was skipped (nothing changed) */
+  syncStepSkipped: (stepLabel, count, meta = {}) =>
+    addLog("info",
+      `  · ${stepLabel} — ${count} record${count !== 1 ? "s" : ""} already up to date, skipped.`,
+      { type: "sync_step_skipped", step: stepLabel, count, ...meta }),
+
+  /** Auto-sync run summary at the end */
+  autoSyncRunSummary: (companyName, fromDate, toDate, status, runNumber, meta = {}) => {
+    const emoji = status === "ok" ? "✓" : status === "warning" ? "⚠" : "✗";
+    const word  = status === "ok" ? "completed" : status === "warning" ? "completed with warnings" : "FAILED";
+    const lvl   = status === "ok" ? "success" : status === "warning" ? "warn" : "error";
+    return addLog(lvl,
+      `${emoji} Auto-sync run #${runNumber} ${word} for "${companyName}" (${fromDate} → ${toDate}).`,
+      { type: "auto_sync_run_summary", company: companyName, fromDate, toDate, status, runNumber, ...meta });
+  },
 };
 
 // ── Public API ────────────────────────────────────────────────────────────────

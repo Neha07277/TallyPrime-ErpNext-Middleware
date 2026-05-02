@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "intervalMs": 1800000,
+  "intervalLabel": "30 min",
+  "options": {
+    "syncChartOfAccounts": true,
+    "syncLedgers": true,
+    "syncSmartLedgers": true,
+    "syncOpeningBalances": true,
+    "syncGodowns": true,
+    "syncCostCentres": true,
+    "syncStock": true,
+    "syncVouchers": true,
+    "syncInvoices": true,
+    "syncTaxes": false
+  },
+  "creds": {
+    "url": "https://timscdrmumbai.m.frappe.cloud/",
+    "erpnextCompany": "Company3"
+  },
+  "companyName": "Tally",
+  "fromDays": 30
+}

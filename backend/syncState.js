@@ -32,7 +32,10 @@ import { logger } from "./logs/logger.js";
 
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const STATE_DIR  = path.join(__dirname, "data");
-const STATE_FILE = path.join(STATE_DIR, "sync_state.json");
+// Use .dat extension so nodemon (which only watches js/mjs) never triggers
+// a restart when this file is written. Previously sync_state.json caused
+// nodemon to restart on every saveCompanyState() call.
+const STATE_FILE = path.join(STATE_DIR, "sync_state.dat");
 const OVERLAP_DAYS = 3;
 
 // ── File helpers ──────────────────────────────────────────────────────────────
@@ -81,7 +84,7 @@ function saveState(state) {
   // .js/.mjs/.cjs/.json by default — .bak is ignored).
   // Then rename atomically to the real path.  This prevents nodemon from
   // seeing a partial write and trying to read a half-written JSON file.
-  const tmp = STATE_FILE + ".bak";
+  const tmp = STATE_FILE + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(state, null, 2), "utf8");
   fs.renameSync(tmp, STATE_FILE);
 }

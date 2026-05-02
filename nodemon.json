@@ -1,0 +1,21 @@
+{
+  "watch": [
+    "server.js",
+    "routes",
+    "tally",
+    "config",
+    "logs/logger.js",
+    "syncState.js"
+  ],
+  "ignore": [
+    "data/**",
+    "data/*.json",
+    "data/**/*.json",
+    "logs/*.log",
+    "*.log",
+    "node_modules/**",
+    "**/*.log"
+  ],
+  "ext": "js,mjs",
+  "delay": "500"
+}
